@@ -10,6 +10,10 @@ function flash(string $key, ?string $message=null): ?string { if ($message !== n
 function redirect(string $path): never { header('Location: '.$path, true, 302); exit; }
 
 date_default_timezone_set(config('APP_TIMEZONE','Asia/Manila'));
+if (config('APP_ENV', 'local') === 'production') {
+  ini_set('display_errors', '0');
+  ini_set('display_startup_errors', '0');
+}
 if (PHP_SAPI !== 'cli') {
   $secure = config('SESSION_SECURE_COOKIE', config('APP_ENV') === 'production' ? 'true' : 'false') === 'true';
   $sessionPath=config('SESSION_PATH', 'storage/sessions'); if (!str_starts_with($sessionPath, DIRECTORY_SEPARATOR) && !preg_match('/^[A-Za-z]:[\\\\\/]/',$sessionPath)) $sessionPath=dirname(__DIR__).DIRECTORY_SEPARATOR.$sessionPath;
