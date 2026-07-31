@@ -427,3 +427,9 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+
+.env
+storage/logs/*.log
+storage/sessions/*
+!storage/sessions/.gitkeep

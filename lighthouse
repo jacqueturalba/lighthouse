@@ -1,0 +1,7 @@
+<?php
+declare(strict_types=1);
+require __DIR__.'/app/Bootstrap.php';
+$command=$argv[1]??'';
+if ($command==='migrate') { foreach (glob(__DIR__.'/database/migrations/*.sql') as $file) { db()->exec(file_get_contents($file)); echo basename($file)." applied\n"; } exit; }
+if ($command==='seed') { require __DIR__.'/database/seeders/InitialSuperAdmin.php'; exit; }
+fwrite(STDERR,"Usage: php lighthouse migrate|seed\n"); exit(1);
