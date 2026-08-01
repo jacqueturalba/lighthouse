@@ -126,23 +126,32 @@ if ($path==='/reset-password' && $method==='POST') {
     } flash('success','Password changed. You can now sign in.');
     redirect('/login'); 
 }
+
 if ($path==='/register' && $method==='GET') { 
     require_super_admin(); 
-    render('Create account','<form method="post"><label>Name<input name="name" maxlength="120"></label><label>Email<input name="email" type="email" required></label><p>New accounts are created with the Admin role. Super Admin access can only be granted from User Management.</p><label>Temporary password<input name="password" type="password" required></label><label>Confirm password<input name="confirm_password" type="password" required></label>'.form_token().'<button>Create account</button></form>'); 
+    view('auth/register',['title'=>'Create account']);
     exit; 
 }
+
 if ($path==='/register' && $method==='POST') { 
+    
     require_super_admin(); 
     csrf(); 
+    
     $email=strtolower(trim($_POST['email']??'')); 
-    $error=valid_password($_POST['password']??'') ?: (($_POST['password']??'')!==($_POST['confirm_password']??'')?'Passwords do not match.':null); 
+    $error=valid_password($_POST['password']??'') ? : (($_POST['password']??'')!==($_POST['confirm_password']??'')?'Passwords do not match.':null); 
+    
     if(!filter_var($email,FILTER_VALIDATE_EMAIL))$error='Enter a valid email.'; 
+
     if($error){
-        flash('error',$error);redirect('/register');
+        flash('error',$error);
+        redirect('/register');
     } 
+
     try{
         db()->prepare('INSERT INTO users (name,email,password,role,must_change_password) VALUES (?,?,?,?,1)')->execute([trim($_POST['name']??''),$email,password_hash($_POST['password'],PASSWORD_ARGON2ID),'admin']);
         log_event('user_created',['email'=>$email]);flash('success','Account created.');
+
     }catch(PDOException $e){
         flash('error','An account with that email already exists.');
     } 
@@ -150,7 +159,7 @@ if ($path==='/register' && $method==='POST') {
 }
 if ($path==='/profile' && $method==='GET') { 
     $u=require_auth(); 
-    render('Profile','<div class="card"><p><strong>Name:</strong> '.e($u['name']?:'—').'</p><p><strong>Email:</strong> '.e($u['email']).'</p><p><strong>Role:</strong> '.e(str_replace('_',' ',ucwords($u['role'],'_'))).'</p></div><h3>Account Settings</h3><form method="post" action="/profile/password"><label>Current password<input name="current_password" type="password" required></label><label>New password<input name="password" type="password" required></label><label>Confirm new password<input name="confirm_password" type="password" required></label>'.form_token().'<button>Change password</button></form>'); 
+    view('profile/profile',['title'=>'Profile','u'=>$u]); 
     exit; 
 }
 if ($path==='/profile/password' && $method==='POST') { 
@@ -179,9 +188,10 @@ if ($path==='/users' && $method==='GET') {
     $users=db()->query('SELECT id,name,email,role,status,created_at,last_login_at FROM users ORDER BY created_at DESC')->fetchAll(); 
     $rows='';
     foreach($users as $u){
-        $rows.='<tr><td>'.e($u['name']).'</td><td>'.e($u['email']).'</td><td>'.e($u['role']).'</td><td>'.e($u['status']).'</td><td>'.e($u['created_at']).'</td><td>'.e($u['last_login_at']?:'—').'</td><td><form method="post" action="/users/reset" style="margin:0">'.form_token().'<input type="hidden" name="email" value="'.e($u['email']).'"><button>Send Password Reset Link</button></form><form method="post" action="/users/password" style="margin:0"><input type="hidden" name="id" value="'.e((string)$u['id']).'">'.form_token().'<input name="password" type="password" placeholder="New password" required><input name="confirm_password" type="password" placeholder="Confirm password" required><button>Set password</button></form><form method="post" action="/users/role" style="margin:0"><input type="hidden" name="id" value="'.e((string)$u['id']).'">'.form_token().'<select name="role"><option value="admin"'.($u['role']==='admin'?' selected':'').'>Admin</option><option value="super_admin"'.($u['role']==='super_admin'?' selected':'').'>Super Admin</option></select><button>Update role</button></form></td></tr>'; 
+        $rows.='<tr><td>'.e($u['name']).'</td><td>'.e($u['email']).'</td><td>'.e($u['role']).'</td><td>'.e($u['status']).'</td><td>'.e($u['created_at']).'</td><td>'.e($u['last_login_at']?:'—').'</td><td><form method="post" action="/users/reset" style="margin:0">'.form_token().'<input type="hidden" name="email" value="'.e($u['email']).'"><button class="btn btn-sm btn-outline-primary py-1 mt-2 mb-2" alt="Send Password Reset Link">Send Reset Email</button></form><form method="post" action="/users/password" style="margin:0"><input type="hidden" name="id" value="'.e((string)$u['id']).'">'.form_token().'<input name="password" type="password" placeholder="New password" class="form-control form-control-sm mt-2 mb-1" required><input name="confirm_password" type="password" placeholder="Confirm password" class="form-control form-control-sm mt-1 mb-2" required><button class="btn btn-sm btn-outline-primary py-1 mt-2 mb-2">Set password</button></form><form method="post" action="/users/role" style="margin:0"><input type="hidden" name="id" value="'.e((string)$u['id']).'">'.form_token().'<select class="form-select form-select-sm mt-2 mb-2" name="role"><option value="admin"'.($u['role']==='admin'?' selected':'').'>Admin</option><option value="super_admin"'.($u['role']==='super_admin'?' selected':'').'>Super Admin</option></select><button  class="btn btn-sm btn-outline-primary py-1 mt-2 mb-2">Update role</button></form></td></tr>'; 
     } 
-    render('User Management','<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th>Last login</th><th>Action</th></tr></thead><tbody>'.$rows.'</tbody></table>');
+    
+    view('profile/user-management',['title'=>'User Management','rows'=>$rows]);
     exit; 
 }
 if ($path==='/users/password' && $method==='POST') { 

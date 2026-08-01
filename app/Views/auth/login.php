@@ -1,8 +1,8 @@
-<section class="container-md justify-content-center gap-4 py-2">
-  <div class="row align-items-left gap-4 py-2">
+<section class="container-md justify-content-center gap-4 py-2 bg-auth">
+  <div class="row align-items-left gap-4 p-5 m-5 glass">
     <div class="text-center align-items-center py-2 col-md-12 col-lg-12 col-xl-12">
       <h1><span style="color: #2563eb;">LIGHT</span><span style="color: #efb70c;">HOUSE</span></h1>
-      <p>Welcome back! Please enter your details.</p>
+      <p style="color: #ffffff;">Welcome back! Please enter your details.</p>
     </div>
     <div class="align-items-center py-2 col-xl-6 col-lg-6 col-md-6 col-sm-12">
       <form method="post">
@@ -18,7 +18,7 @@
       </form>
       <div class="py-2 col-md-6 col-lg-6 col-xl-4">
           <p>
-            <a href="/forgot-password">Forgot password?</a>
+            <a style="color: #ffffff;" href="/forgot-password">Forgot password?</a>
           </p>
       </div>
 

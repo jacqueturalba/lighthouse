@@ -33,18 +33,6 @@
 </section>
 <section class="row g-4 mb-4">
   <div class="col-md-8">
-<!--    <article class="lh-card h-100">
-      <div class="d-flex justify-content-between">
-        <div>
-          <p class="lh-card-title mb-2">Announcements</p>
-          <div class="lh-stat-number">0</div>
-        </div>
-        <i class="bi bi-calendar2-week fs-2 text-primary"></i>
-      </div>
-      <p class="text-secondary mb-0">No upcoming events yet.</p>
-    </article>
--->
-
     <article class="lh-card h-100">
       <div class="d-flex justify-content-between">
         <div class="d-flex flex-row mb-3 d-flex align-items-center">
@@ -52,13 +40,9 @@
           <p class="lh-card-title m-2 align-items-left">Announcements</p>
         </div>
       </div>
-
       <div class="lh-stat-number">0</div>
       <p class="text-secondary mb-0">No upcoming events yet.</p>
     </article>
-
-
-
   </div>
   <div class="col-md-4">
     <article class="lh-card h-100">
