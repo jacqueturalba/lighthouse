@@ -1,0 +1,139 @@
+:root {
+  --lh-blue: #145da0;
+  --lh-blue-dark: #0d477d;
+  --lh-gold: #f6c344;
+  --lh-ink: #14213d;
+  --lh-muted: #6c7a90;
+  --lh-surface: #f6f8fc;
+  --lh-radius: 14px;
+  --lh-shadow: 0 8px 28px rgba(20, 93, 160, 0.09);
+
+  /* UI Colors */
+  --lh-dashboard-blue: rgb(82, 126, 223);
+  --lh-dashboard-blue-dark: rgb(37, 99, 235);
+  --lh-dashboard-cardtext: #2563eb;
+}
+body {
+  background: var(--lh-surface);
+  color: var(--lh-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.lh-shell {
+  max-width: 1320px;
+}
+.lh-navbar {
+  background: #fff;
+  box-shadow: 0 2px 16px rgba(20, 33, 61, 0.06);
+}
+.lh-brand {
+  color: var(--lh-blue);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.lh-nav-link {
+  color: var(--lh-ink) !important;
+  font-weight: 600;
+}
+.lh-nav-link:hover,
+.lh-nav-link.active {
+  color: var(--lh-blue) !important;
+}
+.lh-card {
+  background: #fff;
+  border: 0;
+  border-radius: var(--lh-radius);
+  box-shadow: var(--lh-shadow);
+  padding: 1.5rem;
+}
+.lh-card-title {
+  font-size: 0.9rem;
+  color: var(--lh-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.btn-lh-primary {
+  --bs-btn-bg: var(--lh-blue);
+  --bs-btn-border-color: var(--lh-blue);
+  --bs-btn-hover-bg: var(--lh-blue-dark);
+  --bs-btn-hover-border-color: var(--lh-blue-dark);
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 0.65rem 1.1rem;
+  color: #fff;
+}
+.btn-lh-gold {
+  background: var(--lh-gold);
+  border-color: var(--lh-gold);
+  color: var(--lh-ink);
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 0.65rem 1.1rem;
+}
+.lh-page-title {
+  font-weight: 800;
+  font-size: 1.5rem;
+}
+.lh-page-greeting {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.lh-stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--lh-blue);
+}
+.alert {
+  border: 0;
+  border-radius: 12px;
+}
+.form-control,
+.form-select {
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+.table {
+  --bs-table-bg: transparent;
+}
+.table th {
+  color: var(--lh-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+@media (max-width: 991px) {
+  .lh-navbar .navbar-collapse {
+    padding-top: 1rem;
+  }
+  .lh-card {
+    padding: 1.25rem;
+  }
+}
+/* LOGIN */
+/* END LOGIN */
+
+/* DASHBOARD */
+
+.lh-card-dashboard {
+  --bs-bg-opacity: 1;
+  background: linear-gradient(
+    135deg,
+    var(--lh-dashboard-blue),
+    var(--lh-dashboard-blue-dark)
+  );
+  border: 0;
+  border-radius: var(--lh-radius);
+  box-shadow: var(--lh-shadow);
+  padding: 1.5rem;
+  color: #fff;
+}
+.lh-card-dashboard-white {
+  --bs-bg-opacity: 1;
+  background: #fff;
+  border: 0;
+  border-radius: var(--lh-radius);
+  box-shadow: var(--lh-shadow);
+  padding: 1.5rem;
+  color: var(--lh-dashboard-cardtext);
+}
+/* END DASHBOARD */

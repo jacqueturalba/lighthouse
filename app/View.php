@@ -28,3 +28,13 @@ function render(string $title, string $content, bool $auth = true): void
     $error = flash('error');
     require __DIR__.'/Views/layouts/app.php';
 }
+
+function asset(string $path): string
+{
+    return __DIR__.'/public/assets/' . ltrim($path, '/');
+}
+
+function render_asset(string $path): string
+{
+    return config('APP_URL').'/assets/' . ltrim($path, '/');
+}

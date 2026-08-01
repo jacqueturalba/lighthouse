@@ -28,7 +28,7 @@ function require_super_admin(): array {
 function csrf(): void { 
     if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['_token'] ?? '')) { 
         http_response_code(419); 
-        render('Session expired','<p>Please return to the form and try again.</p>'); 
+        render('Session expired','<p>Please return to the form and try again. <a href="/login">Try again</a>.</p>'); 
         exit; 
     } 
 }
