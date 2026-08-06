@@ -8,20 +8,21 @@
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
         <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/">Home</a>
+          <a class="nav-link lh-nav-link" href="/resources">Promotion Kits</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/resources">Resources</a>
+          <a class="nav-link lh-nav-link" href="/press-releases">Press Releases</a>
         </li>
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/calendar">Calendar</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/trainings">Trainings</a>
+          <a class="nav-link lh-nav-link" href="/trainings">Trainings & Guidelines</a>
         </li>
-        <li class="nav-item">
+        <!--<li class="nav-item">
           <a class="nav-link lh-nav-link" href="/guidelines">Guidelines</a>
-        </li> <?php if ($user['role'] === 'super_admin'): ?> <li class="nav-item">
+        </li>-->
+        <?php if ($user['role'] === 'super_admin'): ?> <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/users">User Management</a>
         </li>
         <li class="nav-item">

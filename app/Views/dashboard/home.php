@@ -60,3 +60,75 @@
     </article>
   </div>
 </section>
+<section class="mb-4">
+  <div class="container">
+    <div class="align-items-left py-2 col-md-12 col-lg-12 col-xl-12">
+      <div class="d-flex justify-content-between">
+        <div class="d-flex flex-row mb-0 d-flex align-items-center">
+          <i class="bi bi-newspaper fs-2 text-primary"></i>
+          
+          <h2 class="lh-page-greeting m-2 align-items-left">Recent Press Releases</h2>
+        </div>
+      </div>
+      <p class=" mb-3">Official announcements and media updates from the ministry.</p>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row g-4">
+      <div class="col-md-12 p-0">
+        <article class="lh-card h-100">
+          <div class="d-flex justify-content-between">
+            <div class="d-flex flex-row mb-3 d-flex align-items-center">
+              <i class="bi bi-x-square-fill fs-2 text-primary"></i>
+              <p class="lh-card-title m-2 align-items-left">No press releases yet</p>
+            </div>
+          </div>
+          <p class="text-secondary mb-0">No press releases have been published yet.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid mt-4 p-0">
+    <div class="row g-4">
+      <div class="col-md-6 col-sm-12 py-1">
+        <article class="lh-card h-100 text-center">
+          <div class="justify-content-between col-md-12 col-lg-12 col-xl-12">
+            <div class="mb-3 align-items-center">
+              <h4 class="m-2 align-items-center">UPLOAD YOUR SUCCESS STORIES <br/>& TESTIMONIALS</h4>
+            </div>
+          </div>
+          <p class="text-secondary mb-0">Help us celebrate what's happening in your branch!</p>
+          <div class="d-grid gap-2 col-md-6 col-sm-12 mx-auto">
+            <a class="btn btn-lh-primary p-2 mt-3" href="/resources">
+              <i class="bi bi-folder2-open"></i> Share your Story <span> (text/Photo/Video) </span> </a>
+
+            <a class="btn btn-lh-primary p-2 py-3 mt-3" href="/resources">
+              <i class="bi bi-folder2-open"></i> SUBMIT a Member testimonial </span> </a>
+          </div>
+        </article>
+      </div>
+      <div class="col-md-6 col-sm-12 py-1">
+        <article class="lh-card h-100 text-center align-items-center">
+          <div class="justify-content-between col-md-12 col-lg-12 col-xl-12">
+            <div class="mb-3 align-items-center">
+              <h4 class="m-2 align-items-center">VIEW INTERNAL CASE STUDIES <br/>& FEEDBACK</h4>
+            </div>
+          </div>
+          <p class="text-secondary mb-0">Learn and adapt from other branch churches.</p>
+          <div class="d-grid gap-2 col-md-6 col-sm-12 mx-auto">
+            <a class="btn btn-lh-primary p-2 mt-3" href="/resources">
+              <i class="bi bi-folder2-open"></i> VIEW STORY ARCHIVE</a>
+          </div>
+          <div class="mt-3 px-5 text-start">
+            <ul>
+              <li><b>Testimonial</b> from [Pastor Name] on community impact...</li>
+              <li><b>Case Study:</b> Innovative local marketing success in Silang...</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+

@@ -124,7 +124,7 @@ body {
             rgba(17, 24, 39, 0.45),
             rgba(37, 99, 235, 0.35)
         ),
-        url("../images/backgrounds/black-sky-night.jpg");
+        url("../images/backgrounds/lighthouse-auth.png");
 
     background-size: cover;
     background-position: center;
@@ -134,20 +134,14 @@ body {
     align-items: center;
     justify-content: center;
 
-    overflow: hidden;
+    /*overflow: hidden;*/
     border-radius: 20px;
 }
 
 /* ===========================
    GLASS OVERLAY
 =========================== */
-
-.glass {
-    background: rgba(255, 255, 255, 0.12);
-
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-
+.auth-container {
     border: 1px solid rgba(255,255,255,.20);
 
     border-radius: 20px;
@@ -156,6 +150,13 @@ body {
         0 8px 32px rgba(0,0,0,.18);
 
     padding: 2.5rem;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 }
 
 /* Optional darker glass */
