@@ -36,7 +36,7 @@ function valid_reset_token(string $email, string $token): bool {
 
 class ApplicationController
 {
-    public function dispatch(): void
+    public function dispatch(array $routeParameters = []): void
     {
         global $path, $method;
 
@@ -257,18 +257,6 @@ class ApplicationController
                 }
             }
             redirect('/users');
-        }
-
-        if ($path==='/press-releases' && $method==='GET') { 
-            view('releases/press-releases',['title'=>'Press Releases']); 
-            exit; 
-        }
-
-        if (in_array($path,['/','/resources','/calendar','/trainings','/guidelines','/press-releases','/static-1','/static-2'],true)) { 
-            $u=require_auth(); 
-            if($path==='/') view('dashboard/home',['title'=>'Homepage']); 
-            else view('static/placeholder',['title'=>ucwords(trim(str_replace('-',' ',$path),'/'))]); 
-            exit; 
         }
 
         http_response_code(404); 

@@ -8,7 +8,7 @@
     <div class="collapse navbar-collapse" id="mainNav">
       <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
         <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/resources">Promotion Kits</a>
+          <a class="nav-link lh-nav-link" href="/promotion-kits">Promotion Kits</a>
         </li>
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/press-releases">Press Releases</a>

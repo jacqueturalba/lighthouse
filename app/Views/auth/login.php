@@ -25,7 +25,7 @@
     </div>
 
     <div class="align-self-end py-0 col-xl-5 col-lg-5 col-md-5 col-sm-12">
-      <!-- <img src="<?=render_asset('/images/auth/login-img.png') ?>" class="rounded img-fluid" alt="lighthouse" > -->
+      <!--<img src="<?=render_asset('/images/auth/login-img.png') ?>" class="rounded img-fluid" alt="lighthouse" >-->
        &nbsp;
     </div>
   </div>

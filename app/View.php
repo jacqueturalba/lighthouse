@@ -38,3 +38,10 @@ function render_asset(string $path): string
 {
     return config('APP_URL').'/assets/' . ltrim($path, '/');
 }
+
+function storage_asset(string $path): string
+{
+    return rtrim(config('APP_URL'), '/')
+        . '/storage/'
+        . ltrim($path, '/');
+}

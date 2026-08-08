@@ -212,4 +212,33 @@ body {
   padding: 1.5rem;
   color: var(--lh-dashboard-cardtext);
 }
+.rounded-home {
+  border-radius: 20px;
+}
 /* END DASHBOARD */
+
+/* START PRESS RELEASES */
+.press-release-image-container {
+    max-height: 250px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.press-release-image-container-min {
+    max-height: 100px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pagination {
+    gap: 2px;
+}
+
+@media (max-width: 576px) {
+    .pagination .page-link {
+        padding: 0.35rem 0.55rem;
+    }
+}
+/* END PRESS RELEASES */
