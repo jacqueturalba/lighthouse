@@ -5,7 +5,7 @@ require_once dirname(__DIR__).'/View.php';
 require_once __DIR__.'/../Models/PressRelease.php';
 require_once __DIR__.'/../Models/PromotionKit.php';
 require_once __DIR__.'/../Models/PromotionKitRequest.php';
-require_once __DIR__.'/../Models/Event.php';
+require_once __DIR__.'/../Models/PEvent.php';
 
 final class PageController
 {
@@ -70,19 +70,19 @@ final class PageController
         $month = $date->format('Y-m');
         $from = $date->modify('first day of this month')->modify('-'.((int)$date->format('N') - 1).' days');
         $to = $date->modify('last day of this month')->modify('+'.(7 - (int)$date->modify('last day of this month')->format('N')).' days');
-        view('calendar/index', ['title'=>'Calendar', 'month'=>$month, 'monthDate'=>$date, 'gridStart'=>$from, 'gridEnd'=>$to, 'events'=>Event::month($from->format('Y-m-d'), $to->format('Y-m-d')), 'upcoming'=>Event::upcoming(), 'mine'=>Event::mine((int)current_user()['id'])]);
+        view('calendar/index', ['title'=>'Calendar', 'month'=>$month, 'monthDate'=>$date, 'gridStart'=>$from, 'gridEnd'=>$to, 'events'=>PEvent::month($from->format('Y-m-d'), $to->format('Y-m-d')), 'upcoming'=>PEvent::upcoming(), 'mine'=>PEvent::mine((int)current_user()['id'])]);
     }
 
     public function eventDetail(array $params): void {
         require_auth();
-        $event = Event::find((int)$params['id']);
+        $event = PEvent::find((int)$params['id']);
         if (!$event || ($event['status'] !== 'approved' && (int)$event['submitted_by'] !== (int)current_user()['id'] && current_user()['role'] !== 'super_admin')) { http_response_code(404); render('Event not found', '<p>This event is not available.</p>'); return; }
         view('calendar/detail', ['title'=>$event['title'], 'event'=>$event]);
     }
 
     public function eventReview(): void {
         require_super_admin();
-        view('calendar/review', ['title'=>'Event Review', 'events'=>Event::forReview()]);
+        view('calendar/review', ['title'=>'Event Review', 'events'=>PEvent::forReview()]);
     }
 
     public function placeholder(array $params = []): void { 

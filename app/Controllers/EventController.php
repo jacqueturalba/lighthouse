@@ -2,17 +2,17 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__).'/View.php';
-require_once dirname(__DIR__).'/Models/Event.php';
+require_once dirname(__DIR__).'/Models/PEvent.php';
 
 final class EventController
 {
     public function store(): void
     {
         $user = require_auth();
-        verify_csrf();
+        csrf();
         $data = $this->validated($_POST);
         if ($data['error']) { flash('error', $data['error']); redirect('/calendar'); }
-        Event::create($data, (int)$user['id']);
+        PEvent::create($data, (int)$user['id']);
         log_event('event_submitted', ['user_id' => $user['id']]);
         flash('success', 'Event submitted for review.');
         redirect('/calendar');
@@ -21,11 +21,11 @@ final class EventController
     public function review(array $params): void
     {
         $reviewer = require_super_admin();
-        verify_csrf();
+        csrf();
         $status = ($_POST['status'] ?? '') === 'approved' ? 'approved' : 'rejected';
         $reason = trim((string)($_POST['reason'] ?? ''));
         if ($status === 'rejected' && $reason === '') { flash('error', 'A rejection reason is required.'); redirect('/event-review'); }
-        Event::review((int)$params['id'], $status, (int)$reviewer['id'], $reason ?: null);
+        PEvent::review((int)$params['id'], $status, (int)$reviewer['id'], $reason ?: null);
         log_event('event_'.$status, ['event_id' => (int)$params['id'], 'reviewer_id' => $reviewer['id']]);
         flash('success', 'Event '.$status.'.');
         redirect('/event-review');

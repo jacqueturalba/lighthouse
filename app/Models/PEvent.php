@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once dirname(__DIR__).'/Database.php';
-
-final class Event
+final class PEvent
 {
     public static function find(int $id): ?array
     {
