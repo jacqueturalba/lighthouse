@@ -34,6 +34,8 @@ final class PromotionKitRequest
 
     public static function review(int $id, string $status, int $reviewer, ?string $reason): void
     {
-        db()->prepare('UPDATE promotion_kit_requests SET status=?, reviewed_at=NOW(), reviewed_by=?, review_reason=? WHERE id=? AND status=?')->execute([$status, $reviewer, $reason, $id, $id, 'pending']);
+        db()->prepare(
+            'UPDATE promotion_kit_requests SET status=?, reviewed_at=NOW(), reviewed_by=?, review_reason=? WHERE id=? AND status=?'
+        )->execute([$status, $reviewer, $reason, $id, 'pending']);
     }
 }
