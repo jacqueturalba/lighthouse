@@ -28,6 +28,13 @@ final class PEvent
         return db()->query("SELECT e.*, u.name AS submitter_name FROM events e JOIN users u ON u.id=e.submitted_by WHERE e.status='pending' ORDER BY e.created_at ASC")->fetchAll();
     }
 
+    public static function pendingVisible(int $userId): array
+    {
+        $stmt = db()->prepare("SELECT e.*, u.name AS submitter_name FROM events e JOIN users u ON u.id=e.submitted_by WHERE e.status='pending' AND (e.submitted_by=? OR e.event_date >= CURDATE()) ORDER BY e.event_date, e.created_at DESC");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll();
+    }
+
     public static function mine(int $userId): array
     {
         $stmt = db()->prepare('SELECT * FROM events WHERE submitted_by=? ORDER BY event_date DESC, created_at DESC');

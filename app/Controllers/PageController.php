@@ -6,6 +6,7 @@ require_once __DIR__.'/../Models/PressRelease.php';
 require_once __DIR__.'/../Models/PromotionKit.php';
 require_once __DIR__.'/../Models/PromotionKitRequest.php';
 require_once __DIR__.'/../Models/PEvent.php';
+require_once __DIR__.'/../Models/MaterialRequest.php';
 
 final class PageController
 {
@@ -70,19 +71,32 @@ final class PageController
         $month = $date->format('Y-m');
         $from = $date->modify('first day of this month')->modify('-'.((int)$date->format('N') - 1).' days');
         $to = $date->modify('last day of this month')->modify('+'.(7 - (int)$date->modify('last day of this month')->format('N')).' days');
-        view('calendar/index', ['title'=>'Calendar', 'month'=>$month, 'monthDate'=>$date, 'gridStart'=>$from, 'gridEnd'=>$to, 'events'=>PEvent::month($from->format('Y-m-d'), $to->format('Y-m-d')), 'upcoming'=>PEvent::upcoming(), 'mine'=>PEvent::mine((int)current_user()['id'])]);
+        view('calendar/index', ['title'=>'Calendar', 'month'=>$month, 'monthDate'=>$date, 'gridStart'=>$from, 'gridEnd'=>$to, 'events'=>PEvent::month($from->format('Y-m-d'), $to->format('Y-m-d')), 'upcoming'=>PEvent::upcoming(), 'mine'=>PEvent::mine((int)current_user()['id']), 'pending'=>PEvent::pendingVisible((int)current_user()['id'])]);
     }
 
     public function eventDetail(array $params): void {
         require_auth();
         $event = PEvent::find((int)$params['id']);
         if (!$event || ($event['status'] !== 'approved' && (int)$event['submitted_by'] !== (int)current_user()['id'] && current_user()['role'] !== 'super_admin')) { http_response_code(404); render('Event not found', '<p>This event is not available.</p>'); return; }
-        view('calendar/detail', ['title'=>$event['title'], 'event'=>$event]);
+        view('calendar/detail', ['title'=>$event['title'], 'event'=>$event, 'materialRequest'=>MaterialRequest::findByEvent((int)$event['id']), 'user'=>current_user()]);
     }
 
     public function eventReview(): void {
         require_super_admin();
         view('calendar/review', ['title'=>'Event Review', 'events'=>PEvent::forReview()]);
+    }
+
+    public function materialRequests(): void {
+        $user = require_auth();
+        $admin = $user['role'] === 'super_admin';
+        view('materials/index', ['title'=>'Material Requests', 'admin'=>$admin, 'requests'=>$admin ? MaterialRequest::forAdmin() : MaterialRequest::forRequester((int)$user['id'])]);
+    }
+
+    public function materialRequestDetail(array $params): void {
+        $user = require_auth();
+        $request = MaterialRequest::find((int)$params['id']);
+        if (!$request || ($user['role'] !== 'super_admin' && (int)$request['requested_by'] !== (int)$user['id'])) { http_response_code(404); render('Material request not found', '<p>This material request is not available.</p>'); return; }
+        view('materials/detail', ['title'=>'Material Request', 'request'=>$request, 'admin'=>$user['role'] === 'super_admin', 'kits'=>$user['role'] === 'super_admin' ? PromotionKit::active() : []]);
     }
 
     public function placeholder(array $params = []): void { 

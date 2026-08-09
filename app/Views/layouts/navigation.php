@@ -19,6 +19,9 @@
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/trainings">Trainings & Guidelines</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link lh-nav-link" href="/material-requests">Materials</a>
+        </li>
         <!--<li class="nav-item">
           <a class="nav-link lh-nav-link" href="/guidelines">Guidelines</a>
         </li>-->
@@ -26,6 +29,8 @@
           <a class="nav-link lh-nav-link" href="/event-review">Event Review</a>
         </li> <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/promotion-kit-requests">Kit Requests</a>
+        </li> <li class="nav-item">
+          <a class="nav-link lh-nav-link" href="/material-requests">Production</a>
         </li> <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/users">User Management</a>
         </li>
