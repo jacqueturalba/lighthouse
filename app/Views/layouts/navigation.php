@@ -23,6 +23,8 @@
           <a class="nav-link lh-nav-link" href="/guidelines">Guidelines</a>
         </li>-->
         <?php if ($user['role'] === 'super_admin'): ?> <li class="nav-item">
+          <a class="nav-link lh-nav-link" href="/promotion-kit-requests">Kit Requests</a>
+        </li> <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/users">User Management</a>
         </li>
         <li class="nav-item">
