@@ -5,6 +5,8 @@ require dirname(__DIR__).'/app/Controllers/ApplicationController.php';
 require dirname(__DIR__).'/app/Controllers/StorageController.php';
 require dirname(__DIR__).'/app/Controllers/PageController.php';
 require dirname(__DIR__).'/app/Controllers/PromotionKitRequestController.php';
+require dirname(__DIR__).'/app/Controllers/EventController.php';
+require dirname(__DIR__).'/app/Models/Event.php';
 
 $storage = new StorageController();
 $router->get('/storage/{type}/{folder}/{file}', [$storage, 'show']);
@@ -22,7 +24,12 @@ $router->post('/promotion-kit-requests/{id}/disapprove', [$requests, 'disapprove
 $router->post('/promotion-kits/{id}/download', [$requests, 'download']);
 $router->post('/promotion-kits/{id}/archive', [$requests, 'archive']);
 $router->post('/promotion-kit-upload', [$requests, 'upload']);
-$router->get('/calendar', [$pages, 'placeholder']);
+$router->get('/calendar', [$pages, 'calendar']);
+$router->get('/events/{id}', [$pages, 'eventDetail']);
+$router->get('/event-review', [$pages, 'eventReview']);
+$events = new EventController();
+$router->post('/events', [$events, 'store']);
+$router->post('/events/{id}/review', [$events, 'review']);
 $router->get('/trainings', [$pages, 'placeholder']);
 $router->get('/guidelines', [$pages, 'placeholder']);
 $router->get('/static-1', [$pages, 'placeholder']);
