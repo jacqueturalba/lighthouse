@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS `promotion_kit_requests` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 
-    `promotion_kit_id` INT UNSIGNED NOT NULL,
-    `requested_by` INT UNSIGNED NOT NULL,
+    `promotion_kit_id` BIGINT UNSIGNED NOT NULL,
+    `requested_by` BIGINT UNSIGNED NOT NULL,
 
     `status` ENUM(
         'pending',
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `promotion_kit_requests` (
 
     `requested_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `reviewed_at` TIMESTAMP NULL DEFAULT NULL,
-    `reviewed_by` INT UNSIGNED NULL DEFAULT NULL,
+    `reviewed_by` BIGINT UNSIGNED NULL DEFAULT NULL,
 
     `review_reason` TEXT NULL,
 
@@ -47,5 +47,5 @@ CREATE TABLE IF NOT EXISTS `promotion_kit_requests` (
         ON DELETE SET NULL
 
 ) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci;
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;

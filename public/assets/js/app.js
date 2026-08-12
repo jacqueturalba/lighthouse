@@ -17,3 +17,10 @@ if (lhModal) {
     modalBodyInput.value = recipient
   })
 }
+
+
+
+$(function () {
+  $('[data-bs-toggle="tooltip"]').tooltip()
+})
+

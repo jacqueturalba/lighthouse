@@ -7,7 +7,6 @@ require dirname(__DIR__).'/app/Controllers/PageController.php';
 require dirname(__DIR__).'/app/Controllers/PromotionKitRequestController.php';
 require dirname(__DIR__).'/app/Controllers/EventController.php';
 require dirname(__DIR__).'/app/Controllers/MaterialRequestController.php';
-require dirname(__DIR__).'/app/Models/MaterialRequest.php';
 
 $storage = new StorageController();
 $router->get('/storage/{type}/{folder}/{file}', [$storage, 'show']);

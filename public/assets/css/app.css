@@ -245,9 +245,23 @@ body {
     gap: 2px;
 }
 
+.link-listings.sticky-top {
+    top: 5rem;
+}
+.linkitself {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
 @media (max-width: 576px) {
     .pagination .page-link {
         padding: 0.35rem 0.55rem;
     }
 }
 /* END PRESS RELEASES */
+
+
+.custom-tooltip {
+  --bs-tooltip-bg: var(--bd-violet-bg);
+  --bs-tooltip-color: var(--bs-white);
+}

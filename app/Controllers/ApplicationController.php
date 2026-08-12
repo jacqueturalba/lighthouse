@@ -203,11 +203,12 @@ class ApplicationController
             require_super_admin(); 
             $users=db()->query('SELECT id,name,email,role,status,created_at,last_login_at FROM users ORDER BY created_at DESC')->fetchAll(); 
             $rows='';
+
             foreach($users as $u){
-                $rows.='<tr><td>'.e($u['name']).'</td><td>'.e($u['email']).'</td><td>'.e($u['role']).'</td><td>'.e($u['status']).'</td><td>'.e($u['created_at']).'</td><td>'.e($u['last_login_at']?:'—').'</td><td><form method="post" action="/users/reset" style="margin:0">'.form_token().'<input type="hidden" name="email" value="'.e($u['email']).'"><button class="btn btn-sm btn-outline-primary py-1 mt-2 mb-2" alt="Send Password Reset Link">Send Reset Email</button></form><form method="post" action="/users/password" style="margin:0"><input type="hidden" name="id" value="'.e((string)$u['id']).'">'.form_token().'<input name="password" type="password" placeholder="New password" class="form-control form-control-sm mt-2 mb-1" required><input name="confirm_password" type="password" placeholder="Confirm password" class="form-control form-control-sm mt-1 mb-2" required><button class="btn btn-sm btn-outline-primary py-1 mt-2 mb-2">Set password</button></form><form method="post" action="/users/role" style="margin:0"><input type="hidden" name="id" value="'.e((string)$u['id']).'">'.form_token().'<select class="form-select form-select-sm mt-2 mb-2" name="role"><option value="admin"'.($u['role']==='admin'?' selected':'').'>Admin</option><option value="super_admin"'.($u['role']==='super_admin'?' selected':'').'>Super Admin</option></select><button  class="btn btn-sm btn-outline-primary py-1 mt-2 mb-2">Update role</button></form></td></tr>'; 
+                
             } 
             
-            view('profile/user-management',['title'=>'User Management','rows'=>$rows]);
+            view('profile/user-management',['title'=>'User Management','rows'=>$users]);
             exit; 
         }
 

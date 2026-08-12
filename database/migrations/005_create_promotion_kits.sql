@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `promotion_kits` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 
     `title` VARCHAR(150) NOT NULL,
     `description` TEXT NULL,
@@ -14,9 +14,10 @@ CREATE TABLE IF NOT EXISTS `promotion_kits` (
 
     `cover_photo_path` VARCHAR(500) NULL,
 
-    `uploaded_by` INT UNSIGNED NOT NULL,
+    `uploaded_by` BIGINT UNSIGNED NOT NULL,
 
-    `status` ENUM('active', 'archived') NOT NULL DEFAULT 'active',
+    `status` ENUM('active', 'archived')
+        NOT NULL DEFAULT 'active',
 
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -35,5 +36,5 @@ CREATE TABLE IF NOT EXISTS `promotion_kits` (
         ON DELETE RESTRICT
 
 ) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci;
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;

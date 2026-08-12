@@ -56,7 +56,9 @@ final class PageController
 
         view('releases/press-releases', [
             'title' => 'Press Releases',
+            'allReleases' => PressRelease::getPressReleases(4, 0),
             'latestRelease' => $pagination['latest'],
+            'latestLinks' => $pagination['latestLinks'],
             'pressReleases' => $pagination['items'],
             'currentPage' => $pagination['currentPage'],
             'totalPages' => $pagination['totalPages'],

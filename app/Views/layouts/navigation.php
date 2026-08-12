@@ -25,26 +25,46 @@
         <!--<li class="nav-item">
           <a class="nav-link lh-nav-link" href="/guidelines">Guidelines</a>
         </li>-->
-        <?php if ($user['role'] === 'super_admin'): ?> <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/event-review">Event Review</a>
-        </li> <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/promotion-kit-requests">Kit Requests</a>
-        </li> <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/material-requests">Production</a>
-        </li> <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/users">User Management</a>
-        </li>
+
+        <?php if ($user['role'] === 'super_admin'): ?> 
+
+
+        <div class="dropdown">
+          <button class="btn btn-outline-warning dropdown-toggle py-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-gear-wide-connected"></i>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/event-review">Event Review</a></li>
+            <li><a class="dropdown-item" href="/promotion-kit-requests">Kit Requests</a></li>
+            <li><a class="dropdown-item" href="/material-requests">Production</a></li>
+            <li><a class="dropdown-item" href="/users">User Management</a></li>
+            <li><a class="dropdown-item" href="/register">Create Account</a></li>
+          </ul>
+        </div>
+
+
+        <?php endif; ?> 
+        
         <li class="nav-item">
-          <a class="btn btn-lh-gold ms-lg-2 py-1" href="/register">
-            <i class="bi bi-person-plus me-1"></i>Create Account </a>
-        </li> <?php endif; ?> <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/profile">
-            <i class="bi bi-person-circle me-1"></i>Profile </a>
+          <button class="btn btn-outline-warning py-0 px-1" type="button">
+          <a class="nav-link lh-nav-link btn py-1" href="/profile" alt="Profile" 
+             data-bs-toggle="tooltip" data-bs-placement="top"
+             data-bs-custom-class="custom-tooltip"
+             data-bs-title="Profile">
+            <i class="bi bi-person-circle me-1"></i>
+          </a>
+          </button>
         </li>
         <li class="nav-item">
           <form method="post" action="/logout" class="ms-lg-2">
             <input type="hidden" name="_token" value="<?= e($_SESSION['csrf']) ?>">
-            <button class="btn btn-lh-primary py-1" type="submit">Logout</button>
+            <button class="btn btn-outline-primary py-1" type="submit" 
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    data-bs-custom-class="custom-tooltip"
+                    data-bs-title="Logout"
+              >
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
           </form>
         </li>
       </ul>

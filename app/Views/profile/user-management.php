@@ -14,6 +14,8 @@
             <th>Action</th>
             </tr>
         </thead>
-        <tbody><?= $rows ?></tbody>
+        <tbody>
+            <?php require __DIR__.'/user.php'; ?>
+        </tbody>
     </table>
 </section>

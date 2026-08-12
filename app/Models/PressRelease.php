@@ -6,12 +6,36 @@ final class PressRelease
     public static function recordPressRelease(array $arguments): ?array
     {
         try{
-            $id = db()->prepare('INSERT INTO press_releases (title,description,news_source,news_content_type,date_released, cover_photo, media_logo, link, media_outlet) VALUES (?,?,?,?,?,?,?,?,?)')->execute([trim($arguments['title']??''),trim($arguments['description']??''),trim($arguments['news_source']??''),trim($arguments['news_content_type']??''),trim($arguments['date_released']??''),trim($arguments['cover_photo']??''),trim($arguments['media_logo']??''),trim($arguments['link']??''),trim($arguments['media_outlet']??'')]);
+            $id = db()->prepare('INSERT INTO press_releases (title,description,event_date, cover_photo) VALUES (?,?,?,?,?,?,?,?,?)')->execute([trim($arguments['title']??''),trim($arguments['description']??''),trim($arguments['event_date']??''),trim($arguments['cover_photo']??'')]);
             log_event('press_release_created',['pr_id'=>$id]);flash('success','Press release created.');
+
+            $links = $arguments['links'] ?? [];
+            foreach ($links as $link) {
+                if (empty($link['url'])) {
+                    continue;
+                }
+
+                $isPrimary = !empty($link['is_primary']) ? 1 : 0;
+
+                db()->prepare('INSERT INTO press_release_links (press_release_id, news_source, news_content_type, date_released, media_logo, media_outlet, link, is_primary) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')->execute([$id, trim($link['news_source']??''), trim($link['news_content_type']??''), trim($link['date_released']??''), trim($link['media_logo']??''), trim($link['media_outlet']??''), trim($link['link']), $isPrimary]);
+            }
 
         }catch(PDOException $e){
             flash('error','Press release failed to create.');
         } 
+    }
+
+    public static function getAllPressReleases(): array
+    {
+        $statement = db()->query(
+            'SELECT *
+            FROM press_releases
+            join press_release_links on press_releases.id = press_release_links.press_release_id
+            where press_release_links.is_primary = 1
+            ORDER BY date_released DESC, press_releases.id DESC'
+        );
+
+        return $statement->fetchAll() ?: [];
     }
 
     public static function countPressReleases(): int
@@ -30,7 +54,9 @@ final class PressRelease
         $statement = db()->prepare(
             'SELECT *
             FROM press_releases
-            ORDER BY date_released DESC, id DESC
+            join press_release_links on press_releases.id = press_release_links.press_release_id
+            where press_release_links.is_primary = 1
+            ORDER BY date_released DESC, press_releases.id DESC
             LIMIT :limit OFFSET :offset'
         );
 
@@ -45,11 +71,17 @@ final class PressRelease
     public static function getPressReleaseById(int $id): ?array
     {   
         if($id <= 0) {
-            $statement = db()->prepare('SELECT * FROM press_releases ORDER BY date_released DESC, id DESC LIMIT 1');
+            $statement = db()->prepare('SELECT * FROM press_releases 
+                                        join press_release_links on press_releases.id = press_release_links.press_release_id
+                                        where press_release_links.is_primary = 1
+                                        ORDER BY date_released DESC, press_releases.id DESC LIMIT 1');
             $statement->execute();
             
         } else {
-            $statement = db()->prepare('SELECT * FROM press_releases WHERE id=? ORDER BY date_released DESC, id DESC LIMIT 1');
+            $statement = db()->prepare('SELECT * FROM press_releases 
+                                        join press_release_links on press_releases.id = press_release_links.press_release_id
+                                        where press_release_links.is_primary = 1 AND press_releases.id = ?
+                                        ORDER BY date_released DESC, press_releases.id DESC LIMIT 1');
             $statement->execute([$id]);
         }
         return $statement->fetch() ?: null;
@@ -60,27 +92,49 @@ final class PressRelease
         int $page = 1,
         int $perPage = 4
     ): array {
+        
         $page = max(1, $page);
         $perPage = max(1, $perPage);
 
         // Keep the latest release separate.
         $latestStatement = db()->query(
-            'SELECT * 
+            'SELECT *, press_releases.id as pr_id,  press_release_links.id as prl_id
             FROM press_releases 
-            ORDER BY date_released DESC, id DESC 
+            join press_release_links on press_releases.id = press_release_links.press_release_id
+            where press_release_links.is_primary = 1
+            ORDER BY date_released DESC, press_releases.id DESC 
             LIMIT 1'
         );
 
         $latest = $latestStatement->fetch() ?: null;
 
+        $latestLinks = db()->prepare(
+            'SELECT *
+            FROM press_release_links
+            WHERE press_release_id = :press_release_id'
+        );
+
+        $latestLinks->bindValue(
+            ':press_release_id',
+            $latest['pr_id'] ?? null,
+            PDO::PARAM_INT
+        );
+
+        $latestLinks->execute();
+        $latestLinksData = $latestLinks->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
         // Count releases excluding the latest one.
         $countStatement = db()->query(
             'SELECT COUNT(*) 
             FROM press_releases 
-            WHERE id != (
-                SELECT id
+            join press_release_links on press_releases.id = press_release_links.press_release_id
+            where press_release_links.is_primary = 1
+            AND press_releases.id != (
+                SELECT press_releases.id
                 FROM press_releases
-                ORDER BY date_released DESC, id DESC
+                join press_release_links on press_releases.id = press_release_links.press_release_id
+                where press_release_links.is_primary = 1
+                ORDER BY date_released DESC, press_releases.id DESC
                 LIMIT 1
             )'
         );
@@ -96,13 +150,17 @@ final class PressRelease
         $statement = db()->prepare(
             'SELECT *
             FROM press_releases
-            WHERE id != (
-                SELECT id
+            JOIN press_release_links ON press_releases.id = press_release_links.press_release_id
+            WHERE press_releases.id != (
+                SELECT press_releases.id
                 FROM press_releases
-                ORDER BY date_released DESC, id DESC
+                join press_release_links on press_releases.id = press_release_links.press_release_id
+                where press_release_links.is_primary = 1
+                ORDER BY date_released DESC, press_releases.id DESC
                 LIMIT 1
             )
-            ORDER BY date_released DESC, id DESC
+            AND press_release_links.is_primary = 1
+            ORDER BY date_released DESC, press_releases.id DESC
             LIMIT :limit OFFSET :offset'
         );
 
@@ -113,6 +171,7 @@ final class PressRelease
 
         return [
             'latest' => $latest,
+            'latestLinks' => $latestLinksData,
             'items' => $statement->fetchAll() ?: [],
             'currentPage' => $page,
             'perPage' => $perPage,

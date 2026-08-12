@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS `promotion_kit_downloads` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 
-    `promotion_kit_id` INT UNSIGNED NOT NULL,
-    `user_id` INT UNSIGNED NOT NULL,
-    `request_id` INT UNSIGNED NULL DEFAULT NULL,
+    `promotion_kit_id` BIGINT UNSIGNED NOT NULL,
+    `user_id` BIGINT UNSIGNED NOT NULL,
+    `request_id` BIGINT UNSIGNED NULL DEFAULT NULL,
 
     `downloaded_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -33,5 +33,5 @@ CREATE TABLE IF NOT EXISTS `promotion_kit_downloads` (
         ON DELETE SET NULL
 
 ) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci;
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
