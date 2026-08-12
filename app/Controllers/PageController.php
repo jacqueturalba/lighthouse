@@ -49,9 +49,12 @@ final class PageController
             (int) ($_GET['page'] ?? 1)
         );
 
+        $prid = (int) ($_GET['p'] ?? 0);
+
         $pagination = PressRelease::getPaginatedPressReleases(
             $currentPage,
-            4
+            4,
+            $prid
         );
 
         view('releases/press-releases', [

@@ -37,7 +37,7 @@
         </div>
         <div>
           <h2 class="h5 mb-2">
-            <a class="text-decoration-none text-dark" href="/promotion-kits/<?= (int)$kit['id'] ?>"><?= e($kit['title']) ?></a>
+            <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="/promotion-kits/<?= (int)$kit['id'] ?>"><?= e($kit['title']) ?></a>
           </h2>
           <p class="text-secondary mb-0">
             <?= e($kit['description'] ?: 'Campaign resources for Lighthouse branches.') ?>

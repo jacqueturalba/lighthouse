@@ -90,24 +90,38 @@ final class PressRelease
 
     public static function getPaginatedPressReleases(
         int $page = 1,
-        int $perPage = 4
+        int $perPage = 4,
+        int $prid = 0
     ): array {
         
         $page = max(1, $page);
         $perPage = max(1, $perPage);
 
-        // Keep the latest release separate.
-        $latestStatement = db()->query(
-            'SELECT *, press_releases.id as pr_id,  press_release_links.id as prl_id
-            FROM press_releases 
-            join press_release_links on press_releases.id = press_release_links.press_release_id
-            where press_release_links.is_primary = 1
-            ORDER BY date_released DESC, press_releases.id DESC 
-            LIMIT 1'
-        );
+        $qr = '
+            SELECT *,
+                press_releases.id AS pr_id,
+                press_release_links.id AS prl_id
+            FROM press_releases
+            JOIN press_release_links
+                ON press_releases.id = press_release_links.press_release_id
+            WHERE press_release_links.is_primary = 1
+        ';
 
-        $latest = $latestStatement->fetch() ?: null;
+        $params = [];
 
+        if (!empty($prid)) {
+            $qr .= ' AND press_releases.id = :pressreleaseid';
+            $params['pressreleaseid'] = (int) $prid;
+        }
+
+        $qr .= '
+            ORDER BY date_released DESC, press_releases.id DESC
+            LIMIT 1
+        ';
+
+        $latestStatement = db()->prepare($qr);
+        $latestStatement->execute($params);
+        $latest = $latestStatement->fetch(PDO::FETCH_ASSOC);
         $latestLinks = db()->prepare(
             'SELECT *
             FROM press_release_links
@@ -140,33 +154,30 @@ final class PressRelease
         );
 
         $totalOlder = (int) $countStatement->fetchColumn();
-
         $totalPages = max(1, (int) ceil($totalOlder / $perPage));
-
         $page = min($page, $totalPages);
-
         $offset = ($page - 1) * $perPage;
 
         $statement = db()->prepare(
-            'SELECT *
+            'SELECT *,
+                press_releases.id AS pr_id,
+                press_release_links.id AS prl_id
             FROM press_releases
-            JOIN press_release_links ON press_releases.id = press_release_links.press_release_id
+            JOIN press_release_links
+                ON press_releases.id = press_release_links.press_release_id
             WHERE press_releases.id != (
                 SELECT press_releases.id
                 FROM press_releases
-                join press_release_links on press_releases.id = press_release_links.press_release_id
-                where press_release_links.is_primary = 1
-                ORDER BY date_released DESC, press_releases.id DESC
+                ORDER BY event_date DESC, press_releases.id DESC
                 LIMIT 1
             )
             AND press_release_links.is_primary = 1
-            ORDER BY date_released DESC, press_releases.id DESC
+            ORDER BY press_releases.event_date DESC, press_releases.id DESC
             LIMIT :limit OFFSET :offset'
         );
 
         $statement->bindValue(':limit', $perPage, PDO::PARAM_INT);
         $statement->bindValue(':offset', $offset, PDO::PARAM_INT);
-
         $statement->execute();
 
         return [

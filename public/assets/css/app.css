@@ -253,6 +253,22 @@ body {
     overflow-y: auto;
 }
 
+.highlight-on-load {
+    animation: lighthouseHighlight 2s ease-out forwards;
+}
+
+@keyframes lighthouseHighlight {
+    0% {
+        background-color: rgba(255, 193, 7, 0.18);
+        border-color: rgba(255, 193, 7, 0.5);
+    }
+
+    100% {
+        background-color: transparent;
+        border-color: transparent;
+    }
+}
+
 @media (max-width: 576px) {
     .pagination .page-link {
         padding: 0.35rem 0.55rem;

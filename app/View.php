@@ -45,3 +45,26 @@ function storage_asset(string $path): string
         . '/storage/'
         . ltrim($path, '/');
 }
+
+function renderurl(int $id): string
+{
+
+    $url = $_SERVER['REQUEST_URI'];
+
+    $parts = parse_url($url);
+
+    $query = [];
+
+    if (!empty($parts['query'])) {
+        parse_str($parts['query'], $query);
+    }
+
+    $url = $parts['path'] ?? '';
+    $query['p'] = $id;
+
+    if (!empty($query)) {
+        $url .= '?' . http_build_query($query);
+    }
+
+    return $url;
+}
