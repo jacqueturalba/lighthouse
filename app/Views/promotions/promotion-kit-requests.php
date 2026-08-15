@@ -17,7 +17,8 @@
                     <th>Kit</th>
                     <th>Status</th>
                     <th>Requested</th>
-                    <th class="text-end">Action</th>
+                    <th>Action</th>
+                    <th class="text-end">Reason</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,7 +39,7 @@
                             </span>
                         </td>
                         <td class="text-secondary small"><?= e(date('M j, Y', strtotime($request['requested_at']))) ?></td>
-                        <td class="text-end">
+                        <td class="text-secondary small">
                             <?php if ($request['status'] === 'pending'): ?>
                                 <div class="d-flex justify-content-end gap-2">
                                     <form method="post" action="/promotion-kit-requests/<?= (int)$request['id'] ?>/approve">
@@ -54,6 +55,9 @@
                             <?php else: ?>
                                 <span class="small text-secondary"><?= e($request['reviewer_name'] ?: 'Reviewed') ?></span>
                             <?php endif; ?>
+                        </td class="text-end">
+                        <td>
+                            <span class="small text-secondary"><?= e($request['review_reason'] ?: '') ?></span>
                         </td>
                     </tr>
                 <?php endforeach; endif; ?>

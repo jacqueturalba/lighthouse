@@ -23,7 +23,23 @@
             <div class="col-lg-4">
                 <div class="bg-light rounded p-4">
                     <h2 class="h6">Access</h2>
-                    <?php if ($request && $request['status'] === 'approved'): ?>
+                        <?php if ($kit['access_type'] === 'all'): ?>
+                        <p class="small text-success">
+                            This kit is available to all users.
+                        </p>
+                        <form method="post"
+                            action="/promotion-kits/<?= (int)$kit['id'] ?>/download">
+                            <input
+                                type="hidden"
+                                name="_token"
+                                value="<?= e($_SESSION['csrf']) ?>"
+                            >
+                            <button class="btn btn-lh-primary w-100" type="submit">
+                                <i class="bi bi-download me-2"></i>
+                                Download Kit
+                            </button>
+                        </form>
+                        <?php elseif ($request && $request['status'] === 'approved'): ?>
                         <p class="small text-success">Your request has been approved.</p>
                         <form method="post" action="/promotion-kits/<?= (int)$kit['id'] ?>/download">
                             <input type="hidden" name="_token" value="<?= e($_SESSION['csrf']) ?>">

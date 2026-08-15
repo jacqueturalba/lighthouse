@@ -51,12 +51,14 @@
             <i class="bi bi-person me-1"></i>
             <?= e($kit['uploader_name']) ?>
           </small>
-          <?php if ($kit['request_status'] === 'approved'): ?>
-            <span class="badge text-bg-success">Approved</span>
+          <?php if ($kit['access_type'] === 'all'): ?>
+            <span class="badge text-bg-success">Available to All</span>
           <?php elseif ($kit['request_status'] === 'pending'): ?>
             <span class="badge text-bg-warning">Pending</span>
           <?php elseif ($kit['request_status'] === 'disapproved'): ?>
             <span class="badge text-bg-danger">Needs review</span>
+          <?php elseif ($kit['request_status'] === 'approved'): ?>
+            <span class="badge text-bg-success">Approved</span>
           <?php else: ?>
             <span class="badge text-bg-light">Request access</span>
           <?php endif; ?>

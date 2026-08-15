@@ -12,8 +12,26 @@ final class PromotionKitRequest
 
     public static function downloadable(int $kitId, int $userId): ?array
     {
-        $s = db()->prepare("SELECT r.*, k.file_path, k.original_file_name, k.mime_type, k.file_size, k.status AS kit_status FROM promotion_kit_requests r JOIN promotion_kits k ON k.id=r.promotion_kit_id WHERE r.promotion_kit_id=? AND r.requested_by=? AND r.status='approved' AND k.status='active'");
-        $s->execute([$kitId, $userId]);
+        $s = db()->prepare(
+            "SELECT
+                k.*,
+                r.id AS request_id,
+                r.status AS request_status
+            FROM promotion_kits k
+            LEFT JOIN promotion_kit_requests r
+                ON r.promotion_kit_id = k.id
+            AND r.requested_by = ?
+            WHERE k.id = ?
+            AND k.status = 'active'
+            AND (
+                    k.access_type = 'all'
+                    OR r.status = 'approved'
+            )
+            LIMIT 1"
+        );
+
+        $s->execute([$userId, $kitId]);
+
         return $s->fetch() ?: null;
     }
 
@@ -37,5 +55,31 @@ final class PromotionKitRequest
         db()->prepare(
             'UPDATE promotion_kit_requests SET status=?, reviewed_at=NOW(), reviewed_by=?, review_reason=? WHERE id=? AND status=?'
         )->execute([$status, $reviewer, $reason, $id, 'pending']);
+    }
+
+    public static function createAutoApproved(
+        int $kitId,
+        int $userId
+    ): int {
+
+        $s = db()->prepare(
+            "INSERT INTO promotion_kit_requests
+            (
+                promotion_kit_id,
+                requested_by,
+                status,
+                reviewed_at,
+                review_reason
+            )
+            VALUES (?, ?, 'approved', NOW(), ?)"
+        );
+
+        $s->execute([
+            $kitId,
+            $userId,
+            'Automatically approved - kit is available to all users.'
+        ]);
+
+        return (int) db()->lastInsertId();
     }
 }

@@ -24,8 +24,8 @@ final class PromotionKit
 
     public static function create(array $data): int
     {
-        $s = db()->prepare('INSERT INTO promotion_kits (title,description,original_file_name,stored_file_name,file_path,file_extension,mime_type,file_size,cover_photo_path,uploaded_by) VALUES (?,?,?,?,?,?,?,?,?,?)');
-        $s->execute([$data['title'], $data['description'], $data['original'], $data['stored'], $data['path'], $data['extension'], $data['mime'], $data['size'], $data['cover'], $data['user_id']]);
+        $s = db()->prepare('INSERT INTO promotion_kits (title,description,original_file_name,stored_file_name,file_path,file_extension,mime_type,file_size,cover_photo_path,access_type,uploaded_by) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
+        $s->execute([$data['title'], $data['description'], $data['original'], $data['stored'], $data['path'], $data['extension'], $data['mime'], $data['size'], $data['cover'], $data['access_type'], $data['user_id']]);
         return (int) db()->lastInsertId();
     }
 

@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS `promotion_kits` (
     `status` ENUM('active', 'archived')
         NOT NULL DEFAULT 'active',
 
+    `access_type` VARCHAR(20) NOT NULL DEFAULT 'request',
+
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,

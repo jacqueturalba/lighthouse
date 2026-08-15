@@ -42,34 +42,201 @@ final class PromotionKitRequestController
     public function download(array $params): void
     {
         $user = require_auth();
-        $row = PromotionKitRequest::downloadable((int) $params['id'], (int) $user['id']);
 
-        if (!$row) { 
-            http_response_code(403); 
-            render('Download unavailable', '<p>Your request must be approved and the kit must be active.</p>'); 
-            exit; 
-        }
-        $root = realpath(config('STORAGE_PATH', dirname(__DIR__, 2).'/storage'));
-        $file = $root ? realpath($root.DIRECTORY_SEPARATOR.ltrim($row['file_path'], '/\\')) : false;
+        $kitId = (int) ($params['id'] ?? 0);
+        $userId = (int) $user['id'];
 
-        if (!$root || !$file || !str_starts_with($file, $root.DIRECTORY_SEPARATOR) || !is_file($file) || !is_readable($file)) { 
-            http_response_code(404); 
-            render('File unavailable', '<p>The promotion kit file could not be found.</p>'); 
-            exit; 
+        if ($kitId <= 0) {
+            http_response_code(404);
+            render(
+                'File unavailable',
+                '<p>The promotion kit file is not available for download.</p>'
+            );
+            exit;
         }
 
-        PromotionKitDownload::record((int) $params['id'], 
-                                     (int) $user['id'], 
-                                     (int) $row['id']);
-        log_event('promotion_kit_downloaded', ['kit_id'=>(int)$params['id'], 
-                                                'user_id'=>(int)$user['id'], 
-                                                'request_id'=>(int)$row['id']]);
+        $kit = PromotionKit::find($kitId);
 
-        header('Content-Type: '.($row['mime_type'] ?: 'application/octet-stream'));
-        header('Content-Length: '.filesize($file));
-        header('Content-Disposition: attachment; filename="'.str_replace(['"', "\r", "\n"], '', basename($row['original_file_name'])).'"');
+        if (!$kit || $kit['status'] !== 'active') {
+            http_response_code(404);
+            render(
+                'File unavailable',
+                '<p>The promotion kit file is not available for download.</p>'
+            );
+            exit;
+        }
+
+        /*
+        * Find the user's existing access/request record.
+        */
+        $request = PromotionKitRequest::forUserAndKit(
+            $kitId,
+            $userId
+        );
+
+        /*
+        * Available to All:
+        * Automatically create an approved access record
+        * if the user doesn't already have one.
+        */
+        if ($kit['access_type'] === 'all') {
+
+            if (!$request) {
+                PromotionKitRequest::createAutoApproved(
+                    $kitId,
+                    $userId
+                );
+
+                $request = PromotionKitRequest::forUserAndKit(
+                    $kitId,
+                    $userId
+                );
+            }
+
+        /*
+        * Request Access:
+        * User must have an approved request.
+        */
+        } elseif ($kit['access_type'] === 'request') {
+
+            if (!$request || $request['status'] !== 'approved') {
+                http_response_code(403);
+
+                render(
+                    'Download unavailable',
+                    '<p>Your request must be approved and the kit must be active.</p>'
+                );
+
+                exit;
+            }
+
+        } else {
+
+            // Unknown access type — fail closed.
+            http_response_code(403);
+
+            render(
+                'Download unavailable',
+                '<p>This promotion kit has an invalid access setting.</p>'
+            );
+
+            exit;
+        }
+
+        /*
+        * At this point, both access types should have
+        * an approved request/access record.
+        */
+        if (!$request || $request['status'] !== 'approved') {
+            http_response_code(403);
+
+            render(
+                'Download unavailable',
+                '<p>Download access could not be verified.</p>'
+            );
+
+            exit;
+        }
+
+        /*
+        * Get the actual downloadable file.
+        */
+        $row = PromotionKitRequest::downloadable(
+            $kitId,
+            $userId
+        );
+
+        if (!$row) {
+            http_response_code(403);
+
+            render(
+                'Download unavailable',
+                '<p>Your request must be approved and the kit must be active.</p>'
+            );
+
+            exit;
+        }
+
+        /*
+        * Resolve the file safely.
+        */
+        $root = realpath(
+            config(
+                'STORAGE_PATH',
+                dirname(__DIR__, 2) . '/storage'
+            )
+        );
+
+        $file = $root
+            ? realpath(
+                $root . DIRECTORY_SEPARATOR .
+                ltrim($row['file_path'], '/\\')
+            )
+            : false;
+
+        if (
+            !$root ||
+            !$file ||
+            !str_starts_with(
+                $file,
+                $root . DIRECTORY_SEPARATOR
+            ) ||
+            !is_file($file) ||
+            !is_readable($file)
+        ) {
+            http_response_code(404);
+
+            render(
+                'File unavailable',
+                '<p>The promotion kit file could not be found.</p>'
+            );
+
+            exit;
+        }
+
+        /*
+        * Record the download against the access/request record.
+        */
+        PromotionKitDownload::record(
+            $kitId,
+            $userId,
+            (int) $request['id']
+        );
+
+        log_event(
+            'promotion_kit_downloaded',
+            [
+                'kit_id' => $kitId,
+                'user_id' => $userId,
+                'request_id' => (int) $request['id'],
+            ]
+        );
+
+        /*
+        * Send the file.
+        */
+        header(
+            'Content-Type: ' .
+            ($row['mime_type'] ?: 'application/octet-stream')
+        );
+
+        header(
+            'Content-Length: ' . filesize($file)
+        );
+
+        header(
+            'Content-Disposition: attachment; filename="' .
+            str_replace(
+                ['"', "\r", "\n"],
+                '',
+                basename($row['original_file_name'])
+            ) .
+            '"'
+        );
+
         header('X-Content-Type-Options: nosniff');
-        readfile($file); 
+
+        readfile($file);
         exit;
     }
 
@@ -97,16 +264,54 @@ final class PromotionKitRequestController
 
         if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) $errors[] = 'Choose a file to upload.';
         
-        $allowed = ['zip'=>'application/zip', 'pdf'=>'application/pdf', 
-                    'docx'=>'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
-                    'pptx'=>'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
+        $allowed = [
+            'zip'  => [
+                'application/zip',
+                'application/x-zip-compressed',
+            ],
+
+            'pdf'  => [
+                'application/pdf',
+            ],
+
+            'docx' => [
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ],
+
+            'pptx' => [
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            ],
+
+            'jpg'  => [
+                'image/jpeg',
+            ],
+
+            'jpeg' => [
+                'image/jpeg',
+            ],
+
+            'png'  => [
+                'image/png',
+            ],
+        ];
         
-        $extension = $file ? strtolower(pathinfo((string)$file['name'], PATHINFO_EXTENSION)) : '';
-        
-        $mime = $file && is_uploaded_file($file['tmp_name']) ? (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']) : '';
-        
-        if ($file && (!isset($allowed[$extension]) || $mime !== $allowed[$extension])) 
-            $errors[] = 'Only valid ZIP, PDF, DOCX, or PPTX files are allowed.';
+        $extension = strtolower(
+            pathinfo((string)$file['name'], PATHINFO_EXTENSION)
+        );
+
+        $mime = '';
+
+        if ($file && is_uploaded_file($file['tmp_name'])) {
+            $mime = (new finfo(FILEINFO_MIME_TYPE))
+                ->file($file['tmp_name']);
+        }
+
+        if (
+            !isset($allowed[$extension]) ||
+            !in_array($mime, $allowed[$extension], true)
+        ) {
+            $errors[] = 'Only valid ZIP, PDF, DOCX, PPTX, JPG, JPEG, or PNG files are allowed.';
+        }
         
         if ($file && (int)$file['size'] > 50 * 1024 * 1024) 
             $errors[] = 'Files must be 50 MB or smaller.';
@@ -129,11 +334,18 @@ final class PromotionKitRequestController
             flash('error', 'The file could not be stored.'); 
             redirect('/promotion-kit-upload'); 
         }
+
+        $accessType = $_POST['access_type'] ?? 'request';
+
+        if (!in_array($accessType, ['all', 'request'], true)) {
+            $accessType = 'request';
+        }
         
         try { 
             PromotionKit::create(['title'=>$title,'description'=>$description,'original'=>$file['name'],
                                   'stored'=>$stored,'path'=>$path,'extension'=>$extension,'mime'=>$mime,
-                                  'size'=>(int)$file['size'],'cover'=>null,'user_id'=>(int)$user['id']]); 
+                                  'size'=>(int)$file['size'],'cover'=>null,'access_type' => $accessType,
+                                  'user_id'=>(int)$user['id']]); 
         } catch (Throwable $e) { 
             @unlink($directory.DIRECTORY_SEPARATOR.$stored); 
             
