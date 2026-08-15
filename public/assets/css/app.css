@@ -13,6 +13,56 @@
   --lh-dashboard-blue-dark: rgb(37, 99, 235);
   --lh-dashboard-cardtext: #2563eb;
 }
+
+/**
+* Page Loader 
+**/
+.page-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    transition: opacity .25s ease, visibility .25s ease;
+}
+
+.page-loader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+.page-content {
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.page-content.is-loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* .page-loader::after {
+    content: "";
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(0, 0, 0, .1);
+    border-top-color: var(--lh-primary);
+    border-radius: 50%;
+    animation: lighthouse-spin .7s linear infinite;
+} */
+@keyframes lighthouse-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/**
+* End of Page Loader 
+**/
+
 body {
   background: var(--lh-surface);
   color: var(--lh-ink);
@@ -146,6 +196,7 @@ body {
     /*overflow: hidden;*/
     border-radius: 20px;
 }
+
 
 /* ===========================
    GLASS OVERLAY

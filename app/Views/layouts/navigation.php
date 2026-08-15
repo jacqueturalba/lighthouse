@@ -22,9 +22,6 @@
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/material-requests">Materials</a>
         </li>
-        <!--<li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/guidelines">Guidelines</a>
-        </li>-->
 
         <?php if ($user['role'] === 'super_admin'): ?> 
 

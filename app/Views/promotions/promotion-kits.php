@@ -1,9 +1,12 @@
 <section class="d-flex flex-column gap-2 mb-4">
   <div class="d-flex flex-wrap justify-content-between align-items-end gap-3">
     <div>
-      <p class="text-uppercase small fw-semibold text-primary mb-1">Resource library</p>
-      <h1 class="lh-page-greeting mb-1">Promotion Kits</h1>
-      <p class="text-secondary mb-0">Approved campaign materials, ready for your next branch activation.</p>
+      <div class="d-flex flex-row mb-0 d-flex align-items-center">
+        <i class="bi bi-cast fs-2 text-primary me-2"></i>
+        <h1 class="lh-page-greeting mb-1">Promotion Kits</h1>
+      </div>
+      <p class="text-uppercase small fw-semibold text-success mb-1">Resource library</p>
+      <p class="text-secondary mb-0">Approved campaign materials, ready for your next promotion and evangelism activities.</p>
     </div>
     <?php if ($user['role'] === 'super_admin'): ?>
       <div class="d-flex gap-2">

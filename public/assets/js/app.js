@@ -18,9 +18,3 @@ if (lhModal) {
   })
 }
 
-
-
-$(function () {
-  $('[data-bs-toggle="tooltip"]').tooltip()
-})
-
