@@ -104,11 +104,11 @@
 
 
                 <!-- DIVIDER -->
-                <div class="lh-login-divider">
+                <!-- <div class="lh-login-divider">
                     <span></span>
                     <small>or</small>
                     <span></span>
-                </div>
+                </div> -->
 
 
                 <!-- SSO -->
@@ -120,14 +120,23 @@
                     <span>Back to Sign In</span>
                 </button> -->
 
-                <a
+                <!-- <a
                     href="/login"
                     class="lh-login-sso"
                     rel="noopener noreferrer nofollow"
                 >
                     <i class="bi bi-shield-lock"></i>
                     Back to Sign In
-                </a>
+                </a> -->
+
+                    <!-- OPTIONS -->
+                    <div class="lh-login-options d-flex justify-content-center mt-3">
+                        
+                        <i class="bi bi-arrow-left"></i>
+                        <a href="/login">
+                            Back to Sign In
+                        </a>
+                    </div>
 
 
                 <div class="lh-login-footer">
