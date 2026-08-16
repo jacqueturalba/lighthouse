@@ -44,8 +44,8 @@
                     <div class="link-section primary-link border border-light-subtle p-3 mb-3 rounded">
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="mb-0">Primary Link</h6>
-                            <span class="badge text-bg-primary">Primary</span>
+                            <h6 class="mb-0">Media Link</h6>
+                            <!-- <span class="badge text-bg-primary">Primary</span> -->
                         </div>
 
                         <div class="mb-3">

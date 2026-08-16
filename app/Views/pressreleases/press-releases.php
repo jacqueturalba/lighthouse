@@ -49,15 +49,13 @@
 
                         <article class="lh-card">
 
-                            <div class="row g-4">
+                            <div class="row g-4 h-100">
 
                                 <!-- ========================================= -->
                                 <!-- COLUMN 1: PRESS RELEASE                  -->
                                 <!-- ========================================= -->
-
-                                <div class="col-lg-8 col-md-7 col-12">
-
-                                    <div class="card border-0 h-100">
+                                <div class="col-lg-8 col-md-7 col-12 d-flex">
+                                    <div class="card border-0 h-100 w-100 d-flex flex-column">
 
                                         <div class="row g-0">
 
@@ -215,7 +213,7 @@
                                                     View Primary Article
                                                 </a> -->
 
-                                                <h2 class="h6 mb-2">
+                                                <!-- <h2 class="h6 mb-2">
                                                     <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" 
                                                     target="_blank" rel="noopener noreferrer nofollow"
                                                     href="<?= htmlspecialchars($primaryLink['link'],
@@ -224,7 +222,7 @@
                                                                                 ) ?>">
                                                         <i class="bi bi-box-arrow-up-right me-1"></i>
                                                         View Primary Article</a>
-                                                </h2>
+                                                </h2> -->
 
                                             <?php endif; ?>
 
@@ -241,8 +239,7 @@
 
                                         <?php if ($user['role'] === 'super_admin'): ?>
 
-                                            <div class="container mt-3 align-bottom">
-
+                                            <div class="container mt-3 mt-auto">
                                                 <div class="d-flex flex-row flex-wrap">
 
                                                     <div class="d-inline-flex m-2">
@@ -266,7 +263,7 @@
                                                             >
                                                             <button
                                                                 type="button"
-                                                                class="btn btn-outline-danger"
+                                                                class="btn btn-sm btn-outline-danger"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#deletePressReleaseModal"
                                                                 data-delete-form="deletePressReleaseForm-<?= e($pressRelease['pr_id'] ?? $pressRelease['id']) ?>"
@@ -284,7 +281,7 @@
                                                     <div class="d-inline-flex m-2">
 
                                                         <a
-                                                            class="btn btn-outline-warning"
+                                                            class="btn btn-sm btn-outline-warning"
                                                             href="/press-release-edit?id=<?= e($pressRelease['pr_id'] ?? $pressRelease['id']) ?>"
                                                             role="button" title="Update"
                                                         >
@@ -433,9 +430,9 @@
                                                                             (int) ($pressLink['is_primary'] ?? 0) === 1
                                                                         ): ?>
 
-                                                                            <span class="badge text-bg-primary flex-shrink-0">
+                                                                            <!-- <span class="badge text-bg-primary flex-shrink-0">
                                                                                 Primary
-                                                                            </span>
+                                                                            </span> -->
 
                                                                         <?php endif; ?>
 

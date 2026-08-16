@@ -396,7 +396,7 @@ final class PressRelease
                     'SELECT *
                     FROM press_release_links
                     WHERE press_release_id = :press_release_id
-                    ORDER BY is_primary DESC, id ASC'
+                    ORDER BY date_released DESC, id ASC'
                 );
 
                 $linksStatement->execute([
@@ -450,7 +450,7 @@ final class PressRelease
                         'SELECT *
                         FROM press_release_links
                         WHERE press_release_id = :press_release_id
-                        ORDER BY is_primary DESC, id ASC'
+                        ORDER BY date_released DESC, id ASC'
                     );
 
                     $linksStatement->execute([
@@ -516,7 +516,7 @@ final class PressRelease
                 'SELECT *
                 FROM press_release_links
                 WHERE press_release_id = :press_release_id
-                ORDER BY is_primary DESC, id ASC'
+                ORDER BY date_released DESC, id ASC'
             );
 
             $linksStatement->execute([
