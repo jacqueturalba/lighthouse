@@ -10,14 +10,28 @@ function flash(string $key, ?string $message=null): ?string { if ($message !== n
 function redirect(string $path): never { header('Location: '.$path, true, 302); exit; }
 
 date_default_timezone_set(config('APP_TIMEZONE','Asia/Manila'));
+if (config('APP_ENV', 'local') === 'production') {
+  ini_set('display_errors', '0');
+  ini_set('display_startup_errors', '0');
+}
 if (PHP_SAPI !== 'cli') {
+
   $secure = config('SESSION_SECURE_COOKIE', config('APP_ENV') === 'production' ? 'true' : 'false') === 'true';
-  $sessionPath=config('SESSION_PATH', 'storage/sessions'); if (!str_starts_with($sessionPath, DIRECTORY_SEPARATOR) && !preg_match('/^[A-Za-z]:[\\\\\/]/',$sessionPath)) $sessionPath=dirname(__DIR__).DIRECTORY_SEPARATOR.$sessionPath;
-  if (!is_dir($sessionPath)) mkdir($sessionPath,0700,true); session_save_path($sessionPath);
+
+  $sessionPath=config('SESSION_PATH', 'storage/sessions'); 
+
+  if (!str_starts_with($sessionPath, DIRECTORY_SEPARATOR) && !preg_match('/^[A-Za-z]:[\\\\\/]/',$sessionPath)) $sessionPath=dirname(__DIR__).DIRECTORY_SEPARATOR.$sessionPath;
+
+  if (!is_dir($sessionPath)) mkdir($sessionPath,0700,true); 
+  
+  session_save_path($sessionPath);
   session_name(config('SESSION_NAME','lighthouse_session'));
   session_set_cookie_params(['lifetime'=>0,'path'=>'/','secure'=>$secure,'httponly'=>true,'samesite'=>'Lax']);
   session_start();
+
   if (!isset($_SESSION['csrf'])) $_SESSION['csrf']=bin2hex(random_bytes(32));
-  if (isset($_SESSION['last_activity']) && time()-$_SESSION['last_activity'] > (int)config('SESSION_LIFETIME','120')*60) { $_SESSION=[]; session_destroy(); session_start(); $_SESSION['csrf']=bin2hex(random_bytes(32)); }
+  if (isset($_SESSION['last_activity']) && time()-$_SESSION['last_activity'] > (int)config('SESSION_LIFETIME','120')*60) { 
+    $_SESSION=[]; session_destroy(); session_start(); $_SESSION['csrf']=bin2hex(random_bytes(32)); 
+  }
   $_SESSION['last_activity']=time();
 }

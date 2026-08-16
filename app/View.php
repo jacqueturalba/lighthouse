@@ -1,7 +1,70 @@
 <?php
 declare(strict_types=1);
+
 require_once __DIR__.'/Auth.php';
-function render(string $title, string $content, bool $auth=true): void { $user=current_user(); $ok=flash('success'); $err=flash('error'); ?>
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><?=e($title)?> · LIGHTHOUSE</title><style>body{font:16px system-ui,sans-serif;max-width:1000px;margin:auto;padding:2rem;color:#14213d}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd}nav a{margin-right:1rem}.card,form{max-width:540px;margin:2rem 0;padding:1.4rem;border:1px solid #ddd;border-radius:8px}input,select{box-sizing:border-box;width:100%;padding:.65rem;margin:.3rem 0 1rem}button,.button{background:#145da0;color:#fff;padding:.65rem 1rem;border:0;border-radius:4px;text-decoration:none;cursor:pointer}.alert{padding:.8rem;background:#eef7ee}.error{background:#fff0f0}table{border-collapse:collapse;width:100%}td,th{padding:.6rem;text-align:left;border-bottom:1px solid #ddd}</style></head><body>
-<?php if ($auth && $user): ?><header><h1>LIGHTHOUSE</h1><nav><a href="/">Homepage</a><a href="/resources">Resources</a><a href="/calendar">Calendar</a><a href="/trainings">Trainings</a><a href="/guidelines">Guidelines</a><?php if($user['role']==='super_admin'): ?><a href="/users">User Management</a><a href="/register">Create Account</a><?php endif ?><a href="/profile">Profile</a><form method="post" action="/logout" style="display:inline"><input type="hidden" name="_token" value="<?=e($_SESSION['csrf'])?>"><button>Logout</button></form></nav></header><?php endif ?>
-<?php if($ok): ?><p class="alert"><?=e($ok)?></p><?php endif ?><?php if($err): ?><p class="alert error"><?=e($err)?></p><?php endif ?><main><h2><?=e($title)?></h2><?=$content?></main></body></html><?php }
+
+function view(string $template, array $data = [], bool $auth = true): void
+{
+    $file = __DIR__.'/Views/'.$template.'.php';
+    if (!is_file($file)) {
+        throw new RuntimeException("View [{$template}] was not found.");
+    }
+
+    $user = current_user();
+    $success = flash('success');
+    $error = flash('error');
+    extract($data, EXTR_SKIP);
+    ob_start();
+    require $file;
+    $content = ob_get_clean();
+    require __DIR__.'/Views/layouts/app.php';
+}
+
+function render(string $title, string $content, bool $auth = true): void
+{
+    // Kept only for legacy error rendering while routes move to dedicated views.
+    $user = current_user();
+    $success = flash('success');
+    $error = flash('error');
+    require __DIR__.'/Views/layouts/app.php';
+}
+
+function asset(string $path): string
+{
+    return __DIR__.'/public/assets/' . ltrim($path, '/');
+}
+
+function render_asset(string $path): string
+{
+    return config('APP_URL').'/assets/' . ltrim($path, '/');
+}
+
+function storage_asset(string $path): string
+{
+    return rtrim(config('APP_URL'), '/')
+        . '/storage/'
+        . ltrim($path, '/');
+}
+
+function renderurl(int $id): string
+{
+
+    $url = $_SERVER['REQUEST_URI'];
+
+    $parts = parse_url($url);
+
+    $query = [];
+
+    if (!empty($parts['query'])) {
+        parse_str($parts['query'], $query);
+    }
+
+    $url = $parts['path'] ?? '';
+    $query['p'] = $id;
+
+    if (!empty($query)) {
+        $url .= '?' . http_build_query($query);
+    }
+
+    return $url;
+}

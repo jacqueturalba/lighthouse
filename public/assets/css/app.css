@@ -1,0 +1,1415 @@
+:root {
+  --lh-blue: #145da0;
+  --lh-blue-dark: #0d477d;
+  --lh-gold: #f6c344;
+  --lh-ink: #14213d;
+  --lh-muted: #6c7a90;
+  --lh-surface: #f6f8fc;
+  --lh-radius: 14px;
+  --lh-shadow: 0 8px 28px rgba(20, 93, 160, 0.09);
+
+  /* UI Colors */
+  --lh-dashboard-blue: rgb(82, 126, 223);
+  --lh-dashboard-blue-dark: rgb(37, 99, 235);
+  --lh-dashboard-cardtext: #2563eb;
+}
+
+/**
+* Page Loader 
+**/
+.page-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    transition: opacity .25s ease, visibility .25s ease;
+}
+
+.page-loader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+.page-content {
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.page-content.is-loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* .page-loader::after {
+    content: "";
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(0, 0, 0, .1);
+    border-top-color: var(--lh-primary);
+    border-radius: 50%;
+    animation: lighthouse-spin .7s linear infinite;
+} */
+@keyframes lighthouse-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/**
+* End of Page Loader 
+**/
+
+body {
+  background: var(--lh-surface);
+  color: var(--lh-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.lh-shell {
+  max-width: 1320px;
+}
+.lh-navbar {
+  background: #fff;
+  box-shadow: 0 2px 16px rgba(20, 33, 61, 0.06);
+}
+.lh-brand {
+  color: var(--lh-blue);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.lh-nav-link {
+  color: var(--lh-ink) !important;
+  font-weight: 600;
+}
+.lh-nav-link:hover,
+.lh-nav-link.active {
+  color: var(--lh-blue) !important;
+}
+.lh-calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .45rem; }
+.lh-calendar-weekdays { color: var(--lh-muted); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; text-align: center; }
+.lh-calendar-day { min-height: 7.5rem; border: 1px solid #e7edf4; border-radius: .8rem; padding: .55rem; background: #fff; }
+.lh-calendar-day.is-muted { background: #f8fafc; color: #a6b2c2; }
+.lh-calendar-day.is-today { border-color: var(--lh-gold); box-shadow: inset 0 3px 0 var(--lh-gold); }
+.lh-calendar-number { font-size: .78rem; font-weight: 700; color: var(--lh-muted); margin-bottom: .45rem; }
+.lh-calendar-event { display: block; margin-top: .3rem; border-radius: .35rem; padding: .28rem .35rem; background: #eef4ff; color: var(--lh-blue); font-size: .72rem; line-height: 1.25; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lh-calendar-event:hover { background: #dbe8ff; color: var(--lh-blue-dark); }
+@media (max-width: 767.98px) { .lh-calendar-day { min-height: 5rem; padding: .35rem; } .lh-calendar-event { font-size: 0; padding: .3rem; width: .5rem; height: .5rem; border-radius: 50%; } }
+.lh-card {
+  background: #fff;
+  border: 0;
+  border-radius: var(--lh-radius);
+  box-shadow: var(--lh-shadow);
+  padding: 1.5rem;
+}
+.lh-card-title {
+  font-size: 0.9rem;
+  color: var(--lh-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.btn-lh-primary {
+  --bs-btn-bg: var(--lh-blue);
+  --bs-btn-border-color: var(--lh-blue);
+  --bs-btn-hover-bg: var(--lh-blue-dark);
+  --bs-btn-hover-border-color: var(--lh-blue-dark);
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 0.65rem 1.1rem;
+  color: #fff;
+}
+.btn-lh-gold {
+  background: var(--lh-gold);
+  border-color: var(--lh-gold);
+  color: var(--lh-ink);
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 0.65rem 1.1rem;
+}
+.lh-page-title {
+  font-weight: 800;
+  font-size: 1.5rem;
+}
+.lh-page-greeting {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.lh-stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--lh-blue);
+}
+.alert {
+  border: 0;
+  border-radius: 12px;
+}
+.form-control,
+.form-select {
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+.table {
+  --bs-table-bg: transparent;
+}
+.table th {
+  color: var(--lh-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+@media (max-width: 991px) {
+  .lh-navbar .navbar-collapse {
+    padding-top: 1rem;
+  }
+  .lh-card {
+    padding: 1.25rem;
+  }
+}
+/* =========================================================
+   LIGHTHOUSE LOGIN
+   ========================================================= */
+
+.lh-login-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    position: relative;
+    /*overflow: hidden;*/
+
+    background:
+        url("../images/backgrounds/lighthouse-auth-hd.png")
+        center center / cover
+        no-repeat;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 2rem;
+}
+
+
+/*
+ * Main two-column layout
+ */
+.lh-login-wrapper {
+    width: min(1400px, 100%);
+    min-height: calc(100vh - 4rem);
+
+    display: grid;
+    grid-template-columns: minmax(420px, 0.95fr) minmax(500px, 1fr);
+
+    align-items: center;
+
+    gap: 3rem;
+}
+
+
+/* =========================================================
+   LEFT / BRANDING
+   ========================================================= */
+
+.lh-login-branding {
+    position: relative;
+
+    min-height: 700px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: flex-start;
+
+    padding: 2rem 1rem 2rem 3rem;
+}
+
+
+/*
+ * Logo / Brand
+ */
+.lh-login-brand {
+    display: flex;
+    align-items: center;
+
+    gap: 0.8rem;
+
+    margin-bottom: 5rem;
+}
+
+.lh-login-brand-icon {
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--lh-blue);
+
+    font-size: 2.6rem;
+}
+
+.lh-login-brand-name {
+    font-size: 1.55rem;
+    font-weight: 800;
+
+    line-height: 1;
+
+    letter-spacing: 0.02em;
+
+    color: var(--lh-ink);
+}
+
+.lh-login-brand-subtitle {
+    margin-top: 0.35rem;
+
+    color: #2778ed;
+
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+
+/*
+ * Main message
+ */
+.lh-login-message {
+    max-width: 470px;
+}
+
+.lh-login-message h1 {
+    margin: 0;
+
+    color: #203c67;
+
+    font-size: clamp(2.8rem, 4vw, 4.4rem);
+
+    line-height: 1.13;
+
+    font-weight: 800;
+
+    letter-spacing: -0.035em;
+}
+
+.lh-login-message h1 span {
+    color: #287cf0;
+}
+
+.lh-login-accent {
+    width: 115px;
+    height: 8px;
+
+    margin: 1rem 0 1.8rem;
+
+    background: var(--lh-gold);
+
+    border-radius: 100%;
+
+    transform: rotate(-3deg);
+}
+
+.lh-login-message p {
+    margin: 0;
+
+    color: #637592;
+
+    font-size: 1.2rem;
+
+    line-height: 1.65;
+
+    font-weight: 500;
+}
+
+
+/*
+ * Bible verse card
+ */
+.lh-login-verse {
+    position: absolute;
+
+    left: 3rem;
+    bottom: 0;
+
+    width: min(390px, calc(100% - 4rem));
+
+    display: flex;
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: 1.25rem 1.5rem;
+
+    background: rgba(255, 255, 255, 0.82);
+
+    border: 1px solid rgba(255, 255, 255, 0.9);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 12px 35px rgba(37, 99, 235, 0.08);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.lh-login-verse-icon {
+    flex: 0 0 auto;
+
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #287cf0;
+
+    font-size: 2.3rem;
+}
+
+.lh-login-verse-text {
+    color: #29466e;
+
+    font-size: 0.95rem;
+
+    line-height: 1.5;
+
+    font-weight: 600;
+}
+
+.lh-login-verse-reference {
+    margin-top: 0.45rem;
+
+    color: #287cf0;
+
+    font-size: 0.85rem;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   RIGHT / FORM
+   ========================================================= */
+
+.lh-login-form-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lh-login-card {
+    width: min(100%, 600px);
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border-radius: 28px;
+
+    padding: 4rem 4rem 3rem;
+
+    box-shadow:
+        0 20px 60px rgba(45, 75, 120, 0.12),
+        0 4px 20px rgba(45, 75, 120, 0.05);
+
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+
+/*
+ * Header
+ */
+.lh-login-card-header {
+    margin-bottom: 2.8rem;
+}
+
+.lh-login-card-header h2 {
+    margin: 0;
+
+    color: #203c67;
+
+    font-size: clamp(2rem, 3vw, 2.6rem);
+
+    font-weight: 800;
+
+    letter-spacing: -0.025em;
+}
+
+.lh-login-card-header h2 span {
+    color: #287cf0;
+}
+
+.lh-login-card-header p {
+    margin: 0.8rem 0 0;
+
+    color: #73829a;
+
+    font-size: 1rem;
+}
+
+
+/*
+ * Form fields
+ */
+.lh-login-field {
+    margin-bottom: 1.7rem;
+}
+
+.lh-login-field label {
+    display: block;
+
+    margin-bottom: 0.7rem;
+
+    color: #29466e;
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+}
+
+.lh-login-input-wrapper {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+}
+
+.lh-login-input-wrapper > i {
+    position: absolute;
+
+    left: 1.15rem;
+
+    z-index: 2;
+
+    color: #8291a8;
+
+    font-size: 1.15rem;
+
+    pointer-events: none;
+}
+
+.lh-login-input-wrapper input {
+    width: 100%;
+
+    height: 56px;
+
+    padding:
+        0.75rem
+        3.1rem
+        0.75rem
+        3.2rem;
+
+    border: 1px solid #dce3ec;
+
+    border-radius: 14px;
+
+    background: #fff;
+
+    color: #263f62;
+
+    font-size: 0.95rem;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.lh-login-input-wrapper input::placeholder {
+    color: #a3adbb;
+}
+
+.lh-login-input-wrapper input:focus {
+    border-color: #5794f4;
+
+    box-shadow:
+        0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+
+/*
+ * Password toggle
+ */
+.lh-password-toggle {
+    position: absolute;
+
+    right: 1rem;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #71829c;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+}
+
+.lh-password-toggle:hover {
+    color: #287cf0;
+
+    background: #f3f7ff;
+}
+
+
+/*
+ * Remember / Forgot password
+ */
+.lh-login-options {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    margin:
+        0.25rem 0
+        1.8rem;
+}
+
+.lh-remember {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 0.65rem;
+
+    color: #526581;
+
+    font-size: 0.88rem;
+
+    cursor: pointer;
+}
+
+.lh-remember input {
+    appearance: none;
+
+    width: 20px;
+    height: 20px;
+
+    margin: 0;
+
+    border: 1px solid #d4dce7;
+
+    border-radius: 5px;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    position: relative;
+}
+
+.lh-remember input:checked {
+    background: #287cf0;
+
+    border-color: #287cf0;
+}
+
+.lh-remember input:checked::after {
+    content: "";
+
+    position: absolute;
+
+    left: 6px;
+    top: 2px;
+
+    width: 6px;
+    height: 11px;
+
+    border:
+        solid #fff;
+
+    border-width:
+        0 2px 2px 0;
+
+    transform: rotate(45deg);
+}
+
+.lh-login-options a {
+    color: #287cf0;
+
+    font-size: 0.88rem;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.lh-login-options a:hover {
+    text-decoration: underline;
+}
+
+
+/*
+ * Sign In
+ */
+.lh-login-submit {
+    width: 100%;
+
+    height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 0.7rem;
+
+    border: 0;
+
+    border-radius: 14px;
+
+    background: #287cf0;
+
+    color: #fff;
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 18px rgba(40, 124, 240, 0.18);
+
+    transition:
+        transform 0.15s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.lh-login-submit:hover {
+    background: #1768d8;
+
+    box-shadow:
+        0 10px 22px rgba(40, 124, 240, 0.24);
+
+    transform: translateY(-1px);
+}
+
+.lh-login-submit:active {
+    transform: translateY(0);
+}
+
+
+/*
+ * Divider
+ */
+.lh-login-divider {
+    display: flex;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    margin: 2rem 0;
+}
+
+.lh-login-divider span {
+    flex: 1;
+
+    height: 1px;
+
+    background: #e5eaf1;
+}
+
+.lh-login-divider small {
+    color: #9aa6b7;
+
+    font-size: 0.85rem;
+}
+
+
+/*
+ * SSO
+ */
+.lh-login-sso {
+    width: 100%;
+
+    height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 0.7rem;
+
+    border: 1px solid #8bb8ff;
+
+    border-radius: 14px;
+
+    background: #fff;
+
+    color: #287cf0;
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.lh-login-sso:hover {
+    background: #f5f9ff;
+
+    border-color: #287cf0;
+}
+
+
+/*
+ * Footer
+ */
+.lh-login-footer {
+    margin-top: 4.5rem;
+
+    text-align: center;
+
+    color: #94a1b4;
+
+    font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1199.98px) {
+
+    .lh-login-wrapper {
+        grid-template-columns:
+            minmax(360px, 0.85fr)
+            minmax(450px, 1fr);
+
+        gap: 2rem;
+    }
+
+    .lh-login-branding {
+        padding-left: 1rem;
+    }
+
+    .lh-login-verse {
+        left: 1rem;
+    }
+
+    .lh-login-card {
+        padding: 3rem;
+    }
+
+}
+
+
+@media (max-width: 991.98px) {
+
+    .lh-login-page {
+        padding: 1.5rem;
+    }
+
+    .lh-login-wrapper {
+        grid-template-columns: 1fr;
+
+        min-height: auto;
+
+        max-width: 650px;
+    }
+
+    .lh-login-branding {
+        min-height: auto;
+
+        padding: 1rem 0;
+
+        align-items: center;
+
+        text-align: center;
+    }
+
+    .lh-login-brand {
+        margin-bottom: 2rem;
+    }
+
+    .lh-login-message {
+        max-width: 600px;
+    }
+
+    .lh-login-message h1 {
+        font-size: 2.8rem;
+    }
+
+    .lh-login-message p {
+        font-size: 1rem;
+    }
+
+    .lh-login-verse {
+        position: static;
+
+        margin-top: 2rem;
+
+        text-align: left;
+    }
+
+    .lh-login-form-area {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 575.98px) {
+
+    .lh-login-page {
+        padding: 1rem;
+    }
+
+    .lh-login-wrapper {
+        gap: 1rem;
+    }
+
+    .lh-login-brand-icon {
+        width: 48px;
+        height: 48px;
+
+        font-size: 2rem;
+    }
+
+    .lh-login-brand-name {
+        font-size: 1.25rem;
+    }
+
+    .lh-login-brand-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .lh-login-message h1 {
+        font-size: 2.25rem;
+    }
+
+    .lh-login-accent {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .lh-login-card {
+        padding: 2rem 1.35rem;
+
+        border-radius: 22px;
+    }
+
+    .lh-login-card-header {
+        margin-bottom: 2rem;
+    }
+
+    .lh-login-card-header h2 {
+        font-size: 2rem;
+    }
+
+    .lh-login-options {
+        align-items: flex-start;
+    }
+
+    .lh-login-footer {
+        margin-top: 3rem;
+    }
+
+}
+
+/* =========================================================
+   END LIGHTHOUSE LOGIN
+   ========================================================= */
+
+/* DASHBOARD */
+
+.lh-card-dashboard {
+  --bs-bg-opacity: 1;
+  background: linear-gradient(
+    135deg,
+    var(--lh-dashboard-blue),
+    var(--lh-dashboard-blue-dark)
+  );
+  border: 0;
+  border-radius: var(--lh-radius);
+  box-shadow: var(--lh-shadow);
+  padding: 1.5rem;
+  color: #fff;
+}
+.lh-card-dashboard-white {
+  --bs-bg-opacity: 1;
+  background: #fff;
+  border: 0;
+  border-radius: var(--lh-radius);
+  box-shadow: var(--lh-shadow);
+  padding: 1.5rem;
+  color: var(--lh-dashboard-cardtext);
+}
+.rounded-home {
+  border-radius: 20px;
+}
+
+
+/* =========================================================
+   HOME - UPCOMING EVENTS
+   ========================================================= */
+
+.lh-event-feed {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.lh-event-item {
+    display: flex;
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: 1rem 0;
+
+    color: inherit;
+
+    border-bottom: 1px solid #edf1f6;
+
+    transition:
+        background-color .2s ease,
+        transform .2s ease;
+}
+
+.lh-event-item:last-child {
+    border-bottom: 0;
+}
+
+
+.lh-event-item:hover {
+    transform: translateX(3px);
+}
+
+
+.lh-event-date {
+    flex: 0 0 58px;
+
+    width: 58px;
+    height: 62px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #eef5ff;
+
+    color: var(--lh-blue);
+}
+
+
+.lh-event-month {
+    font-size: .65rem;
+
+    font-weight: 800;
+
+    letter-spacing: .08em;
+}
+
+
+.lh-event-day {
+    font-size: 1.35rem;
+
+    line-height: 1;
+
+    margin-top: .15rem;
+}
+
+
+.lh-event-content {
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+.lh-event-title {
+    color: var(--lh-ink);
+
+    font-size: .98rem;
+
+    font-weight: 700;
+
+    margin-bottom: .35rem;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.lh-event-meta {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: .7rem;
+
+    color: var(--lh-muted);
+
+    font-size: .75rem;
+}
+
+
+.lh-event-meta span {
+    display: inline-flex;
+
+    align-items: center;
+}
+
+
+.lh-event-arrow {
+    color: #a6b2c2;
+
+    font-size: .9rem;
+}
+
+
+.lh-event-item:hover .lh-event-arrow {
+    color: var(--lh-blue);
+}
+
+
+/* =========================================================
+   WEEK SUMMARY
+   ========================================================= */
+
+.lh-week-summary {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+
+    margin-top: .5rem;
+}
+
+
+.lh-week-summary-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: .85rem;
+
+    padding: .85rem;
+
+    border-radius: 12px;
+
+    background: #f7f9fc;
+}
+
+
+.lh-week-summary-item > i {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #eaf2ff;
+
+    color: var(--lh-blue);
+}
+
+
+.lh-week-summary-item small {
+    display: block;
+
+    color: var(--lh-muted);
+
+    font-size: .72rem;
+
+    margin-bottom: .15rem;
+}
+
+
+.lh-week-summary-item strong {
+    display: block;
+
+    color: var(--lh-ink);
+
+    font-size: .85rem;
+}
+
+
+/* =========================================================
+   EMPTY EVENT STATE
+   ========================================================= */
+
+.lh-empty-events {
+    display: flex;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: 1.5rem 0;
+}
+
+
+.lh-empty-events-icon {
+    width: 48px;
+    height: 48px;
+
+    flex: 0 0 auto;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #f1f4f8;
+
+    color: var(--lh-muted);
+
+    font-size: 1.3rem;
+}
+
+
+.lh-empty-events h6 {
+    color: var(--lh-ink);
+
+    font-weight: 700;
+}
+
+
+@media (max-width: 575.98px) {
+
+    .lh-event-meta {
+        flex-direction: column;
+
+        gap: .25rem;
+    }
+
+    .lh-event-title {
+        white-space: normal;
+    }
+
+    .lh-event-arrow {
+        display: none;
+    }
+
+}
+
+/* END DASHBOARD */
+
+/* START PRESS RELEASES */
+#deletePressReleaseModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 2000 !important;
+}
+
+.modal-backdrop {
+    z-index: 1990 !important;
+}
+
+.press-release-image-container {
+    max-height: 250px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.press-release-image-container-min {
+    max-height: 100px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pagination {
+    gap: 2px;
+}
+
+.link-listings.sticky-top {
+    top: 5rem;
+}
+.linkitself {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.highlight-on-load {
+    animation: lighthouseHighlight 2s ease-out forwards;
+}
+
+@keyframes lighthouseHighlight {
+    0% {
+        background-color: rgba(255, 193, 7, 0.18);
+        border-color: rgba(255, 193, 7, 0.5);
+    }
+
+    100% {
+        background-color: transparent;
+        border-color: transparent;
+    }
+}
+
+@media (max-width: 576px) {
+    .pagination .page-link {
+        padding: 0.35rem 0.55rem;
+    }
+}
+/* END PRESS RELEASES */
+
+
+.custom-tooltip {
+  --bs-tooltip-bg: var(--bd-violet-bg);
+  --bs-tooltip-color: var(--bs-white);
+}
+
+
+/* =========================================================
+   Promotion Kit Preview
+   ========================================================= */
+
+.promotion-kit-card {
+    overflow: hidden;
+}
+
+.promotion-kit-preview {
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+}
+
+.promotion-kit-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-light);
+}
+
+.promotion-kit-preview-stage {
+    position: relative;
+    flex: 1;
+    min-height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.promotion-kit-image-container {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+.promotion-kit-preview-image {
+    max-width: 100%;
+    max-height: 330px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transform-origin: center center;
+    transition: transform 0.2s ease;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.promotion-kit-preview-controls {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+    z-index: 2;
+}
+
+.promotion-kit-preview-pdf {
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    border: 0;
+    background: #fff;
+}
+
+.promotion-kit-no-preview {
+    text-align: center;
+    padding: 2rem;
+}
+
+@media (min-width: 992px) {
+    .border-start-lg {
+        border-left: 1px solid var(--bs-border-color);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .promotion-kit-preview {
+        min-height: 380px;
+    }
+
+    .promotion-kit-preview-stage {
+        min-height: 320px;
+    }
+
+    .promotion-kit-preview-pdf {
+        min-height: 380px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .promotion-kit-preview-controls {
+        max-width: calc(100% - 1.5rem);
+        overflow-x: auto;
+    }
+
+    .promotion-kit-preview-image {
+        max-height: 280px;
+    }
+}
+/* =========================================================
+   END Promotion Kit Preview
+   ========================================================= */

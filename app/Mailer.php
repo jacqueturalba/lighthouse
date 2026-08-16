@@ -6,7 +6,7 @@ function send_reset_email(string $to, string $token): void {
   $url=rtrim(config('APP_URL','http://localhost:8000'),'/').'/reset-password?token='.rawurlencode($token).'&email='.rawurlencode($to);
   $subject='Reset your '.config('APP_NAME','LIGHTHOUSE').' password'; $body="A password reset was requested. This link expires in ".config('PASSWORD_RESET_MINUTES','60')." minutes:\r\n\r\n{$url}\r\n\r\nIf you did not request this, ignore this message.";
   $headers='From: '.config('MAIL_FROM_NAME','LIGHTHOUSE').' <'.config('MAIL_FROM_ADDRESS').">\r\nContent-Type: text/plain; charset=UTF-8";
-  if (config('APP_ENV','local') === 'local' && !config('SMTP_HOST')) { file_put_contents(dirname(__DIR__).'/storage/logs/mail.log',"TO: {$to}\nSUBJECT: {$subject}\n{$body}\n---\n",FILE_APPEND|LOCK_EX); return; }
+  if (!config('SMTP_HOST')) throw new RuntimeException('SMTP_HOST is required to send password reset emails.');
   smtp_send($to, $subject, $body, $headers);
 }
 function smtp_send(string $to, string $subject, string $body, string $headers): void {

@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS material_requests (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    event_id BIGINT UNSIGNED NOT NULL,
+    requested_by BIGINT UNSIGNED NOT NULL,
+    material_types JSON NOT NULL,
+    video_specs JSON NULL,
+    image_specs JSON NULL,
+    event_content TEXT NOT NULL,
+    additional_instructions TEXT NULL,
+    status ENUM('requested', 'in_production', 'ready', 'delivered', 'cancelled') NOT NULL DEFAULT 'requested',
+    deadline DATE NULL,
+    promotion_kit_id BIGINT UNSIGNED NULL,
+    admin_notes TEXT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uq_material_requests_event UNIQUE (event_id),
+    CONSTRAINT fk_material_requests_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    CONSTRAINT fk_material_requests_user FOREIGN KEY (requested_by) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_material_requests_kit FOREIGN KEY (promotion_kit_id) REFERENCES promotion_kits(id) ON DELETE SET NULL,
+    INDEX idx_material_requests_status_deadline (status, deadline),
+    INDEX idx_material_requests_requester (requested_by)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
