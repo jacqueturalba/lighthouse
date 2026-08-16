@@ -62,11 +62,11 @@
 
                 <div class="lh-login-card-header">
                     <h2>
-                        Forgot <span>Password?</span>
+                        Reset <span>Password</span>
                     </h2>
 
                     <p>
-                        No worries! Enter your email address and we'll send you a link to reset your your password.
+                        Create a new password for your account to continue.
                     </p>
                 </div>
 
