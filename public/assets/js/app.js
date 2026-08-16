@@ -1,22 +1,4 @@
 document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('[data-password-toggle]').forEach(button=>button.addEventListener('click',()=>{const input=document.querySelector(button.dataset.passwordToggle);if(!input)return;input.type=input.type==='password'?'text':'password';button.setAttribute('aria-pressed',String(input.type==='text'));}));window.setTimeout(()=>document.querySelectorAll('[data-auto-dismiss]').forEach(alert=>bootstrap.Alert.getOrCreateInstance(alert).close()),5000);});
-const lhModal = document.getElementById('lhModal')
-if (lhModal) {
-  lhModal.addEventListener('show.bs.modal', event => {
-    // Button that triggered the modal
-    const button = event.relatedTarget
-    // Extract info from data-bs-* attributes
-    const recipient = button.getAttribute('data-bs-recipient')
-    // If necessary, you could initiate an Ajax request here
-    // and then do the updating in a callback.
-
-    // Update the modal's content.
-    const modalTitle = lhModal.querySelector('.modal-title')
-    const modalBodyInput = lhModal.querySelector('.modal-body input')
-
-    modalTitle.textContent = `New message to ${recipient}`
-    modalBodyInput.value = recipient
-  })
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     const viewers = document.querySelectorAll('[data-image-viewer]');
@@ -126,3 +108,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const deleteModal = document.getElementById(
+        'deletePressReleaseModal'
+    );
+
+    const confirmDeleteButton = document.getElementById(
+        'confirmDeletePressRelease'
+    );
+
+    const deleteTitle = document.getElementById(
+        'deletePressReleaseTitle'
+    );
+
+    if (!deleteModal || !confirmDeleteButton) {
+        return;
+    }
+
+    deleteModal.addEventListener('show.bs.modal', (event) => {
+
+        const button = event.relatedTarget;
+
+        if (!button) {
+            return;
+        }
+
+        const formId = button.getAttribute(
+            'data-delete-form'
+        );
+
+        const title = button.getAttribute(
+            'data-delete-title'
+        );
+
+        // Update the title shown in the confirmation modal.
+        if (deleteTitle) {
+            deleteTitle.textContent = title || 'Press Release';
+        }
+
+        // Tell the confirmation button which form to submit.
+        confirmDeleteButton.setAttribute(
+            'form',
+            formId
+        );
+    });
+
+});

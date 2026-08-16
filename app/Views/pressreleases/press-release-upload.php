@@ -7,21 +7,20 @@
 <section class="card lh-card">
     <div class="card-body p-4 p-lg-5">
         <form method="post" 
-              action="/press-release-edit" 
+              action="/press-release-upload" 
               enctype="multipart/form-data" 
               class="row g-4">
 
             <div class="col-xl-6 col-lg-6 col-sm-12">
                 <input type="hidden" name="_token" value="<?= e($_SESSION['csrf']) ?>">
-                <input type="hidden" name="id" value="<?= e($pressRelease['pr_id']) ?>">
                 <div class="col-12 mb-3">
                     <label class="form-label" for="title">Title</label>
-                    <input class="form-control" id="title" name="title" maxlength="150" value="<?= e($pressRelease['title']) ?>" required>
+                    <input class="form-control" id="title" name="title" maxlength="150" value="" required>
                 </div>
 
                 <div class="col-12 mb-3">
                     <label class="form-label" for="description">Event Date</label>
-                    <input class="form-control" type="date" name="event_date" value="<?= e($pressRelease['event_date']) ?>" required="">
+                    <input class="form-control" type="date" name="event_date" value="" required="">
                 </div>
                 <div class="col-12 mb-3">
                     <label class="form-label" for="file">Cover Photo</label>
@@ -32,31 +31,14 @@
             <div class="col-xl-6 col-lg-6 col-sm-12">
                 <div class="col-12 mb-3">
                     <label class="form-label" for="description">Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="5" maxlength="5000"><?= e($pressRelease['description']) ?></textarea>
+                    <textarea class="form-control" id="description" name="description" rows="5" maxlength="5000"></textarea>
                 </div>
-                <?php if (!empty($pressRelease['cover_photo'])): ?>
-                <div class="col-12 mb-3">
-                    <div class="form-text mb-2">Current cover photo:</div>
-                    <img
-                        src="<?= e(storage_asset($pressRelease['cover_photo'])) ?>"
-                        alt="Current cover photo"
-                        class="img-fluid rounded"
-                        style="max-height: 200px;"
-                    >
-                </div>
-                <?php endif; ?>
-
             </div>
 
 
             <div class="col-12">
 
                 <div id="press-release-links">
-
-                    <?php
-                    if (!empty($pressRelease['links'][0])):
-                        $ppr = $pressRelease['links'][0];
-                    ?>
 
                     <!-- Required Primary Link -->
                     <div class="link-section primary-link border border-light-subtle p-3 mb-3 rounded">
@@ -73,17 +55,17 @@
                                 name="links[0][news_source]"
                                 required
                             >
-                                <option value="Online News Portals" <?= ($ppr['news_source'] ?? '') === 'Online News Portals' ? 'selected' : '' ?>>Online News Portals</option>
-                                <option value="Newspaper (Print)" <?= ($ppr['news_source'] ?? '') === 'Newspaper (Print)' ? 'selected' : '' ?>>Newspaper (Print)</option>
-                                <option value="Magazine" <?= ($ppr['news_source'] ?? '') === 'Magazine' ? 'selected' : '' ?>>Magazine</option>
-                                <option value="Official Website News" <?= ($ppr['news_source'] ?? '') === 'Official Website News' ? 'selected' : '' ?>>Official Website News</option>
-                                <option value="Blogs" <?= ($ppr['news_source'] ?? '') === 'Blogs' ? 'selected' : '' ?>>Blogs</option>
-                                <option value="Social Media (SNS News)" <?= ($ppr['news_source'] ?? '') === 'Social Media (SNS News)' ? 'selected' : '' ?>>Social Media (SNS News)</option>
-                                <option value="Influencer/Content Creator Updates" <?= ($ppr['news_source'] ?? '') === 'Influencer/Content Creator Updates' ? 'selected' : '' ?>>Influencer/Content Creator Updates</option>
-                                <option value="Television News" <?= ($ppr['news_source'] ?? '') === 'Television News' ? 'selected' : '' ?>>Television News</option>
-                                <option value="Radio News" <?= ($ppr['news_source'] ?? '') === 'Radio News' ? 'selected' : '' ?>>Radio News</option>
-                                <option value="Newsletters / Email Updates" <?= ($ppr['news_source'] ?? '') === 'Newsletters / Email Updates' ? 'selected' : '' ?>>Newsletters / Email Updates</option>
-                                <option value="News Aggregators (e.g., Google News)" <?= ($ppr['news_source'] ?? '') === 'News Aggregators (e.g., Google News)' ? 'selected' : '' ?>>News Aggregators (e.g., Google News)</option>
+                                <option value="Online News Portals" >Online News Portals</option>
+                                <option value="Newspaper (Print)" >Newspaper (Print)</option>
+                                <option value="Magazine" >Magazine</option>
+                                <option value="Official Website News" >Official Website News</option>
+                                <option value="Blogs" >Blogs</option>
+                                <option value="Social Media (SNS News)" >Social Media (SNS News)</option>
+                                <option value="Influencer/Content Creator Updates" >Influencer/Content Creator Updates</option>
+                                <option value="Television News" >Television News</option>
+                                <option value="Radio News" >Radio News</option>
+                                <option value="Newsletters / Email Updates" >Newsletters / Email Updates</option>
+                                <option value="News Aggregators (e.g., Google News)" >News Aggregators (e.g., Google News)</option>
                             </select>
                         </div>
 
@@ -94,16 +76,16 @@
                                 name="links[0][news_content_type]"
                                 required
                             >
-                                <option value="Press Release" <?= ($ppr['news_content_type'] ?? '') === 'Press Release' ? 'selected' : '' ?>>Press Release</option>
-                                <option value="News Article" <?= ($ppr['news_content_type'] ?? '') === 'News Article' ? 'selected' : '' ?>>News Article</option>
-                                <option value="Feature Story" <?= ($ppr['news_content_type'] ?? '') === 'Feature Story' ? 'selected' : '' ?>>Feature Story</option>
-                                <option value="Editorial / Opinion Piece" <?= ($ppr['news_content_type'] ?? '') === 'Editorial / Opinion Piece' ? 'selected' : '' ?>>Editorial / Opinion Piece</option>
-                                <option value="Video Feature" <?= ($ppr['news_content_type'] ?? '') === 'Video Feature' ? 'selected' : '' ?>>Video Feature</option>
-                                <option value="News Report (TV/Radio)" <?= ($ppr['news_content_type'] ?? '') === 'News Report (TV/Radio)' ? 'selected' : '' ?>>News Report (TV/Radio)</option>
-                                <option value="Interview Segment" <?= ($ppr['news_content_type'] ?? '') === 'Interview Segment' ? 'selected' : '' ?>>Interview Segment</option>
-                                <option value="Photojournalism / Image Story" <?= ($ppr['news_content_type'] ?? '') === 'Photojournalism / Image Story' ? 'selected' : '' ?>>Photojournalism / Image Story</option>
-                                <option value="Podcast / Audio News" <?= ($ppr['news_content_type'] ?? '') === 'Podcast / Audio News' ? 'selected' : '' ?>>Podcast / Audio News</option>
-                                <option value="Live Coverage / Breaking News" <?= ($ppr['news_content_type'] ?? '') === 'Live Coverage / Breaking News' ? 'selected' : '' ?>>Live Coverage / Breaking News</option>
+                                <option value="Press Release" >Press Release</option>
+                                <option value="News Article" >News Article</option>
+                                <option value="Feature Story" >Feature Story</option>
+                                <option value="Editorial / Opinion Piece" >Editorial / Opinion Piece</option>
+                                <option value="Video Feature" >Video Feature</option>
+                                <option value="News Report (TV/Radio)" >News Report (TV/Radio)</option>
+                                <option value="Interview Segment" >Interview Segment</option>
+                                <option value="Photojournalism / Image Story" >Photojournalism / Image Story</option>
+                                <option value="Podcast / Audio News" >Podcast / Audio News</option>
+                                <option value="Live Coverage / Breaking News" >Live Coverage / Breaking News</option>
                             </select>
                         </div>
 
@@ -113,7 +95,7 @@
                                 class="form-control"
                                 type="date"
                                 name="links[0][date_released]"
-                                value="<?= e($ppr['date_released']) ?>"
+                                value=""
                                 required
                             >
                         </div>
@@ -124,7 +106,7 @@
                                 type="text"
                                 name="links[0][media_outlet]"
                                 class="form-control"
-                                value="<?= e($ppr['media_outlet']) ?>"
+                                value=""
                                 required
                             >
                             <div class="form-text">
@@ -138,7 +120,7 @@
                                 type="url"
                                 name="links[0][link]"
                                 class="form-control"
-                                value="<?= e($ppr['link']) ?>"
+                                value=""
                                 required
                             >
                         </div>
@@ -150,126 +132,6 @@
                         >
 
                     </div>
-
-                    <?php 
-                    endif;
-                    ?>
-
-                    <?php 
-                    if (!empty($pressRelease['links']) && count($pressRelease['links']) > 1):
-                        foreach ($pressRelease['links'] as $k => $pr): 
-                        
-                    ?>
-
-                    <div class="link-section additional-link border border-light-subtle p-3 mb-3 rounded">
-
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="mb-0">Media Link</h6>
-
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-danger remove-link"
-                            >
-                                <i class="bi bi-trash me-1"></i>
-                                Remove
-                            </button>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">News Source</label>
-
-                            <select
-                                class="form-select news-source"
-                                name="links[<?=$k;?>][news_source]"
-                                required
-                            >
-                                <option value="Online News Portals">Online News Portals</option>
-                                <option value="Newspaper (Print)">Newspaper (Print)</option>
-                                <option value="Magazine">Magazine</option>
-                                <option value="Official Website News">Official Website News</option>
-                                <option value="Blogs">Blogs</option>
-                                <option value="Social Media (SNS News)">Social Media (SNS News)</option>
-                                <option value="Influencer/Content Creator Updates">Influencer/Content Creator Updates</option>
-                                <option value="Television News">Television News</option>
-                                <option value="Radio News">Radio News</option>
-                                <option value="Newsletters / Email Updates">Newsletters / Email Updates</option>
-                                <option value="News Aggregators (e.g., Google News)">News Aggregators (e.g., Google News)</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">News Content Type</label>
-
-                            <select
-                                class="form-select news-content-type"
-                                name="links[<?=$k;?>][news_content_type]"
-                                required
-                            >
-                                <option value="Press Release">Press Release</option>
-                                <option value="News Article">News Article</option>
-                                <option value="Feature Story">Feature Story</option>
-                                <option value="Editorial / Opinion Piece">Editorial / Opinion Piece</option>
-                                <option value="Video Feature">Video Feature</option>
-                                <option value="News Report (TV/Radio)">News Report (TV/Radio)</option>
-                                <option value="Interview Segment">Interview Segment</option>
-                                <option value="Photojournalism / Image Story">Photojournalism / Image Story</option>
-                                <option value="Podcast / Audio News">Podcast / Audio News</option>
-                                <option value="Live Coverage / Breaking News">Live Coverage / Breaking News</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Date Released</label>
-
-                            <input
-                                type="date"
-                                class="form-control date-released"
-                                name="links[<?=$k;?>][date_released]"
-                                value="<?= e($pr['date_released']) ?>"
-                                required
-                            >
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Media Outlet</label>
-
-                            <input
-                                type="text"
-                                class="form-control media-outlet"
-                                name="links[<?=$k;?>][media_outlet]"
-                                value="<?= e($pr['media_outlet']) ?>"
-                                required
-                            >
-
-                            <div class="form-text">
-                                e.g., ABS-CBN, Manila Standard, GMA Network
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Article URL</label>
-
-                            <input
-                                type="url"
-                                class="form-control article-link"
-                                name="links[<?=$k;?>][link]"
-                                value="<?= e($pr['link']) ?>"
-                                required
-                                placeholder="https://example.com/article"
-                            >
-                        </div>
-
-                        <input
-                            type="hidden"
-                            class="is-primary"
-                            value="0"
-                        >
-
-                    </div>
-
-                    <?php endforeach; 
-                    endif;
-                    ?>
 
                 </div>
 
@@ -404,7 +266,7 @@ const linksContainer = document.getElementById('press-release-links');
 const addLinkButton = document.getElementById('add-link');
 const linkTemplate = document.getElementById('link-template');
 
-let linkIndex = <?php echo !empty($pressRelease['links']) ? count($pressRelease['links']) : 1;?>;
+let linkIndex = 1;
 
 addLinkButton.addEventListener('click', () => {
 

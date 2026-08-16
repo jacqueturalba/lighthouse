@@ -22,696 +22,699 @@
 <section class="mb-4">
     <div class="container-fluid">
         <div class="row g-4">
-            <div class="col-lg-8 col-md-8 col-sm-12 p-2">
-
 
             <?php if (empty($pressReleases)): ?>
 
-                <article class="lh-card">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-x-square-fill fs-2 text-primary"></i>
+                <div class="col-12">
+                    <article class="lh-card">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-x-square-fill fs-2 text-primary"></i>
 
-                        <p class="lh-card-title m-2 mb-0">
-                            No press releases yet
+                            <p class="lh-card-title m-2 mb-0">
+                                No press releases yet
+                            </p>
+                        </div>
+
+                        <p class="text-secondary mb-0">
+                            No press releases have been published yet.
                         </p>
-                    </div>
-
-                    <p class="text-secondary mb-0">
-                        No press releases have been published yet.
-                    </p>
-                </article>
+                    </article>
+                </div>
 
             <?php else: ?>
 
-                <!-- ========================================= -->
-                <!-- LATEST PRESS RELEASE                      -->
-                <!-- ========================================= -->
+                <?php foreach ($pressReleases as $pressRelease): ?>
 
-                <div class="row">
                     <div class="col-12">
 
                         <article class="lh-card">
 
-                            <div class="card border-0">
+                            <div class="row g-4">
 
-                                <div class="row g-0">
+                                <!-- ========================================= -->
+                                <!-- COLUMN 1: PRESS RELEASE                  -->
+                                <!-- ========================================= -->
 
-                                    <!-- Image -->
-                                    
+                                <div class="col-lg-8 col-md-7 col-12">
 
-                                    <div class="col-md-4 press-release-image-container rounded align-middle">
-                                        <?php if (!empty($latestRelease['cover_photo'])): ?>
-                                        <img
-                                            src="<?= htmlspecialchars(
-                                                storage_asset($latestRelease['cover_photo']),
-                                                ENT_QUOTES,
-                                                'UTF-8'
-                                            ) ?>"
-                                            class="card-img-top img-fluid rounded"
-                                            alt="<?= htmlspecialchars(
-                                                $latestRelease['title'],
-                                                ENT_QUOTES,
-                                                'UTF-8'
-                                            ) ?>"
-                                        >
-                                        <?php else: ?>
-                                            <svg aria-label="Image not available" class="bd-placeholder-img img-thumbnail  m-0 me-2 rounded-top" height="200" preserveAspectRatio="xMidYMid slice" role="img" width="200" xmlns="http://www.w3.org/2000/svg">
-                                                <title>Image not available</title>
-                                                <rect width="100%" height="100%" fill="#868e96"></rect>
-                                                <text x="20%" y="50%" fill="#dee2e6" dy=".3em">Not Available</text>
-                                            </svg>
-                                        <?php endif; ?>
-                                    </div>
-                                    
-                                    <!-- Content -->
-                                    <div class="col-md-8">
+                                    <div class="card border-0 h-100">
 
-                                        <div class="card-body">
+                                        <div class="row g-0">
 
-                                            <p class="card-text">
-                                                <small class="text-body-secondary me-2">
-                                                    <?= htmlspecialchars(
-                                                        $latestRelease['media_outlet'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    ) ?>
-                                                </small>
-                                                <small class="text-body-secondary me-2">
-                                                    <?= htmlspecialchars(
-                                                        $latestRelease['news_source'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    ) ?>
-                                                </small>
+                                            <!-- Cover Photo -->
+                                            <div class="col-lg-5 col-md-12">
 
-                                                <small class="text-body-secondary">
-                                                    <?= htmlspecialchars(
-                                                        $latestRelease['date_released'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    ) ?>
-                                                </small>
-                                            </p>
+                                                <div class="press-release-image-container rounded">
 
+                                                    <?php if (!empty($pressRelease['cover_photo'])): ?>
 
-                                            <h5 class="card-title">
-                                                <?= htmlspecialchars(
-                                                    $latestRelease['title'],
-                                                    ENT_QUOTES,
-                                                    'UTF-8'
-                                                ) ?>
-                                            </h5>
+                                                        <img
+                                                            src="<?= htmlspecialchars(
+                                                                storage_asset($pressRelease['cover_photo']),
+                                                                ENT_QUOTES,
+                                                                'UTF-8'
+                                                            ) ?>"
+                                                            class="card-img-top img-fluid rounded"
+                                                            alt="<?= htmlspecialchars(
+                                                                $pressRelease['title'],
+                                                                ENT_QUOTES,
+                                                                'UTF-8'
+                                                            ) ?>"
+                                                        >
 
+                                                    <?php else: ?>
 
-                                            <p class="card-text">
-                                                <?= htmlspecialchars(
-                                                    $latestRelease['description'],
-                                                    ENT_QUOTES,
-                                                    'UTF-8'
-                                                ) ?>
-                                            </p>
+                                                        <svg
+                                                            aria-label="Image not available"
+                                                            class="bd-placeholder-img img-thumbnail m-0 rounded"
+                                                            height="200"
+                                                            preserveAspectRatio="xMidYMid slice"
+                                                            role="img"
+                                                            width="200"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                            <title>Image not available</title>
+                                                            <rect
+                                                                width="100%"
+                                                                height="100%"
+                                                                fill="#868e96"
+                                                            ></rect>
+                                                            <text
+                                                                x="20%"
+                                                                y="50%"
+                                                                fill="#dee2e6"
+                                                                dy=".3em"
+                                                            >
+                                                                Not Available
+                                                            </text>
+                                                        </svg>
 
+                                                    <?php endif; ?>
 
-                                            <p class="card-text">
-                                                <small class="text-body-secondary">
-                                                    <?= htmlspecialchars(
-                                                        $latestRelease['news_content_type'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    ) ?>
-                                                </small>
-                                            </p>
+                                                </div>
+
+                                            </div>
+
+                                            <!-- Press Release Information -->
+                                            <div class="col-lg-7 col-md-12">
+
+                                                <div class="card-body">
+
+                                                    <p class="card-text mb-2">
+
+                                                        <?php if (!empty($pressRelease['date_released'])): ?>
+
+                                                            <small class="text-body-secondary">
+                                                                <?= htmlspecialchars(
+                                                                    $pressRelease['date_released'],
+                                                                    ENT_QUOTES,
+                                                                    'UTF-8'
+                                                                ) ?>
+                                                            </small>
+
+                                                        <?php endif; ?>
+
+                                                        <?php if (!empty($pressRelease['event_date'])): ?>
+
+                                                            <small class="text-body-secondary ms-2">
+                                                                <?= htmlspecialchars(
+                                                                    $pressRelease['event_date'],
+                                                                    ENT_QUOTES,
+                                                                    'UTF-8'
+                                                                ) ?>
+                                                            </small>
+
+                                                        <?php endif; ?>
+
+                                                    </p>
+
+                                                    <h5 class="card-title">
+                                                        <?= htmlspecialchars(
+                                                            $pressRelease['title'],
+                                                            ENT_QUOTES,
+                                                            'UTF-8'
+                                                        ) ?>
+                                                    </h5>
+
+                                                    <p class="card-text">
+                                                        <?= mb_substr(
+                                                            htmlspecialchars(
+                                                                $pressRelease['description'],
+                                                                ENT_QUOTES,
+                                                                'UTF-8'
+                                                            ),
+                                                            0,
+                                                            300,
+                                                            'UTF-8'
+                                                        ) ?>
+                                                        <?php if (mb_strlen($pressRelease['description'] ?? '') > 300): ?>
+                                                            ...
+                                                        <?php endif; ?>
+                                                    </p>
+
+                                                </div>
+
+                                            </div>
 
                                         </div>
 
+                                        <!-- Press Release Actions -->
+
+                                        <div class="container mt-3">
+
+                                            <?php
+                                            /*
+                                             * Find the primary link by is_primary.
+                                             * We DO NOT assume links[0] is primary.
+                                             */
+                                            $primaryLink = null;
+
+                                            foreach (($pressRelease['links'] ?? []) as $pressLink) {
+
+                                                if ((int) ($pressLink['is_primary'] ?? 0) === 1) {
+                                                    $primaryLink = $pressLink;
+                                                    break;
+                                                }
+
+                                            }
+                                            ?>
+
+                                            <?php if ($primaryLink && !empty($primaryLink['link'])): ?>
+
+                                                <!-- <a
+                                                    href="<?= htmlspecialchars(
+                                                        $primaryLink['link'],
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ) ?>"
+                                                    class="btn btn-primary m-2"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer nofollow"
+                                                >
+                                                    <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                    View Primary Article
+                                                </a> -->
+
+                                                <h2 class="h6 mb-2">
+                                                    <a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" 
+                                                    target="_blank" rel="noopener noreferrer nofollow"
+                                                    href="<?= htmlspecialchars($primaryLink['link'],
+                                                                                ENT_QUOTES,
+                                                                                'UTF-8'
+                                                                                ) ?>">
+                                                        <i class="bi bi-box-arrow-up-right me-1"></i>
+                                                        View Primary Article</a>
+                                                </h2>
+
+                                            <?php endif; ?>
+
+                                            <!-- <a
+                                                href="<?= renderurl($pressRelease['pr_id'] ?? $pressRelease['id']) ?>"
+                                                class="m-2 flex-nowrap"
+                                                style="white-space: nowrap;"
+                                            >
+                                                View Press Release
+                                                <i class="bi bi-box-arrow-in-up-right"></i>
+                                            </a> -->
+
+                                        </div>
+
+                                        <?php if ($user['role'] === 'super_admin'): ?>
+
+                                            <div class="container mt-3 align-bottom">
+
+                                                <div class="d-flex flex-row flex-wrap">
+
+                                                    <div class="d-inline-flex m-2">
+
+                                                        <form
+                                                            method="post"
+                                                            action="/press-release-delete"
+                                                            id="deletePressReleaseForm-<?= e($pressRelease['pr_id'] ?? $pressRelease['id']) ?>"
+                                                        >
+
+                                                            <input
+                                                                type="hidden"
+                                                                name="_token"
+                                                                value="<?= e($_SESSION['csrf']) ?>"
+                                                            >
+
+                                                            <input
+                                                                type="hidden"
+                                                                name="id"
+                                                                value="<?= e($pressRelease['pr_id'] ?? $pressRelease['id']) ?>"
+                                                            >
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-outline-danger"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#deletePressReleaseModal"
+                                                                data-delete-form="deletePressReleaseForm-<?= e($pressRelease['pr_id'] ?? $pressRelease['id']) ?>"
+                                                                data-delete-title="<?= e($pressRelease['title']) ?>"
+                                                                aria-label="Delete"
+                                                                title="Delete"
+                                                            >
+                                                                <i class="bi bi-trash me-1"></i>
+                                                            </button>
+
+                                                        </form>
+
+                                                    </div>
+
+                                                    <div class="d-inline-flex m-2">
+
+                                                        <a
+                                                            class="btn btn-outline-warning"
+                                                            href="/press-release-edit?id=<?= e($pressRelease['pr_id'] ?? $pressRelease['id']) ?>"
+                                                            role="button" title="Update"
+                                                        >
+                                                            <i class="bi bi-pencil-square me-1"></i>
+                                                            
+                                                        </a>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        <?php endif; ?>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- ========================================= -->
+                                <!-- COLUMN 2: MEDIA / ARTICLE LINKS         -->
+                                <!-- ========================================= -->
+
+                                <div class="col-lg-4 col-md-5 col-12">
+
+                                    <div class="h-100">
+
+                                        <div class="d-flex align-items-center mb-3">
+
+                                            <i class="bi bi-link-45deg fs-3 text-primary"></i>
+
+                                            <h5 class="lh-card-title mb-0 ms-2">
+                                                Media Links
+                                            </h5>
+
+                                        </div>
+
+
+                                        <?php if (empty($pressRelease['links'])): ?>
+
+                                            <div class="text-secondary small">
+                                                No media links available.
+                                            </div>
+
+                                        <?php else: ?>
+
+                                            <div
+                                                class="press-release-links"
+                                                style="
+                                                    max-height: 420px;
+                                                    overflow-y: auto;
+                                                    overflow-x: hidden;
+                                                "
+                                            >
+
+                                                <div class="list-group">
+
+                                                    <?php foreach ($pressRelease['links'] as $pressLink): ?>
+
+                                                        <div class="list-group-item">
+
+                                                            <div class="d-flex align-items-start">
+
+                                                                <!-- Media Logo -->
+
+                                                                <div class="flex-shrink-0 me-2">
+
+                                                                    <?php if (!empty($pressLink['media_logo'])): ?>
+
+                                                                        <img
+                                                                            src="<?= htmlspecialchars(
+                                                                                storage_asset($pressLink['media_logo']),
+                                                                                ENT_QUOTES,
+                                                                                'UTF-8'
+                                                                            ) ?>"
+                                                                            class="bd-placeholder-img img-thumbnail rounded"
+                                                                            width="45"
+                                                                            height="45"
+                                                                            alt="<?= e(
+                                                                                $pressLink['media_outlet']
+                                                                                    ?? 'Media outlet'
+                                                                            ) ?>"
+                                                                        >
+
+                                                                    <?php else: ?>
+
+                                                                        <svg
+                                                                            aria-label="Image not available"
+                                                                            class="bd-placeholder-img img-thumbnail rounded"
+                                                                            width="45"
+                                                                            height="45"
+                                                                            preserveAspectRatio="xMidYMid slice"
+                                                                            role="img"
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                        >
+                                                                            <title>Image not available</title>
+
+                                                                            <rect
+                                                                                width="100%"
+                                                                                height="100%"
+                                                                                fill="#868e96"
+                                                                            ></rect>
+
+                                                                            <text
+                                                                                x="5%"
+                                                                                y="50%"
+                                                                                fill="#dee2e6"
+                                                                                dy=".3em"
+                                                                                font-size="7"
+                                                                            >
+                                                                                N/A
+                                                                            </text>
+
+                                                                        </svg>
+
+                                                                    <?php endif; ?>
+
+                                                                </div>
+
+
+                                                                <!-- Link Information -->
+
+                                                                <div
+                                                                    class="flex-grow-1"
+                                                                    style="min-width: 0;"
+                                                                >
+
+                                                                    <div class="d-flex align-items-center gap-2 mb-1">
+
+                                                                        <strong
+                                                                            class="text-truncate"
+                                                                            title="<?= e(
+                                                                                $pressLink['media_outlet']
+                                                                                    ?? 'Unknown Media Outlet'
+                                                                            ) ?>"
+                                                                        >
+                                                                            <?= e(
+                                                                                $pressLink['media_outlet']
+                                                                                    ?? 'Unknown Media Outlet'
+                                                                            ) ?>
+                                                                        </strong>
+
+
+                                                                        <?php if (
+                                                                            (int) ($pressLink['is_primary'] ?? 0) === 1
+                                                                        ): ?>
+
+                                                                            <span class="badge text-bg-primary flex-shrink-0">
+                                                                                Primary
+                                                                            </span>
+
+                                                                        <?php endif; ?>
+
+                                                                    </div>
+
+
+                                                                    <?php if (!empty($pressLink['news_source'])): ?>
+
+                                                                        <div class="small text-body-secondary mb-1">
+
+                                                                            <?= e(
+                                                                                $pressLink['news_source']
+                                                                            ) ?>
+
+                                                                        </div>
+
+                                                                    <?php endif; ?>
+
+
+                                                                    <?php if (!empty($pressLink['news_content_type'])): ?>
+
+                                                                        <div class="small text-body-secondary mb-1">
+
+                                                                            <?= e(
+                                                                                $pressLink['news_content_type']
+                                                                            ) ?>
+
+                                                                        </div>
+
+                                                                    <?php endif; ?>
+
+
+                                                                    <?php if (!empty($pressLink['link'])): ?>
+
+                                                                        <a
+                                                                            href="<?= htmlspecialchars(
+                                                                                $pressLink['link'],
+                                                                                ENT_QUOTES,
+                                                                                'UTF-8'
+                                                                            ) ?>"
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer nofollow"
+                                                                            class="d-block small text-truncate"
+                                                                            title="<?= e(
+                                                                                $pressLink['link']
+                                                                            ) ?>"
+                                                                        >
+                                                                            <?= e(
+                                                                                mb_strimwidth(
+                                                                                    $pressLink['link'],
+                                                                                    0,
+                                                                                    45,
+                                                                                    '...',
+                                                                                    'UTF-8'
+                                                                                )
+                                                                            ) ?>
+                                                                        </a>
+
+                                                                    <?php endif; ?>
+
+
+                                                                    <?php if (!empty($pressLink['date_released'])): ?>
+
+                                                                        <small class="text-body-secondary">
+
+                                                                            <?= e(
+                                                                                $pressLink['date_released']
+                                                                            ) ?>
+
+                                                                        </small>
+
+                                                                    <?php endif; ?>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    <?php endforeach; ?>
+
+                                                </div>
+
+                                            </div>
+
+                                        <?php endif; ?>
+
                                     </div>
 
                                 </div>
 
                             </div>
 
-                            <div class="container">
-                                <a
-                                    href="<?= htmlspecialchars(
-                                        $latestRelease['link'],
-                                        ENT_QUOTES,
-                                        'UTF-8'
-                                    ) ?>"
-                                    class="btn btn-primary m-2"
-                                    target="_blank"
-                                    rel="noopener noreferrer nofollow"
-                                >
-                                    Like and Share on Social Media
-                                </a>
-
-                                <a
-                                    href="<?= renderurl($latestRelease['pr_id']); ?>"
-                                    class="m-2 flex-nowrap"
-                                    style="white-space: nowrap;"
-                                    rel="noopener noreferrer nofollow"
-                                >
-                                    See all press releases
-                                    <i class="bi bi-box-arrow-in-up-right"></i>
-                                </a>
-                            </div>
-
-                            <?php if ($user['role'] === 'super_admin'): ?>
-
-                            <div class="container mt-4">
-                                <div class="d-flex flex-row">
-                                    <div class="d-inline-flex m-2">
-                                        <form
-                                            method="post"
-                                            action="/press-release-delete"
-                                            id="deletePressReleaseForm"
-                                        >
-                                            <input
-                                                type="hidden"
-                                                name="_token"
-                                                value="<?= e($_SESSION['csrf']) ?>"
-                                            >
-
-                                            <input
-                                                type="hidden"
-                                                name="id"
-                                                value="<?= e($latestRelease['pr_id']) ?>"
-                                            >
-
-                                            <button
-                                                type="button"
-                                                class="btn btn-outline-danger"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#deletePressReleaseModal"
-                                            >
-                                                <i class="bi bi-trash me-1"></i>
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <div class="d-inline-flex m-2">
-                                        <a class="btn btn-outline-warning" 
-                                           href="/press-release-edit?id=<?= e($latestRelease['pr_id']) ?>" 
-                                           role="button">
-                                           <i class="bi bi-pencil-square"></i>
-                                            Update
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php endif; ?>
                         </article>
 
                     </div>
-                </div>
 
-                
-                <!-- ========================================= -->
-                <!-- OTHER PRESS RELEASES                      -->
-                <!-- ========================================= -->
-
-                <?php if (!empty($pressReleases)): ?>
-
-                    <div class="row g-4 mt-2">
-
-                        <?php foreach ($pressReleases as $pressRelease): ?>
-
-                            <div class="col-lg-6 col-md-6 col-sm-12">
-
-                                <article class="lh-card h-100">
-
-                                    <div class="card border-0 mb-3">
-
-                                        <?php if (!empty($pressRelease['cover_photo'])): ?>
-                                        <div class="press-release-image-container-min rounded-top">
-                                            <img
-                                                src="<?= htmlspecialchars(
-                                                    storage_asset($pressRelease['cover_photo']),
-                                                    ENT_QUOTES,
-                                                    'UTF-8'
-                                                ) ?>"
-                                                class="card-img-top img-fluid"
-                                                alt="<?= htmlspecialchars(
-                                                    $pressRelease['title'],
-                                                    ENT_QUOTES,
-                                                    'UTF-8'
-                                                ) ?>"
-                                            >
-                                        </div>
-                                        <?php endif; ?>
-
-
-                                        <div class="card-body">
-
-                                            <p class="card-text">
-                                                <small class="text-body-secondary me-2">
-                                                    <?= htmlspecialchars(
-                                                        $pressRelease['media_outlet'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    ) ?>
-                                                </small>
-                                                <small class="text-body-secondary me-2">
-                                                    <?= htmlspecialchars(
-                                                        $pressRelease['news_source'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    ) ?>
-                                                </small>
-
-                                                <small class="text-body-secondary">
-                                                    <?= htmlspecialchars(
-                                                        $pressRelease['date_released'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    ) ?>
-                                                </small>
-                                            </p>
-
-
-                                            <h5 class="card-title">
-                                                <?= htmlspecialchars(
-                                                    $pressRelease['title'],
-                                                    ENT_QUOTES,
-                                                    'UTF-8'
-                                                ) ?>
-                                            </h5>
-
-
-                                            <p class="card-text">
-                                                <?= mb_substr(htmlspecialchars(
-                                                    $pressRelease['description'],
-                                                    ENT_QUOTES,
-                                                    'UTF-8'
-                                                ), 0, 100, "UTF-8")."..." ?>
-                                            </p>
-
-
-                                            <p class="card-text">
-                                                <small class="text-body-secondary">
-                                                    <?= htmlspecialchars(
-                                                        $pressRelease['news_content_type'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    ) ?>
-                                                </small>
-                                            </p>
-
-                                        </div>
-
-                                    </div>
-
-                                    <div class="container">
-                                        <a
-                                            href="<?= htmlspecialchars(
-                                                $pressRelease['link'],
-                                                ENT_QUOTES,
-                                                'UTF-8'
-                                            ) ?>"
-                                            class="btn btn-primary m-2"
-                                            target="_blank"
-                                            rel="noopener noreferrer nofollow"
-                                        >
-                                            Like and Share on Social Media
-                                        </a>
-                                        <a
-                                            href="<?= renderurl($pressRelease['pr_id']); ?>"
-                                            class="m-2 flex-nowrap"
-                                            style="white-space: nowrap;"
-                                            rel="noopener noreferrer nofollow"
-                                        >
-                                            See all press releases
-                                            <i class="bi bi-box-arrow-in-up-right"></i>
-                                        </a>
-                                    </div>
-
-                                    <?php if ($user['role'] === 'super_admin'): ?>
-
-                                    <div class="container mt-4">
-                                        <div class="d-flex flex-row">
-                                            <div class="d-inline-flex m-2">
-                                                <form
-                                                    method="post"
-                                                    action="/press-release-delete"
-                                                    id="deletePressReleaseForm"
-                                                >
-                                                    <input
-                                                        type="hidden"
-                                                        name="_token"
-                                                        value="<?= e($_SESSION['csrf']) ?>"
-                                                    >
-
-                                                    <input
-                                                        type="hidden"
-                                                        name="id"
-                                                        value="<?= e($pressRelease['pr_id']) ?>"
-                                                    >
-
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-outline-danger"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#deletePressReleaseModal"
-                                                    >
-                                                        <i class="bi bi-trash me-1"></i>
-                                                        Delete
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            <div class="d-inline-flex m-2">
-                                                <a class="btn btn-outline-warning" 
-                                                href="/press-release-edit?id=<?= e($pressRelease['pr_id']) ?>" 
-                                                role="button">
-                                                <i class="bi bi-pencil-square"></i>
-                                                    Update
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php endif; ?>
-
-                                </article>
-
-                            </div>
-
-                        <?php endforeach; ?>
-
-                    </div>
-
-                <?php endif; ?>
+                <?php endforeach; ?>
 
             <?php endif; ?>
-            </div>
-
-
-            <div class="col-lg-4 col-md-4 col-sm-12 p-2">
-
-            <?php if (empty($latestLinks)): ?>
-                <article class="lh-card h-100">
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-row mb-3 d-flex align-items-center">
-                            <i class="bi bi-x-square-fill fs-2 text-primary"></i>
-                            <p class="lh-card-title m-2 align-items-left">No press releases yet</p>
-                        </div>
-                    </div>
-                    <p class="text-secondary mb-0">No press releases have been published yet.</p>
-                </article>
-            <?php else: ?>
-                <article class="highlight-on-load lh-card link-listings sticky-top">
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-row mb-1 d-flex align-items-center">
-                            <i class="bi bi-list fs-2 text-primary"></i>
-                            <p class="lh-card-title m-2 align-items-left">Press Releases</p>
-                        </div>
-
-                    </div>
-                    <div class="mb-1">
-                        <h6 id="linktitle">
-                        <?= htmlspecialchars(
-                            $latestRelease['title'],
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ) ?>
-                        </h6>
-                    </div>
-                    <ul class="list-group list-group-flush linkitself" id="linkitself">
-                        <?php foreach ($latestLinks as $llinks): ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-1">
-
-                                <?php if (!empty($llinks['media_logo'])): ?>
-                                    <img src="<?= htmlspecialchars(storage_asset($llinks['media_logo']),
-                                          ENT_QUOTES,
-                                          'UTF-8'
-                                      ) ?>" class="bd-placeholder-img img-thumbnail m-0 me-2" width="45" height="45" alt="<?= e($llinks['media_outlet'] ?? 'Press Release') ?>">
-                                <?php else: ?>
-                                    <svg aria-label="Image not available" class="bd-placeholder-img img-thumbnail  m-0 me-2" 
-                                        height="50" preserveAspectRatio="xMidYMid slice" role="img" width="50" xmlns="http://www.w3.org/2000/svg">
-                                        <title>Image not available</title>
-                                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                                        <text x="1%" y="50%" fill="#dee2e6" dy=".3em">Not Available</text>
-                                    </svg>
-                                <?php endif; ?>
-
-                                <a href="<?= htmlspecialchars(
-                                    $llinks['link'],
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>" target="_blank" rel="noopener noreferrer nofollow text-truncate">
-                                    <?php $mlink = mb_strimwidth($llinks['link'], 0, 25, "..."); 
-                                    echo htmlspecialchars(
-                                        $mlink,
-                                        ENT_QUOTES,
-                                        'UTF-8'
-                                    ) ?>
-                                </a>
-                                <span class="badge bg-primary rounded-pill">
-                                    <?= htmlspecialchars(
-                                        $llinks['date_released'],
-                                        ENT_QUOTES,
-                                        'UTF-8'
-                                    ) ?>
-                                </span>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </article>
-            <?php endif; ?>
-            </div>
-
 
         </div>
 
+
+        <!-- ========================================= -->
+        <!-- PAGINATION                               -->
+        <!-- ========================================= -->
 
         <div class="d-flex justify-content-start mt-4">
-        <?php if ($totalPages > 1): ?>
 
-            <?php
-            $visiblePages = 2;
-            ?>
+            <?php if ($totalPages > 1): ?>
 
-            <nav aria-label="Press release pagination">
-                <ul class="pagination justify-content-center justify-content-lg-end flex-wrap">
+                <?php
+                $visiblePages = 2;
+                ?>
 
-                    <!-- Previous -->
-                    <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+                <nav aria-label="Press release pagination">
 
-                        <?php if ($currentPage > 1): ?>
+                    <ul class="pagination justify-content-center justify-content-lg-end flex-wrap">
+
+                        <!-- Previous -->
+
+                        <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+
+                            <?php if ($currentPage > 1): ?>
+
+                                <a
+                                    class="page-link"
+                                    href="?page=<?= $currentPage - 1 ?>"
+                                    aria-label="Previous"
+                                >
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+
+                            <?php else: ?>
+
+                                <span class="page-link">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </span>
+
+                            <?php endif; ?>
+
+                        </li>
+
+
+                        <!-- First Page -->
+
+                        <li class="page-item <?= $currentPage === 1 ? 'active' : '' ?>">
 
                             <a
                                 class="page-link"
-                                href="?page=<?= $currentPage - 1 ?>"
-                                aria-label="Previous"
+                                href="?page=1"
+                                <?= $currentPage === 1 ? 'aria-current="page"' : '' ?>
                             >
-                                <span aria-hidden="true">&laquo;</span>
+                                1
                             </a>
 
-                        <?php else: ?>
+                        </li>
 
-                            <span class="page-link">
-                                <span aria-hidden="true">&laquo;</span>                                
-                            </span>
+
+                        <!-- Ellipsis Before -->
+
+                        <?php if ($currentPage > $visiblePages + 2): ?>
+
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
 
                         <?php endif; ?>
 
-                    </li>
+
+                        <!-- Pages Around Current -->
+
+                        <?php
+
+                        $startPage = max(
+                            2,
+                            $currentPage - $visiblePages
+                        );
+
+                        $endPage = min(
+                            $totalPages - 1,
+                            $currentPage + $visiblePages
+                        );
+
+                        ?>
+
+                        <?php for (
+                            $page = $startPage;
+                            $page <= $endPage;
+                            $page++
+                        ): ?>
+
+                            <li
+                                class="page-item <?= $page === $currentPage ? 'active' : '' ?>"
+                            >
+
+                                <a
+                                    class="page-link"
+                                    href="?page=<?= $page ?>"
+                                    <?= $page === $currentPage ? 'aria-current="page"' : '' ?>
+                                >
+                                    <?= $page ?>
+                                </a>
+
+                            </li>
+
+                        <?php endfor; ?>
 
 
-                    <?php
-                    /*
-                    * Always show page 1
-                    */
-                    ?>
+                        <!-- Ellipsis After -->
 
-                    <li class="page-item <?= $currentPage === 1 ? 'active' : '' ?>">
-                        <a
-                            class="page-link"
-                            href="?page=1"
-                            <?= $currentPage === 1 ? 'aria-current="page"' : '' ?>
+                        <?php if (
+                            $currentPage <
+                            $totalPages - ($visiblePages + 1)
+                        ): ?>
+
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+
+                        <?php endif; ?>
+
+
+                        <!-- Last Page -->
+
+                        <?php if ($totalPages > 1): ?>
+
+                            <li
+                                class="page-item <?= $currentPage === $totalPages ? 'active' : '' ?>"
+                            >
+
+                                <a
+                                    class="page-link"
+                                    href="?page=<?= $totalPages ?>"
+                                    <?= $currentPage === $totalPages ? 'aria-current="page"' : '' ?>
+                                >
+                                    <?= $totalPages ?>
+                                </a>
+
+                            </li>
+
+                        <?php endif; ?>
+
+
+                        <!-- Next -->
+
+                        <li
+                            class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>"
                         >
-                            1
-                        </a>
-                    </li>
 
+                            <?php if ($currentPage < $totalPages): ?>
 
-                    <?php
-                    /*
-                    * Ellipsis before the current page
-                    */
-                    ?>
+                                <a
+                                    class="page-link"
+                                    href="?page=<?= $currentPage + 1 ?>"
+                                    aria-label="Next"
+                                >
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
 
-                    <?php if ($currentPage > $visiblePages + 2): ?>
+                            <?php else: ?>
 
-                        <li class="page-item disabled">
-                            <span class="page-link">...</span>
-                        </li>
+                                <span class="page-link">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </span>
 
-                    <?php endif; ?>
-
-
-                    <?php
-                    /*
-                    * Pages around the current page
-                    */
-                    $startPage = max(2, $currentPage - $visiblePages);
-                    $endPage = min(
-                        $totalPages - 1,
-                        $currentPage + $visiblePages
-                    );
-
-                    for ($page = $startPage; $page <= $endPage; $page++):
-                    ?>
-
-                        <li class="page-item <?= $page === $currentPage ? 'active' : '' ?>">
-
-                            <a
-                                class="page-link"
-                                href="?page=<?= $page ?>"
-                                <?= $page === $currentPage ? 'aria-current="page"' : '' ?>
-                            >
-                                <?= $page ?>
-                            </a>
+                            <?php endif; ?>
 
                         </li>
 
-                    <?php endfor; ?>
+                    </ul>
 
+                </nav>
 
-                    <?php
-                    /*
-                    * Ellipsis after the current page
-                    */
-                    ?>
+            <?php endif; ?>
 
-                    <?php if ($currentPage < $totalPages - ($visiblePages + 1)): ?>
-
-                        <li class="page-item disabled">
-                            <span class="page-link">...</span>
-                        </li>
-
-                    <?php endif; ?>
-
-
-                    <?php
-                    /*
-                    * Always show the last page
-                    */
-                    ?>
-
-                    <?php if ($totalPages > 1): ?>
-
-                        <li class="page-item <?= $currentPage === $totalPages ? 'active' : '' ?>">
-
-                            <a
-                                class="page-link"
-                                href="?page=<?= $totalPages ?>"
-                                <?= $currentPage === $totalPages ? 'aria-current="page"' : '' ?>
-                            >
-                                <?= $totalPages ?>
-                            </a>
-
-                        </li>
-
-                    <?php endif; ?>
-
-
-                    <!-- Next -->
-                    <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
-
-                        <?php if ($currentPage < $totalPages): ?>
-
-                            <a
-                                class="page-link"
-                                href="?page=<?= $currentPage + 1 ?>"
-                                aria-label="Next"
-                            >
-                                <span aria-hidden="true">&raquo;</span>   
-                            </a>
-
-                        <?php else: ?>
-
-                            <span class="page-link">
-                                <span aria-hidden="true">&raquo;</span>
-                            </span>
-
-                        <?php endif; ?>
-
-                    </li>
-
-                </ul>
-            </nav>
-
-        <?php endif; ?>
         </div>
+
     </div>
 </section>
-<section>
-    <!-- Delete Press Release Confirmation Modal -->
-    <div
-        class="modal fade"
-        id="deletePressReleaseModal"
-        tabindex="-1"
-        aria-labelledby="deletePressReleaseModalLabel"
-        aria-hidden="true"
-    >
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
 
-                <div class="modal-header">
-                    <h5
-                        class="modal-title"
-                        id="deletePressReleaseModalLabel"
-                    >
-                        Delete Press Release
-                    </h5>
-
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
-                </div>
-
-                <div class="modal-body">
-
-                    <div class="text-center mb-3">
-                        <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
-                    </div>
-
-                    <p class="mb-2">
-                        Are you sure you want to delete this press release?
-                    </p>
-
-                    <p class="fw-semibold mb-2">
-                        <?= e($latestRelease['title']) ?>
-                    </p>
-
-                    <div class="alert alert-danger mb-0">
-                        <i class="bi bi-exclamation-circle me-1"></i>
-                        This action cannot be undone.
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary"
-                        data-bs-dismiss="modal"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="submit"
-                        form="deletePressReleaseForm"
-                        class="btn btn-danger"
-                    >
-                        <i class="bi bi-trash me-1"></i>
-                        Yes, Delete
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</section>

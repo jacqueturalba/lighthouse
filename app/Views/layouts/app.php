@@ -21,7 +21,8 @@
             <i class="bi bi-exclamation-triangle-fill"></i>
             <div> <?= e($error) ?></div>
           </div>
-        <?php endif; ?> <?= $content ?>
+        <?php endif; ?> 
+        <?= $content ?>
     </main>
 
     <script>
@@ -43,8 +44,8 @@
         }
     });
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/app.js"></script>
+    <?php require __DIR__.'/pr-modal-delete.php'; ?>
   </body>
 </html>
