@@ -168,85 +168,771 @@ body {
     padding: 1.25rem;
   }
 }
-/* LOGIN */
-/* ===========================
-   LOGIN SECTION BACKGROUND
-=========================== */
+/* =========================================================
+   LIGHTHOUSE LOGIN
+   ========================================================= */
 
-.bg-auth {
-    position: relative;
+.lh-login-page {
     min-height: 100vh;
+    min-height: 100dvh;
 
-    /* Background image */
+    position: relative;
+    /*overflow: hidden;*/
+
     background:
-        linear-gradient(
-            rgba(17, 24, 39, 0.45),
-            rgba(37, 99, 235, 0.35)
-        ),
-        url("../images/backgrounds/lighthouse-auth.png");
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+        url("../images/backgrounds/lighthouse-auth-hd.png")
+        center center / cover
+        no-repeat;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    /*overflow: hidden;*/
-    border-radius: 20px;
+    padding: 2rem;
 }
 
 
-/* ===========================
-   GLASS OVERLAY
-=========================== */
-.auth-container {
-    border: 1px solid rgba(255,255,255,.20);
+/*
+ * Main two-column layout
+ */
+.lh-login-wrapper {
+    width: min(1400px, 100%);
+    min-height: calc(100vh - 4rem);
 
-    border-radius: 20px;
+    display: grid;
+    grid-template-columns: minmax(420px, 0.95fr) minmax(500px, 1fr);
+
+    align-items: center;
+
+    gap: 3rem;
+}
+
+
+/* =========================================================
+   LEFT / BRANDING
+   ========================================================= */
+
+.lh-login-branding {
+    position: relative;
+
+    min-height: 700px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: flex-start;
+
+    padding: 2rem 1rem 2rem 3rem;
+}
+
+
+/*
+ * Logo / Brand
+ */
+.lh-login-brand {
+    display: flex;
+    align-items: center;
+
+    gap: 0.8rem;
+
+    margin-bottom: 5rem;
+}
+
+.lh-login-brand-icon {
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--lh-blue);
+
+    font-size: 2.6rem;
+}
+
+.lh-login-brand-name {
+    font-size: 1.55rem;
+    font-weight: 800;
+
+    line-height: 1;
+
+    letter-spacing: 0.02em;
+
+    color: var(--lh-ink);
+}
+
+.lh-login-brand-subtitle {
+    margin-top: 0.35rem;
+
+    color: #2778ed;
+
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+
+/*
+ * Main message
+ */
+.lh-login-message {
+    max-width: 470px;
+}
+
+.lh-login-message h1 {
+    margin: 0;
+
+    color: #203c67;
+
+    font-size: clamp(2.8rem, 4vw, 4.4rem);
+
+    line-height: 1.13;
+
+    font-weight: 800;
+
+    letter-spacing: -0.035em;
+}
+
+.lh-login-message h1 span {
+    color: #287cf0;
+}
+
+.lh-login-accent {
+    width: 115px;
+    height: 8px;
+
+    margin: 1rem 0 1.8rem;
+
+    background: var(--lh-gold);
+
+    border-radius: 100%;
+
+    transform: rotate(-3deg);
+}
+
+.lh-login-message p {
+    margin: 0;
+
+    color: #637592;
+
+    font-size: 1.2rem;
+
+    line-height: 1.65;
+
+    font-weight: 500;
+}
+
+
+/*
+ * Bible verse card
+ */
+.lh-login-verse {
+    position: absolute;
+
+    left: 3rem;
+    bottom: 0;
+
+    width: min(390px, calc(100% - 4rem));
+
+    display: flex;
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: 1.25rem 1.5rem;
+
+    background: rgba(255, 255, 255, 0.82);
+
+    border: 1px solid rgba(255, 255, 255, 0.9);
+
+    border-radius: 18px;
 
     box-shadow:
-        0 8px 32px rgba(0,0,0,.18);
+        0 12px 35px rgba(37, 99, 235, 0.08);
 
-    padding: 2.5rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
-.glass {
-    background: rgba(255, 255, 255, 0.12);
+.lh-login-verse-icon {
+    flex: 0 0 auto;
 
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #287cf0;
+
+    font-size: 2.3rem;
 }
 
-/* Optional darker glass */
+.lh-login-verse-text {
+    color: #29466e;
 
-.glass-dark {
-    background: rgba(15, 23, 42, 0.25);
+    font-size: 0.95rem;
 
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    line-height: 1.5;
 
-    border: 1px solid rgba(255,255,255,.12);
+    font-weight: 600;
+}
 
-    border-radius: 20px;
+.lh-login-verse-reference {
+    margin-top: 0.45rem;
+
+    color: #287cf0;
+
+    font-size: 0.85rem;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   RIGHT / FORM
+   ========================================================= */
+
+.lh-login-form-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lh-login-card {
+    width: min(100%, 600px);
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border-radius: 28px;
+
+    padding: 4rem 4rem 3rem;
+
+    box-shadow:
+        0 20px 60px rgba(45, 75, 120, 0.12),
+        0 4px 20px rgba(45, 75, 120, 0.05);
+
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+
+/*
+ * Header
+ */
+.lh-login-card-header {
+    margin-bottom: 2.8rem;
+}
+
+.lh-login-card-header h2 {
+    margin: 0;
+
+    color: #203c67;
+
+    font-size: clamp(2rem, 3vw, 2.6rem);
+
+    font-weight: 800;
+
+    letter-spacing: -0.025em;
+}
+
+.lh-login-card-header h2 span {
+    color: #287cf0;
+}
+
+.lh-login-card-header p {
+    margin: 0.8rem 0 0;
+
+    color: #73829a;
+
+    font-size: 1rem;
+}
+
+
+/*
+ * Form fields
+ */
+.lh-login-field {
+    margin-bottom: 1.7rem;
+}
+
+.lh-login-field label {
+    display: block;
+
+    margin-bottom: 0.7rem;
+
+    color: #29466e;
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+}
+
+.lh-login-input-wrapper {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+}
+
+.lh-login-input-wrapper > i {
+    position: absolute;
+
+    left: 1.15rem;
+
+    z-index: 2;
+
+    color: #8291a8;
+
+    font-size: 1.15rem;
+
+    pointer-events: none;
+}
+
+.lh-login-input-wrapper input {
+    width: 100%;
+
+    height: 56px;
+
+    padding:
+        0.75rem
+        3.1rem
+        0.75rem
+        3.2rem;
+
+    border: 1px solid #dce3ec;
+
+    border-radius: 14px;
+
+    background: #fff;
+
+    color: #263f62;
+
+    font-size: 0.95rem;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.lh-login-input-wrapper input::placeholder {
+    color: #a3adbb;
+}
+
+.lh-login-input-wrapper input:focus {
+    border-color: #5794f4;
+
+    box-shadow:
+        0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+
+/*
+ * Password toggle
+ */
+.lh-password-toggle {
+    position: absolute;
+
+    right: 1rem;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #71829c;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+}
+
+.lh-password-toggle:hover {
+    color: #287cf0;
+
+    background: #f3f7ff;
+}
+
+
+/*
+ * Remember / Forgot password
+ */
+.lh-login-options {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    margin:
+        0.25rem 0
+        1.8rem;
+}
+
+.lh-remember {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 0.65rem;
+
+    color: #526581;
+
+    font-size: 0.88rem;
+
+    cursor: pointer;
+}
+
+.lh-remember input {
+    appearance: none;
+
+    width: 20px;
+    height: 20px;
+
+    margin: 0;
+
+    border: 1px solid #d4dce7;
+
+    border-radius: 5px;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    position: relative;
+}
+
+.lh-remember input:checked {
+    background: #287cf0;
+
+    border-color: #287cf0;
+}
+
+.lh-remember input:checked::after {
+    content: "";
+
+    position: absolute;
+
+    left: 6px;
+    top: 2px;
+
+    width: 6px;
+    height: 11px;
+
+    border:
+        solid #fff;
+
+    border-width:
+        0 2px 2px 0;
+
+    transform: rotate(45deg);
+}
+
+.lh-login-options a {
+    color: #287cf0;
+
+    font-size: 0.88rem;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.lh-login-options a:hover {
+    text-decoration: underline;
+}
+
+
+/*
+ * Sign In
+ */
+.lh-login-submit {
+    width: 100%;
+
+    height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 0.7rem;
+
+    border: 0;
+
+    border-radius: 14px;
+
+    background: #287cf0;
 
     color: #fff;
 
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
     box-shadow:
-        0 10px 40px rgba(0,0,0,.25);
+        0 8px 18px rgba(40, 124, 240, 0.18);
+
+    transition:
+        transform 0.15s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-/* White text inside dark glass */
+.lh-login-submit:hover {
+    background: #1768d8;
 
-.glass-dark h1,
-.glass-dark h2,
-.glass-dark h3,
-.glass-dark p,
-.glass-dark label{
-    color:#fff;
+    box-shadow:
+        0 10px 22px rgba(40, 124, 240, 0.24);
+
+    transform: translateY(-1px);
 }
-/* END LOGIN */
+
+.lh-login-submit:active {
+    transform: translateY(0);
+}
+
+
+/*
+ * Divider
+ */
+.lh-login-divider {
+    display: flex;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    margin: 2rem 0;
+}
+
+.lh-login-divider span {
+    flex: 1;
+
+    height: 1px;
+
+    background: #e5eaf1;
+}
+
+.lh-login-divider small {
+    color: #9aa6b7;
+
+    font-size: 0.85rem;
+}
+
+
+/*
+ * SSO
+ */
+.lh-login-sso {
+    width: 100%;
+
+    height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 0.7rem;
+
+    border: 1px solid #8bb8ff;
+
+    border-radius: 14px;
+
+    background: #fff;
+
+    color: #287cf0;
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.lh-login-sso:hover {
+    background: #f5f9ff;
+
+    border-color: #287cf0;
+}
+
+
+/*
+ * Footer
+ */
+.lh-login-footer {
+    margin-top: 4.5rem;
+
+    text-align: center;
+
+    color: #94a1b4;
+
+    font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1199.98px) {
+
+    .lh-login-wrapper {
+        grid-template-columns:
+            minmax(360px, 0.85fr)
+            minmax(450px, 1fr);
+
+        gap: 2rem;
+    }
+
+    .lh-login-branding {
+        padding-left: 1rem;
+    }
+
+    .lh-login-verse {
+        left: 1rem;
+    }
+
+    .lh-login-card {
+        padding: 3rem;
+    }
+
+}
+
+
+@media (max-width: 991.98px) {
+
+    .lh-login-page {
+        padding: 1.5rem;
+    }
+
+    .lh-login-wrapper {
+        grid-template-columns: 1fr;
+
+        min-height: auto;
+
+        max-width: 650px;
+    }
+
+    .lh-login-branding {
+        min-height: auto;
+
+        padding: 1rem 0;
+
+        align-items: center;
+
+        text-align: center;
+    }
+
+    .lh-login-brand {
+        margin-bottom: 2rem;
+    }
+
+    .lh-login-message {
+        max-width: 600px;
+    }
+
+    .lh-login-message h1 {
+        font-size: 2.8rem;
+    }
+
+    .lh-login-message p {
+        font-size: 1rem;
+    }
+
+    .lh-login-verse {
+        position: static;
+
+        margin-top: 2rem;
+
+        text-align: left;
+    }
+
+    .lh-login-form-area {
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 575.98px) {
+
+    .lh-login-page {
+        padding: 1rem;
+    }
+
+    .lh-login-wrapper {
+        gap: 1rem;
+    }
+
+    .lh-login-brand-icon {
+        width: 48px;
+        height: 48px;
+
+        font-size: 2rem;
+    }
+
+    .lh-login-brand-name {
+        font-size: 1.25rem;
+    }
+
+    .lh-login-brand-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .lh-login-message h1 {
+        font-size: 2.25rem;
+    }
+
+    .lh-login-accent {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .lh-login-card {
+        padding: 2rem 1.35rem;
+
+        border-radius: 22px;
+    }
+
+    .lh-login-card-header {
+        margin-bottom: 2rem;
+    }
+
+    .lh-login-card-header h2 {
+        font-size: 2rem;
+    }
+
+    .lh-login-options {
+        align-items: flex-start;
+    }
+
+    .lh-login-footer {
+        margin-top: 3rem;
+    }
+
+}
+
+/* =========================================================
+   END LIGHTHOUSE LOGIN
+   ========================================================= */
 
 /* DASHBOARD */
 

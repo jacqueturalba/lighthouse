@@ -1,32 +1,189 @@
-<section class="container-md justify-content-center gap-4 py-2">
-  <div class="row align-items-left gap-4 auth-container">
-    <div class="text-center align-items-center py-2 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-      <h1><span style="color: #2563eb;">LIGHT</span><span style="color: #efb70c;">HOUSE</span></h1>
-      <p style="color: #ffffff;">Welcome back! Please enter your details.</p>
-    </div>
-    <div class="align-items-center py-2 col-xl-6 col-lg-6 col-md-6 col-sm-12 glassmorphism">
-      <form method="post">
-        <div class="form-floating mb-3 py-2 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-          <label for="email">Email</label>
-          <input name="email" type="email" autocomplete="email" id="email" class="form-control" required>
+<section class="lh-loginp-page">
+    <div class="lh-login-wrapper">
+
+        <!-- LEFT SIDE -->
+        <div class="lh-login-branding">
+
+            <div class="lh-login-brand">
+                <div class="lh-login-brand-icon">
+                    <i class="bi bi-lighthouse"></i>
+                </div>
+
+                <div>
+                    <div class="lh-login-brand-name">
+                        LIGHTHOUSE
+                    </div>
+                    <div class="lh-login-brand-subtitle">
+                        Admin Portal
+                    </div>
+                </div>
+            </div>
+
+            <div class="lh-login-message">
+                <h1>
+                    Grow in Faith.<br>
+                    Serve with<br>
+                    <span>Purpose.</span>
+                </h1>
+
+                <div class="lh-login-accent"></div>
+
+                <p>
+                    A system built to manage,<br>
+                    organize, and share the light<br>
+                    of God's truth.
+                </p>
+            </div>
+
+            <div class="lh-login-verse">
+                <div class="lh-login-verse-icon">
+                    <i class="bi bi-book"></i>
+                </div>
+
+                <div>
+                    <div class="lh-login-verse-text">
+                        Your word is a lamp to my feet<br>
+                        and a light to my path.
+                    </div>
+
+                    <div class="lh-login-verse-reference">
+                        Psalm 119:105
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="form-floating mb-3 py-2 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-          <label for="password">Password</label>
-          <input name="password" type="password" autocomplete="current-password" id="password" class="form-control" required>
+
+
+        <!-- RIGHT SIDE -->
+        <div class="lh-login-form-area">
+
+            <div class="lh-login-card">
+
+                <div class="lh-login-card-header">
+                    <h2>
+                        Welcome <span>Back!</span>
+                    </h2>
+
+                    <p>
+                        Sign in to continue to Lighthouse.
+                    </p>
+                </div>
+
+                <form method="post">
+
+                    <?= form_token() ?>
+
+                    <!-- EMAIL -->
+                    <div class="lh-login-field">
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <div class="lh-login-input-wrapper">
+                            <i class="bi bi-envelope"></i>
+
+                            <input
+                                name="email"
+                                type="email"
+                                autocomplete="email"
+                                id="email"
+                                placeholder="Enter your email"
+                                required
+                            >
+                        </div>
+                    </div>
+
+
+                    <!-- PASSWORD -->
+                    <div class="lh-login-field">
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="lh-login-input-wrapper">
+                            <i class="bi bi-lock"></i>
+
+                            <input
+                                name="password"
+                                type="password"
+                                autocomplete="current-password"
+                                id="password"
+                                placeholder="Enter your password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="lh-password-toggle"
+                                id="togglePassword"
+                                aria-label="Show password"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <!-- OPTIONS -->
+                    <div class="lh-login-options">
+
+                        <label class="lh-remember">
+                            <input
+                                type="checkbox"
+                                name="remember"
+                                value="1"
+                            >
+
+                            <span>
+                                Remember me
+                            </span>
+                        </label>
+
+                        <a href="/forgot-password">
+                            Forgot password?
+                        </a>
+
+                    </div>
+
+
+                    <!-- SIGN IN -->
+                    <button
+                        type="submit"
+                        class="lh-login-submit"
+                    >
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        <span>Sign In</span>
+                    </button>
+
+                </form>
+
+
+                <!-- DIVIDER -->
+                <div class="lh-login-divider">
+                    <span></span>
+                    <small>or</small>
+                    <span></span>
+                </div>
+
+
+                <!-- SSO -->
+                <button
+                    type="button"
+                    class="lh-login-sso"
+                >
+                    <i class="bi bi-shield-lock"></i>
+                    <span>Sign in with SSO</span>
+                </button>
+
+
+                <div class="lh-login-footer">
+                    © 2025 Lighthouse. All rights reserved.
+                </div>
+
+            </div>
+
         </div>
-        <?= form_token() ?> <button type="submit" class="btn btn-primary">Sign in</button>
-      </form>
-      <div class="py-2 col-md-6 col-lg-6 col-xl-4">
-          <p>
-            <a style="color: #ffffff;" href="/forgot-password">Forgot password?</a>
-          </p>
-      </div>
 
     </div>
-
-    <div class="align-self-end py-0 col-xl-5 col-lg-5 col-md-5 col-sm-12">
-      <!--<img src="<?=render_asset('/images/auth/login-img.png') ?>" class="rounded img-fluid" alt="lighthouse" >-->
-       &nbsp;
-    </div>
-  </div>
 </section>

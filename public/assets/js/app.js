@@ -1,5 +1,32 @@
 document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('[data-password-toggle]').forEach(button=>button.addEventListener('click',()=>{const input=document.querySelector(button.dataset.passwordToggle);if(!input)return;input.type=input.type==='password'?'text':'password';button.setAttribute('aria-pressed',String(input.type==='text'));}));window.setTimeout(()=>document.querySelectorAll('[data-auto-dismiss]').forEach(alert=>bootstrap.Alert.getOrCreateInstance(alert).close()),5000);});
 
+document.addEventListener("DOMContentLoaded", function () {
+    const togglePassword = document.getElementById("togglePassword");
+    const password = document.getElementById("password");
+
+    if (!togglePassword || !password) {
+        return;
+    }
+
+    togglePassword.addEventListener("click", function () {
+        const isPassword = password.type === "password";
+
+        password.type = isPassword ? "text" : "password";
+
+        const icon = this.querySelector("i");
+
+        if (icon) {
+            icon.classList.toggle("bi-eye", !isPassword);
+            icon.classList.toggle("bi-eye-slash", isPassword);
+        }
+
+        this.setAttribute(
+            "aria-label",
+            isPassword ? "Hide password" : "Show password"
+        );
+    });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const viewers = document.querySelectorAll('[data-image-viewer]');
 
