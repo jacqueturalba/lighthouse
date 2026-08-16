@@ -185,7 +185,7 @@ class ApplicationController
 
                 render(
                     'Reset link unavailable',
-                    '<p>This password reset link is invalid or expired.</p>',
+                    '<p class="bg-primary-subtle opacity-75 rounded p-4 text-primary-emphasis">This password reset link is invalid or expired.</p>',
                     false
                 );
 
@@ -406,7 +406,7 @@ class ApplicationController
         }
 
         http_response_code(404); 
-        render('Not found','<p>The requested page does not exist.</p>',false);
+        render('Not found','<p class="bg-primary-subtle opacity-75 rounded p-4 text-primary-emphasis">The requested page does not exist.</p>',false);
 
     }
 
