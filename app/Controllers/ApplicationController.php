@@ -85,7 +85,9 @@ class ApplicationController
         }
 
         if ($path==='/forgot-password' && $method==='GET') { 
-            view('auth/forgot-password',['title'=>'Reset password'],false); 
+            view('auth/forgot-password',
+                ['title'=>'Reset password'],
+                false); 
             exit; 
         }
 
