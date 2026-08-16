@@ -11,12 +11,15 @@ require_once __DIR__.'/../Models/MaterialRequest.php';
 final class PageController
 {
     public function home(): void { 
-        require_auth(); 
+        $user = require_auth(); 
         $latestRelease = PressRelease::getPressReleaseById(0);
+        $thisWeekEvents = PEvent::thisWeek(8);
 
         view('dashboard/home', ['title' => 'Homepage',
-         'latestRelease' => $latestRelease]
-         ); 
+         'user' => $user,
+         'latestRelease' => $latestRelease,
+         'thisWeekEvents' => $thisWeekEvents
+         ]); 
     }
 
     public function promotionKits(): void {

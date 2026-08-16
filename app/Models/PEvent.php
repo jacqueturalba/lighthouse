@@ -54,4 +54,29 @@ final class PEvent
         $stmt = db()->prepare('UPDATE events SET status=?, reviewed_by=?, review_reason=?, reviewed_at=NOW() WHERE id=? AND status="pending"');
         $stmt->execute([$status, $reviewerId, $reason, $id]);
     }
+
+    public static function thisWeek(int $limit = 8): array
+    {
+        $limit = max(1, min(24, $limit));
+
+        $stmt = db()->query("
+            SELECT
+                e.*,
+                u.name AS submitter_name
+            FROM events e
+            JOIN users u ON u.id = e.submitted_by
+            WHERE e.status = 'approved'
+            AND e.event_date BETWEEN
+                DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+                AND
+                DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+            ORDER BY
+                e.event_date,
+                e.start_time,
+                e.title
+            LIMIT {$limit}
+        ");
+
+        return $stmt->fetchAll();
+    }
 }
