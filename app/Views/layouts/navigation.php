@@ -17,9 +17,6 @@
           <a class="nav-link lh-nav-link" href="/calendar">Calendar</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link lh-nav-link" href="/trainings">Trainings & Guidelines</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/material-requests">Materials</a>
         </li>
 
@@ -31,6 +28,9 @@
             <i class="bi bi-gear-wide-connected"></i>
           </button>
           <ul class="dropdown-menu">
+            <li class="nav-item">
+              <a class="nav-link lh-nav-link" href="/trainings">Trainings & Guidelines</a>
+            </li>
             <li><a class="dropdown-item" href="/event-review">Event Review</a></li>
             <li><a class="dropdown-item" href="/promotion-kit-requests">Kit Requests</a></li>
             <li><a class="dropdown-item" href="/material-requests">Production</a></li>
