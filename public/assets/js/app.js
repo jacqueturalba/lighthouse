@@ -25,6 +25,32 @@ document.addEventListener("DOMContentLoaded", function () {
             isPassword ? "Hide password" : "Show password"
         );
     });
+
+
+    const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+    const confirmpassword = document.getElementById("confirmpassword");
+
+    if (!toggleConfirmPassword || !password) {
+        return;
+    }
+
+    toggleConfirmPassword.addEventListener("click", function () {
+        const isPassword = confirmpassword.type === "password";
+
+        confirmpassword.type = isPassword ? "text" : "password";
+
+        const icon = this.querySelector("i");
+
+        if (icon) {
+            icon.classList.toggle("bi-eye", !isPassword);
+            icon.classList.toggle("bi-eye-slash", isPassword);
+        }
+
+        this.setAttribute(
+            "aria-label",
+            isPassword ? "Hide password" : "Show password"
+        );
+    });
 });
 
 document.addEventListener('DOMContentLoaded', () => {

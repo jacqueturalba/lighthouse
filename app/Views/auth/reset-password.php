@@ -71,10 +71,8 @@
                 </div>
 
                 <form method="post">
-                  <input type="hidden" name="email" value="
-                    <?= e($email) ?>">
-                  <input type="hidden" name="token" value="
-                      <?= e($token) ?>">
+                  <input type="hidden" name="email" value="<?= e($email) ?>">
+                  <input type="hidden" name="token" value="<?= e($token) ?>">
 
                     <!-- NEW PASSWORD -->
                     <div class="lh-login-field">
@@ -117,7 +115,7 @@
                                 name="confirm_password"
                                 type="password"
                                 autocomplete="new-password"
-                                id="password"
+                                id="confirmpassword"
                                 placeholder="Enter your password"
                                 required
                             >
@@ -125,7 +123,7 @@
                             <button
                                 type="button"
                                 class="lh-password-toggle"
-                                id="togglePassword"
+                                id="toggleConfirmPassword"
                                 aria-label="Show password"
                             >
                                 <i class="bi bi-eye"></i>
