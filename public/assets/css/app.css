@@ -332,3 +332,125 @@ body {
   --bs-tooltip-bg: var(--bd-violet-bg);
   --bs-tooltip-color: var(--bs-white);
 }
+
+
+/* =========================================================
+   Promotion Kit Preview
+   ========================================================= */
+
+.promotion-kit-card {
+    overflow: hidden;
+}
+
+.promotion-kit-preview {
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+}
+
+.promotion-kit-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-light);
+}
+
+.promotion-kit-preview-stage {
+    position: relative;
+    flex: 1;
+    min-height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.promotion-kit-image-container {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+.promotion-kit-preview-image {
+    max-width: 100%;
+    max-height: 330px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transform-origin: center center;
+    transition: transform 0.2s ease;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.promotion-kit-preview-controls {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.6rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+    z-index: 2;
+}
+
+.promotion-kit-preview-pdf {
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    border: 0;
+    background: #fff;
+}
+
+.promotion-kit-no-preview {
+    text-align: center;
+    padding: 2rem;
+}
+
+@media (min-width: 992px) {
+    .border-start-lg {
+        border-left: 1px solid var(--bs-border-color);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .promotion-kit-preview {
+        min-height: 380px;
+    }
+
+    .promotion-kit-preview-stage {
+        min-height: 320px;
+    }
+
+    .promotion-kit-preview-pdf {
+        min-height: 380px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .promotion-kit-preview-controls {
+        max-width: calc(100% - 1.5rem);
+        overflow-x: auto;
+    }
+
+    .promotion-kit-preview-image {
+        max-height: 280px;
+    }
+}
+/* =========================================================
+   END Promotion Kit Preview
+   ========================================================= */

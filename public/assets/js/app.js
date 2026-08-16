@@ -18,3 +18,111 @@ if (lhModal) {
   })
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const viewers = document.querySelectorAll('[data-image-viewer]');
+
+    viewers.forEach((viewer) => {
+        const image = viewer.querySelector('[data-preview-image]');
+
+        if (!image) {
+            return;
+        }
+
+        const card = viewer.closest('.promotion-kit-card');
+
+        if (!card) {
+            return;
+        }
+
+        let scale = 1;
+        let rotation = 0;
+
+        const updateTransform = () => {
+            image.style.transform =
+                `scale(${scale}) rotate(${rotation}deg)`;
+        };
+
+        const reset = () => {
+            scale = 1;
+            rotation = 0;
+            updateTransform();
+        };
+
+        const zoomIn = () => {
+            scale = Math.min(scale + 0.2, 3);
+            updateTransform();
+        };
+
+        const zoomOut = () => {
+            scale = Math.max(scale - 0.2, 0.5);
+            updateTransform();
+        };
+
+        const rotate = () => {
+            rotation = (rotation + 90) % 360;
+            updateTransform();
+        };
+
+        const fullscreen = async () => {
+            const stage = card.querySelector(
+                '.promotion-kit-preview-stage'
+            );
+
+            if (!stage) {
+                return;
+            }
+
+            try {
+                if (!document.fullscreenElement) {
+                    await stage.requestFullscreen();
+                } else {
+                    await document.exitFullscreen();
+                }
+            } catch (error) {
+                console.error(
+                    'Unable to toggle fullscreen:',
+                    error
+                );
+            }
+        };
+
+        const buttons = card.querySelectorAll(
+            '[data-action]'
+        );
+
+        buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+                switch (button.dataset.action) {
+                    case 'zoom-in':
+                        zoomIn();
+                        break;
+
+                    case 'zoom-out':
+                        zoomOut();
+                        break;
+
+                    case 'rotate':
+                        rotate();
+                        break;
+
+                    case 'reset':
+                        reset();
+                        break;
+
+                    case 'fullscreen':
+                        fullscreen();
+                        break;
+                }
+            });
+        });
+
+        image.addEventListener('dblclick', reset);
+
+        image.addEventListener('dragstart', (event) => {
+            event.preventDefault();
+        });
+
+        reset();
+    });
+});
+

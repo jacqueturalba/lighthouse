@@ -323,7 +323,7 @@ final class PromotionKitRequestController
         
         $root = config('STORAGE_PATH', dirname(__DIR__, 2).'/storage');
         
-        $folder = 'promotion-kits'; $directory = rtrim($root, '/\\').DIRECTORY_SEPARATOR.$folder;
+        $folder = 'promotion-kits/images'; $directory = rtrim($root, '/\\').DIRECTORY_SEPARATOR.$folder;
         
         if (!is_dir($directory)) 
             mkdir($directory, 0700, true);

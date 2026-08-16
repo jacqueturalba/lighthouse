@@ -62,7 +62,7 @@ final class PageController
             $prid
         );
 
-        view('releases/press-releases', [
+        view('pressreleases/press-releases', [
             'title' => 'Press Releases',
             'allReleases' => PressRelease::getPressReleases(4, 0),
             'latestRelease' => $pagination['latest'],
@@ -91,7 +91,7 @@ final class PageController
             redirect('/press-releases');
         }
 
-        view('releases/press-release-edit', [
+        view('pressreleases/press-release-edit', [
             'title' => 'Press Releases',
             'pressRelease' => $pressRelease,
         ]);
@@ -99,7 +99,7 @@ final class PageController
 
     public function pressReleaseUpload(): void {
         require_super_admin();
-        view('releases/press-release-upload', ['title' => 'Add Press Release']);
+        view('pressreleases/press-release-upload', ['title' => 'Add Press Release']);
     }
 
     public function calendar(): void {
