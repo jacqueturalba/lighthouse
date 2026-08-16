@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="/assets/css/app.css" rel="stylesheet">
   </head>
-  <body class="<?= $_SERVER['REQUEST_URI'] === '/login' ? 'lh-login-page' : 'auth-class' ?>"> <?php if ($auth && $user): require __DIR__.'/navigation.php'; endif; ?>
+  <body class="<?= (in_array($_SERVER['REQUEST_URI'], ['/login', '/forgot-password', '/reset-password'])) ? 'lh-login-page' : 'auth-class' ?>"> <?php if ($auth && $user): require __DIR__.'/navigation.php'; endif; ?>
   <div id="page-loader" class="page-loader">
       <div class="spinner-border" role="status" aria-label="Loading"></div>
   </div>
