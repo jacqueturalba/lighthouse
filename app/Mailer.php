@@ -2,12 +2,76 @@
 declare(strict_types=1);
 require_once __DIR__.'/Bootstrap.php';
 
-function send_reset_email(string $to, string $token): void {
-  $url=rtrim(config('APP_URL','http://localhost:8000'),'/').'/reset-password?token='.rawurlencode($token).'&email='.rawurlencode($to);
-  $subject='Reset your '.config('APP_NAME','LIGHTHOUSE').' password'; $body="A password reset was requested. This link expires in ".config('PASSWORD_RESET_MINUTES','60')." minutes:\r\n\r\n{$url}\r\n\r\nIf you did not request this, ignore this message.";
-  $headers='From: '.config('MAIL_FROM_NAME','LIGHTHOUSE').' <'.config('MAIL_FROM_ADDRESS').">\r\nContent-Type: text/plain; charset=UTF-8";
-  if (!config('SMTP_HOST')) throw new RuntimeException('SMTP_HOST is required to send password reset emails.');
-  smtp_send($to, $subject, $body, $headers);
+function send_reset_email(string $to, string $token): void
+{
+    $url =
+        rtrim(config('APP_URL', 'http://localhost:8000'), '/') .
+        '/reset-password?token=' .
+        rawurlencode($token) .
+        '&email=' .
+        rawurlencode($to);
+
+    $appName = config('APP_NAME', 'LIGHTHOUSE');
+    $minutes = config('PASSWORD_RESET_MINUTES', '60');
+
+    $subject = 'Reset your ' . $appName . ' password';
+
+    $body = '
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+
+            <h2>' . e($appName) . ' Password Reset</h2>
+
+            <p>
+                A password reset was requested for your account.
+            </p>
+
+            <p>
+                Click the button below to create a new password.
+            </p>
+
+            <p>
+                <a
+                    href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '"
+                    style="
+                        display: inline-block;
+                        padding: 12px 20px;
+                        background: #0d6efd;
+                        color: #ffffff;
+                        text-decoration: none;
+                        border-radius: 6px;
+                    "
+                >
+                    Reset Password
+                </a>
+            </p>
+
+            <p>
+                This link expires in ' . (int) $minutes . ' minutes.
+            </p>
+
+            <p>
+                If you did not request a password reset, you can safely ignore this email.
+            </p>
+
+        </body>
+        </html>
+    ';
+
+    $headers =
+        'From: ' .
+        config('MAIL_FROM_NAME', 'LIGHTHOUSE') .
+        ' <' . config('MAIL_FROM_ADDRESS') . ">\r\n" .
+        'MIME-Version: 1.0' . "\r\n" .
+        'Content-Type: text/html; charset=UTF-8';
+
+    if (!config('SMTP_HOST')) {
+        throw new RuntimeException(
+            'SMTP_HOST is required to send password reset emails.'
+        );
+    }
+
+    smtp_send($to, $subject, $body, $headers);
 }
 function smtp_send(string $to, string $subject, string $body, string $headers): void {
   $host=config('SMTP_HOST'); if (!$host) throw new RuntimeException('SMTP_HOST is required outside local development.');
