@@ -7,7 +7,7 @@
 <section class="card lh-card">
     <div class="card-body p-4 p-lg-5">
         <form method="post" 
-              action="/press-release-upload" 
+              action="/press-release-new" 
               enctype="multipart/form-data" 
               class="row g-4">
 

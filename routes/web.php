@@ -33,7 +33,7 @@ $router->get('/static-1', [$pages, 'placeholder']);
 $router->get('/static-2', [$pages, 'placeholder']);
 
 $releases = new PressReleaseController();
-$router->post('/press-release-upload', [$releases, 'store']);
+$router->post('/press-release-new', [$releases, 'store']);
 $router->post('/press-release-edit', [$releases, 'update']);
 $router->post('/press-release-delete', [$releases, 'delete']);
 
