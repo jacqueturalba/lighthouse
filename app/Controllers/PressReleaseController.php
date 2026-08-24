@@ -81,10 +81,7 @@ final class PressReleaseController
             isset($file['error']) &&
             $file['error'] === UPLOAD_ERR_OK
         ) {
-            $root = config(
-                'STORAGE_PATH',
-                dirname(__DIR__, 2) . '/storage'
-            );
+            $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage';
 
             $folder = 'press-releases/images';
 
@@ -101,6 +98,7 @@ final class PressReleaseController
             );
 
             $stored = bin2hex(random_bytes(20)) . '.' . $extension;
+
             $path = $folder . '/' . $stored;
 
             if (
@@ -233,10 +231,7 @@ final class PressReleaseController
                 redirect('/press-release-edit?id=' . $id);
             }
 
-            $root = config(
-                'STORAGE_PATH',
-                dirname(__DIR__, 2) . '/storage'
-            );
+            $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage';
 
             $folder = 'press-releases/images';
 

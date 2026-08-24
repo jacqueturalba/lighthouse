@@ -160,12 +160,7 @@ final class PromotionKitRequestController
         /*
         * Resolve the file safely.
         */
-        $root = realpath(
-            config(
-                'STORAGE_PATH',
-                dirname(__DIR__, 2) . '/storage'
-            )
-        );
+        $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage';
 
         $file = $root
             ? realpath(
@@ -321,7 +316,7 @@ final class PromotionKitRequestController
             redirect('/promotion-kit-upload'); 
         }
         
-        $root = config('STORAGE_PATH', dirname(__DIR__, 2).'/storage');
+        $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage';
         
         $folder = 'promotion-kits/images'; $directory = rtrim($root, '/\\').DIRECTORY_SEPARATOR.$folder;
         

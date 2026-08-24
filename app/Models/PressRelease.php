@@ -221,10 +221,7 @@ final class PressRelease
             */
             if (!empty($pressRelease['cover_photo'])) {
 
-                $root = config(
-                    'STORAGE_PATH',
-                    dirname(__DIR__, 2) . '/storage'
-                );
+                $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage';
 
                 $filePath = rtrim($root, '/\\')
                     . DIRECTORY_SEPARATOR
