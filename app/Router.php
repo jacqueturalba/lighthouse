@@ -23,6 +23,6 @@ final class Router
             call_user_func($route['handler'], array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY));
             return;
         }
-        http_response_code(404); require __DIR__.'/View.php'; render('Not found','<p>The requested page does not exist.</p>',false);
+        http_response_code(404); require __DIR__.'/View.php'; render('Not found','<p class="bg-primary-subtle opacity-75 rounded p-4 text-primary-emphasis">The requested page does not exist.</p>',false);
     }
 }

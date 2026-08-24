@@ -18,7 +18,7 @@ final class PressReleaseController
         $links = $_POST['links'] ?? [];
 
         $file = $_FILES['cover_photo'] ?? null;
-
+        $path = '';
         $errors = [];
 
         if ($title === '' || mb_strlen($title) > 150) {
@@ -29,36 +29,43 @@ final class PressReleaseController
             $errors[] = 'Event date is required.';
         }
 
-        if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-            $errors[] = 'Choose a cover photo to upload.';
-        }
-
-        $allowed = [
-            'jpg'  => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'png'  => 'image/png',
-        ];
-
-        $extension = $file
-            ? strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION))
-            : '';
-
-        $mime = $file && is_uploaded_file($file['tmp_name'])
-            ? (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name'])
-            : '';
-
+        /*
+        * Cover photo is OPTIONAL.
+        * Only validate it if a file was actually uploaded.
+        */
         if (
             $file &&
-            (
-                !isset($allowed[$extension]) ||
-                $mime !== $allowed[$extension]
-            )
+            isset($file['error']) &&
+            $file['error'] !== UPLOAD_ERR_NO_FILE
         ) {
-            $errors[] = 'Only valid JPG, JPEG, or PNG files are allowed.';
-        }
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                $errors[] = 'There was a problem uploading the cover photo.';
+            } else {
+                $allowed = [
+                    'jpg'  => 'image/jpeg',
+                    'jpeg' => 'image/jpeg',
+                    'png'  => 'image/png',
+                ];
 
-        if ($file && (int) $file['size'] > 3 * 1024 * 1024) {
-            $errors[] = 'Files must be 3 MB or smaller.';
+                $extension = strtolower(
+                    pathinfo((string) $file['name'], PATHINFO_EXTENSION)
+                );
+
+                $mime = is_uploaded_file($file['tmp_name'])
+                    ? (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name'])
+                    : '';
+
+                if (
+                    !isset($allowed[$extension]) ||
+                    $mime !== $allowed[$extension]
+                ) {
+                    $errors[] = 'Only valid JPG, JPEG, or PNG files are allowed.';
+                }
+
+                if ((int) $file['size'] > 3 * 1024 * 1024) {
+                    $errors[] = 'Files must be 3 MB or smaller.';
+                }
+            }
         }
 
         if ($errors) {
@@ -66,32 +73,45 @@ final class PressReleaseController
             redirect('/press-release-upload');
         }
 
-        $root = config(
-            'STORAGE_PATH',
-            dirname(__DIR__, 2) . '/storage'
-        );
-
-        $folder = 'press-releases/images';
-
-        $directory = rtrim($root, '/\\')
-            . DIRECTORY_SEPARATOR
-            . $folder;
-
-        if (!is_dir($directory)) {
-            mkdir($directory, 0700, true);
-        }
-
-        $stored = bin2hex(random_bytes(20)) . '.' . $extension;
-        $path = $folder . '/' . $stored;
-
+        /*
+        * Store cover photo only when one was uploaded.
+        */
         if (
-            !move_uploaded_file(
-                $file['tmp_name'],
-                $directory . DIRECTORY_SEPARATOR . $stored
-            )
+            $file &&
+            isset($file['error']) &&
+            $file['error'] === UPLOAD_ERR_OK
         ) {
-            flash('error', 'The file could not be stored.');
-            redirect('/press-release-upload');
+            $root = config(
+                'STORAGE_PATH',
+                dirname(__DIR__, 2) . '/storage'
+            );
+
+            $folder = 'press-releases/images';
+
+            $directory = rtrim($root, '/\\')
+                . DIRECTORY_SEPARATOR
+                . $folder;
+
+            if (!is_dir($directory)) {
+                mkdir($directory, 0700, true);
+            }
+
+            $extension = strtolower(
+                pathinfo((string) $file['name'], PATHINFO_EXTENSION)
+            );
+
+            $stored = bin2hex(random_bytes(20)) . '.' . $extension;
+            $path = $folder . '/' . $stored;
+
+            if (
+                !move_uploaded_file(
+                    $file['tmp_name'],
+                    $directory . DIRECTORY_SEPARATOR . $stored
+                )
+            ) {
+                flash('error', 'The file could not be stored.');
+                redirect('/press-release-upload');
+            }
         }
 
         $data = [
@@ -106,9 +126,11 @@ final class PressReleaseController
             PressRelease::recordPR($data, $user);
         } catch (Throwable $e) {
 
-            @unlink(
-                $directory . DIRECTORY_SEPARATOR . $stored
-            );
+            if (!empty($path) && isset($directory, $stored)) {
+                @unlink(
+                    $directory . DIRECTORY_SEPARATOR . $stored
+                );
+            }
 
             flash(
                 'error',
