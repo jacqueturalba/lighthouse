@@ -24,9 +24,7 @@ final class StorageController
             }
         }
 
-        $root = realpath(
-            config('STORAGE_PATH', dirname(__DIR__, 2) . '/storage')
-        );
+        $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage';
 
         if (!$root) {
             http_response_code(404);
