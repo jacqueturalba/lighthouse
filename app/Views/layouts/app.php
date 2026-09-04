@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title> <?= e($title) ?> · LIGHTHOUSE</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="/assets/css/app.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css?v=<?= config('VERSION') ?>" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css?v=<?= config('VERSION') ?>" rel="stylesheet">
+    <link href="/assets/css/app.css?v=<?= config('VERSION') ?>" rel="stylesheet">
   </head>
   <body class="<?= (in_array(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), ['/login', '/forgot-password', '/reset-password'])) ? 'lh-login-page' : 'auth-class' ?>"> <?php if ($auth && $user): require __DIR__.'/navigation.php'; endif; ?>
   <div id="page-loader" class="page-loader">
@@ -44,8 +44,8 @@
         }
     });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js?v=<?= config('VERSION') ?>"></script>
+    <script src="/assets/js/app.js?v=<?= config('VERSION') ?>"></script>
     <?php require __DIR__.'/pr-modal-delete.php'; ?>
   </body>
 </html>
