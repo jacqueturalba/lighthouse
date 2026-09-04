@@ -6,7 +6,8 @@
   --lh-muted: #6c7a90;
   --lh-surface: #f6f8fc;
   --lh-radius: 14px;
-  --lh-shadow: 0 8px 28px rgba(20, 93, 160, 0.09);
+  --lh-shadow: 0 0 0 rgba(20, 93, 160, 0.09);
+  /* --lh-shadow: 0 8px 28px rgba(20, 93, 160, 0.09); */
 
   /* UI Colors */
   --lh-dashboard-blue: rgb(82, 126, 223);

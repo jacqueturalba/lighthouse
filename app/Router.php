@@ -13,7 +13,11 @@ final class Router
     private function add(string $method, string $path, callable|array $handler): void { $this->routes[] = compact('method','path','handler'); }
     public function dispatch(string $method, string $uri): void
     {
-        $path = parse_url($uri, PHP_URL_PATH) ?: '/';
+		$path = parse_url($uri, PHP_URL_PATH) ?: '/';
+
+		if ($path !== '/') {
+			$path = rtrim($path, '/');
+		}
 
         foreach ($this->routes as $route) {
 
