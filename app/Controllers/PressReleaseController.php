@@ -62,8 +62,8 @@ final class PressReleaseController
                     $errors[] = 'Only valid JPG, JPEG, or PNG files are allowed.';
                 }
 
-                if ((int) $file['size'] > 3 * 1024 * 1024) {
-                    $errors[] = 'Files must be 3 MB or smaller.';
+                if ((int) $file['size'] > 8 * 1024 * 1024) {
+                    $errors[] = 'Files must be 8 MB or smaller.';
                 }
             }
         }
@@ -222,10 +222,10 @@ final class PressReleaseController
                 redirect('/press-release-edit?id=' . $id);
             }
 
-            if ((int) $newFile['size'] > 3 * 1024 * 1024) {
+            if ((int) $newFile['size'] > 8 * 1024 * 1024) {
                 flash(
                     'error',
-                    'Files must be 3 MB or smaller.'
+                    'Files must be 8 MB or smaller.'
                 );
 
                 redirect('/press-release-edit?id=' . $id);
