@@ -26,7 +26,7 @@
                 <div class="col-12 mb-3">
                     <label class="form-label" for="file">Cover Photo</label>
                     <input class="form-control" id="cover_photo" name="cover_photo" type="file" accept=".jpg,.jpeg,.png" >
-                    <div class="form-text">JPGE, JPG, PNG. Maximum file size: 3 MB.</div>
+                    <div class="form-text">JPGE, JPG, PNG. Maximum file size: 8 MB.</div>
                 </div>
             </div>
             <div class="col-xl-6 col-lg-6 col-sm-12">

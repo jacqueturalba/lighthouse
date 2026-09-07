@@ -105,6 +105,9 @@ body {
   box-shadow: var(--lh-shadow);
   padding: 1.5rem;
 }
+.lh-card-pr {
+    height: 360px;
+}
 .lh-card-title {
   font-size: 0.9rem;
   color: var(--lh-muted);
@@ -1239,14 +1242,14 @@ body {
 }
 
 .press-release-image-container {
-    max-height: 250px;
+    height: 250px;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 .press-release-image-container-min {
-    max-height: 100px;
+    height: 100px;
     overflow: hidden;
     display: flex;
     justify-content: center;

@@ -47,20 +47,20 @@
 
                     <div class="col-12">
 
-                        <article class="lh-card">
+                        <article class="lh-card lh-card-pr">
 
                             <div class="row g-4 h-100">
 
                                 <!-- ========================================= -->
                                 <!-- COLUMN 1: PRESS RELEASE                  -->
                                 <!-- ========================================= -->
-                                <div class="col-lg-8 col-md-7 col-12 d-flex">
+                                <div class="col-lg-8 col-md-7 col-12 d-flex h-100">
                                     <div class="card border-0 h-100 w-100 d-flex flex-column">
 
                                         <div class="row g-0">
 
                                             <!-- Cover Photo -->
-                                            <div class="col-lg-5 col-md-12">
+                                            <div class="col-lg-5 col-md-12 align-middle">
 
                                                 <div class="press-release-image-container rounded">
 
@@ -72,7 +72,7 @@
                                                                 ENT_QUOTES,
                                                                 'UTF-8'
                                                             ) ?>"
-                                                            class="card-img-top img-fluid rounded"
+                                                            class="card-img-top img-fluid img-thumbnail w-100 h-100 object-fit-cover rounded"
                                                             alt="<?= htmlspecialchars(
                                                                 $pressRelease['title'],
                                                                 ENT_QUOTES,
@@ -306,7 +306,7 @@
                                 <!-- COLUMN 2: MEDIA / ARTICLE LINKS         -->
                                 <!-- ========================================= -->
 
-                                <div class="col-lg-4 col-md-5 col-12">
+                                <div class="col-lg-4 col-md-5 col-12 h-100">
 
                                     <div class="h-100">
 
@@ -329,14 +329,7 @@
 
                                         <?php else: ?>
 
-                                            <div
-                                                class="press-release-links"
-                                                style="
-                                                    max-height: 420px;
-                                                    overflow-y: auto;
-                                                    overflow-x: hidden;
-                                                "
-                                            >
+                                            <div class="press-release-links" style="max-height: 250px;overflow-y: auto;overflow-x: hidden;">
 
                                                 <div class="list-group">
 

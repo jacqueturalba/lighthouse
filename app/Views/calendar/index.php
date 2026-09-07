@@ -57,6 +57,27 @@ $today = date('Y-m-d');
       <?php endfor; ?>
       </div>
     </section>
+    <section>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Coming up</h2>
+        <span class="badge text-bg-light"><?= count($upcoming) ?> listed</span>
+      </div>
+      <div class="d-grid gap-2">
+        <?php foreach ($upcoming as $event): ?>
+          <a class="lh-card p-3 text-decoration-none" href="/events/<?= (int)$event['id'] ?>">
+            <div class="small text-primary fw-semibold"><?= e(date('D, M j', strtotime($event['event_date']))) ?></div>
+            <div class="fw-semibold text-dark mt-1"><?= e($event['title']) ?></div>
+            <div class="small text-secondary mt-1">
+              <i class="bi bi-geo-alt me-1"></i>
+              <?= e($event['location']) ?>
+            </div>
+          </a>
+        <?php endforeach; 
+          if (!$upcoming): ?>
+            <div class="lh-card p-4 text-secondary">No upcoming events yet.</div>
+          <?php endif; ?>
+      </div>
+    </section>
   </div>
   <div class="col-xl-4">
     <section class="lh-card p-4 mb-4">
@@ -108,26 +129,6 @@ $today = date('Y-m-d');
         </div>
       </section>
     <?php endif; ?>
-    <section>
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h5 mb-0">Coming up</h2>
-        <span class="badge text-bg-light"><?= count($upcoming) ?> listed</span>
-      </div>
-      <div class="d-grid gap-2">
-        <?php foreach ($upcoming as $event): ?>
-          <a class="lh-card p-3 text-decoration-none" href="/events/<?= (int)$event['id'] ?>">
-            <div class="small text-primary fw-semibold"><?= e(date('D, M j', strtotime($event['event_date']))) ?></div>
-            <div class="fw-semibold text-dark mt-1"><?= e($event['title']) ?></div>
-            <div class="small text-secondary mt-1">
-              <i class="bi bi-geo-alt me-1"></i>
-              <?= e($event['location']) ?>
-            </div>
-          </a>
-        <?php endforeach; 
-          if (!$upcoming): ?>
-            <div class="lh-card p-4 text-secondary">No upcoming events yet.</div>
-          <?php endif; ?>
-        </div>
-      </section>
+
   </div>
 </div>
