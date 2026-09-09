@@ -133,27 +133,109 @@ $today = date('Y-m-d');
 <div class="lh-card p-4 text-secondary">No events scheduled for this day.</div>
 <?php endif;?>
 </section>
-    <section>
-      <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
-        <h2 class="h5 mb-0">Coming up</h2>
-        <span class="badge text-bg-light"><?= count($upcoming['items']) ?> listed</span>
-      </div>
-      <div class="d-grid gap-2">
+
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+
+        <h2 class="h5 mb-0">
+            Coming up
+        </h2>
+
+        <span
+            class="badge text-bg-light"
+            id="upcoming-total"
+        >
+            <?= (int)$upcoming['total'] ?> total
+        </span>
+
+    </div>
+
+
+    <div
+        id="upcoming-list"
+        class="d-grid gap-2"
+    >
+
         <?php foreach ($upcoming['items'] as $event): ?>
-          <a class="lh-card p-3 text-decoration-none" href="/events/<?= (int)$event['id'] ?>">
-            <div class="small text-primary fw-semibold"><?= e(date('D, M j', strtotime($event['event_date']))) ?></div>
-            <div class="fw-semibold text-dark mt-1"><?= e($event['title']) ?></div>
-            <div class="small text-secondary mt-1">
-              <i class="bi bi-geo-alt me-1"></i>
-              <?= e($event['location']) ?>
-            </div>
-          </a>
-        <?php endforeach; 
-          if (!$upcoming['items']): ?>
-            <div class="lh-card p-4 text-secondary">No upcoming events yet.</div>
-          <?php endif; ?>
+
+            <a
+                class="lh-card p-3 text-decoration-none"
+                href="/events/<?= (int)$event['id'] ?>"
+            >
+
+                <div class="small text-primary fw-semibold">
+                    <?= e(date(
+                        'D, M j',
+                        strtotime($event['event_date'])
+                    )) ?>
+                </div>
+
+                <div class="fw-semibold text-dark mt-1">
+                    <?= e($event['title']) ?>
+                </div>
+
+                <div class="small text-secondary mt-1">
+                    <i class="bi bi-geo-alt me-1"></i>
+                    <?= e($event['location']) ?>
+                </div>
+
+            </a>
+
+        <?php endforeach; ?>
+
+    </div>
+
+
+    <div
+        id="upcoming-empty"
+        class="lh-card p-4 text-secondary <?= $upcoming['items'] ? 'd-none' : '' ?>"
+    >
+        No upcoming events yet.
+    </div>
+
+
+    <?php if ($upcoming['pages'] > 1): ?>
+
+        <div
+            class="d-flex justify-content-between align-items-center mt-3"
+            id="upcoming-pagination"
+        >
+
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                id="upcoming-prev"
+                <?= $upcoming['page'] <= 1 ? 'disabled' : '' ?>
+            >
+                <i class="bi bi-chevron-left"></i>
+                Previous
+            </button>
+
+
+            <span
+                class="small text-secondary"
+                id="upcoming-page-info"
+            >
+                Page <?= (int)$upcoming['page'] ?>
+                of <?= (int)$upcoming['pages'] ?>
+            </span>
+
+
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary"
+                id="upcoming-next"
+                <?= $upcoming['page'] >= $upcoming['pages'] ? 'disabled' : '' ?>
+            >
+                Next
+                <i class="bi bi-chevron-right"></i>
+            </button>
+
         </div>
-      </section>
+
+    <?php endif; ?>
+
+</section>
 </div>
 <div class="col-xl-4">
     <section class="lh-card p-4 mb-4">
@@ -195,39 +277,585 @@ $today = date('Y-m-d');
     </section>
 
     <?php if ($pending['items']): ?>
-      <section class="mb-4">
+    <section class="mb-4">
+
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="h5 mb-0">Pending submissions</h2>
-          <span class="badge text-bg-warning">
-            <?= count($pending['items']) ?>
-          </span>
-        </div>
-        <div class="d-grid gap-2">
-          <?php foreach ($pending['items'] as $ev): ?>
-              <a class="lh-card p-3 text-decoration-none" href="/events/<?= (int)$ev['id'] ?>">
-                  <div class="small text-warning-emphasis fw-semibold">
-                      Pending review · <?= e(date('M j, Y', strtotime($ev['event_date']))) ?>
-                  </div>
 
-                  <div class="fw-semibold text-dark mt-1">
-                      <?= e($ev['title']) ?>
-                  </div>
+            <h2 class="h5 mb-0">
+                Pending submissions
+            </h2>
 
-                  <div class="small text-secondary mt-1">
-                      <?= e($ev['location']) ?>
-                  </div>
-              </a>
-          <?php endforeach; ?>
+            <span
+                class="badge text-bg-warning"
+                id="pending-total"
+            >
+                <?= (int)$pending['total'] ?>
+            </span>
+
         </div>
-      </section>
+
+
+        <div
+            class="d-grid gap-2"
+            id="pending-list"
+        >
+
+            <?php foreach ($pending['items'] as $ev): ?>
+
+                <a
+                    class="lh-card p-3 text-decoration-none"
+                    href="/events/<?= (int)$ev['id'] ?>"
+                >
+
+                    <div class="small text-warning-emphasis fw-semibold">
+
+                        Pending review ·
+                        <?= e(date(
+                            'M j, Y',
+                            strtotime($ev['event_date'])
+                        )) ?>
+
+                    </div>
+
+
+                    <div class="fw-semibold text-dark mt-1">
+                        <?= e($ev['title']) ?>
+                    </div>
+
+
+                    <div class="small text-secondary mt-1">
+                        <?= e($ev['location']) ?>
+                    </div>
+
+                </a>
+
+            <?php endforeach; ?>
+
+        </div>
+
+
+        <div
+            id="pending-empty"
+            class="lh-card p-4 text-secondary <?= $pending['items'] ? 'd-none' : '' ?>"
+        >
+            No pending submissions.
+        </div>
+
+
+        <?php if ($pending['pages'] > 1): ?>
+
+            <div
+                class="d-flex justify-content-between align-items-center mt-3"
+                id="pending-pagination"
+            >
+
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    id="pending-prev"
+                    <?= $pending['page'] <= 1 ? 'disabled' : '' ?>
+                >
+                    <i class="bi bi-chevron-left"></i>
+                    Previous
+                </button>
+
+
+                <span
+                    class="small text-secondary"
+                    id="pending-page-info"
+                >
+                    Page <?= (int)$pending['page'] ?>
+                    of <?= (int)$pending['pages'] ?>
+                </span>
+
+
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    id="pending-next"
+                    <?= $pending['page'] >= $pending['pages'] ? 'disabled' : '' ?>
+                >
+                    Next
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+
+            </div>
+
+        <?php endif; ?>
+
+    </section>
     <?php endif; ?>
 </div>
 </div>
 <script>
-document.querySelector('[data-org]').onchange=function(){
-  let i=document.querySelector('[data-custom]');
-  i.classList.toggle('d-none',this.value!=='__other__');
-  i.required=this.value==='__other__';
-}
+document.addEventListener('DOMContentLoaded', function () {
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Escape HTML
+    |--------------------------------------------------------------------------
+    */
+
+    function escapeHtml(value) {
+
+        const div = document.createElement('div');
+
+        div.textContent = value ?? '';
+
+        return div.innerHTML;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Format date
+    |--------------------------------------------------------------------------
+    */
+
+    function formatUpcomingDate(date) {
+
+        return new Date(date + 'T00:00:00')
+            .toLocaleDateString(
+                'en-US',
+                {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                }
+            );
+    }
+
+
+    function formatPendingDate(date) {
+
+        return new Date(date + 'T00:00:00')
+            .toLocaleDateString(
+                'en-US',
+                {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                }
+            );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Generic loader
+    |--------------------------------------------------------------------------
+    */
+
+    async function loadEvents(type, page) {
+
+        const params = new URLSearchParams(
+            window.location.search
+        );
+
+        params.set('ajax', '1');
+        params.set('type', type);
+        params.set('page', page);
+
+
+        if (type === 'pending') {
+
+            params.delete('pending_page');
+
+        }
+
+
+        try {
+
+            const response = await fetch(
+                '/calendar?' + params.toString(),
+                {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }
+            );
+
+
+            if (!response.ok) {
+                throw new Error('Failed to load events.');
+            }
+
+
+            return await response.json();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            return null;
+        }
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Upcoming
+    |--------------------------------------------------------------------------
+    */
+
+    let upcomingPage =
+        <?= (int)$upcoming['page'] ?>;
+
+
+    const upcomingPrev =
+        document.getElementById('upcoming-prev');
+
+    const upcomingNext =
+        document.getElementById('upcoming-next');
+
+
+    async function renderUpcoming(page) {
+
+        const list =
+            document.getElementById('upcoming-list');
+
+        if (!list) return;
+
+
+        list.style.opacity = '0.5';
+        list.style.pointerEvents = 'none';
+
+
+        const data =
+            await loadEvents('upcoming', page);
+
+
+        list.style.opacity = '';
+        list.style.pointerEvents = '';
+
+
+        if (!data) return;
+
+
+        upcomingPage = data.page;
+
+
+        document.getElementById(
+            'upcoming-total'
+        ).textContent =
+            data.total + ' total';
+
+
+        document.getElementById(
+            'upcoming-page-info'
+        ).textContent =
+            'Page ' +
+            data.page +
+            ' of ' +
+            data.pages;
+
+
+        const empty =
+            document.getElementById('upcoming-empty');
+
+
+        if (!data.items.length) {
+
+            list.innerHTML = '';
+
+            empty.classList.remove('d-none');
+
+        } else {
+
+            empty.classList.add('d-none');
+
+
+            list.innerHTML =
+                data.items.map(event => `
+
+                    <a
+                        class="lh-card p-3 text-decoration-none"
+                        href="/events/${Number(event.id)}"
+                    >
+
+                        <div class="small text-primary fw-semibold">
+                            ${formatUpcomingDate(event.event_date)}
+                        </div>
+
+                        <div class="fw-semibold text-dark mt-1">
+                            ${escapeHtml(event.title)}
+                        </div>
+
+                        <div class="small text-secondary mt-1">
+
+                            <i class="bi bi-geo-alt me-1"></i>
+
+                            ${escapeHtml(event.location)}
+
+                        </div>
+
+                    </a>
+
+                `).join('');
+        }
+
+
+        if (upcomingPrev) {
+            upcomingPrev.disabled = data.page <= 1;
+        }
+
+        if (upcomingNext) {
+            upcomingNext.disabled =
+                data.page >= data.pages;
+        }
+
+
+        /*
+        | Keep browser URL clean and updated
+        */
+
+        const url =
+            new URL(window.location);
+
+        url.searchParams.set(
+            'page',
+            data.page
+        );
+
+        history.replaceState(
+            {},
+            '',
+            url
+        );
+    }
+
+
+    if (upcomingPrev) {
+
+        upcomingPrev.addEventListener(
+            'click',
+            () => {
+
+                if (upcomingPage > 1) {
+
+                    renderUpcoming(
+                        upcomingPage - 1
+                    );
+                }
+
+            }
+        );
+    }
+
+
+    if (upcomingNext) {
+
+        upcomingNext.addEventListener(
+            'click',
+            () => {
+
+                renderUpcoming(
+                    upcomingPage + 1
+                );
+
+            }
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pending
+    |--------------------------------------------------------------------------
+    */
+
+    let pendingPage =
+        <?= (int)$pending['page'] ?>;
+
+
+    const pendingPrev =
+        document.getElementById('pending-prev');
+
+    const pendingNext =
+        document.getElementById('pending-next');
+
+
+    async function renderPending(page) {
+
+        const list =
+            document.getElementById('pending-list');
+
+        if (!list) return;
+
+
+        list.style.opacity = '0.5';
+        list.style.pointerEvents = 'none';
+
+
+        const data =
+            await loadEvents('pending', page);
+
+
+        list.style.opacity = '';
+        list.style.pointerEvents = '';
+
+
+        if (!data) return;
+
+
+        pendingPage = data.page;
+
+
+        document.getElementById(
+            'pending-total'
+        ).textContent = data.total;
+
+
+        document.getElementById(
+            'pending-page-info'
+        ).textContent =
+            'Page ' +
+            data.page +
+            ' of ' +
+            data.pages;
+
+
+        const empty =
+            document.getElementById('pending-empty');
+
+
+        if (!data.items.length) {
+
+            list.innerHTML = '';
+
+            empty.classList.remove('d-none');
+
+        } else {
+
+            empty.classList.add('d-none');
+
+
+            list.innerHTML =
+                data.items.map(event => `
+
+                    <a
+                        class="lh-card p-3 text-decoration-none"
+                        href="/events/${Number(event.id)}"
+                    >
+
+                        <div
+                            class="small text-warning-emphasis fw-semibold"
+                        >
+
+                            Pending review ·
+                            ${formatPendingDate(event.event_date)}
+
+                        </div>
+
+
+                        <div
+                            class="fw-semibold text-dark mt-1"
+                        >
+                            ${escapeHtml(event.title)}
+                        </div>
+
+
+                        <div
+                            class="small text-secondary mt-1"
+                        >
+                            ${escapeHtml(event.location)}
+                        </div>
+
+                    </a>
+
+                `).join('');
+        }
+
+
+        if (pendingPrev) {
+            pendingPrev.disabled = data.page <= 1;
+        }
+
+        if (pendingNext) {
+            pendingNext.disabled =
+                data.page >= data.pages;
+        }
+
+
+        const url =
+            new URL(window.location);
+
+        url.searchParams.set(
+            'pending_page',
+            data.page
+        );
+
+        history.replaceState(
+            {},
+            '',
+            url
+        );
+    }
+
+
+    if (pendingPrev) {
+
+        pendingPrev.addEventListener(
+            'click',
+            () => {
+
+                if (pendingPage > 1) {
+
+                    renderPending(
+                        pendingPage - 1
+                    );
+                }
+
+            }
+        );
+    }
+
+
+    if (pendingNext) {
+
+        pendingNext.addEventListener(
+            'click',
+            () => {
+
+                renderPending(
+                    pendingPage + 1
+                );
+
+            }
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Existing organizer field
+    |--------------------------------------------------------------------------
+    */
+
+    const organizerSelect =
+        document.querySelector('[data-org]');
+
+
+    if (organizerSelect) {
+
+        organizerSelect.onchange = function () {
+
+            const custom =
+                document.querySelector('[data-custom]');
+
+            custom.classList.toggle(
+                'd-none',
+                this.value !== '__other__'
+            );
+
+            custom.required =
+                this.value === '__other__';
+        };
+    }
+
+
+});
 </script>
 

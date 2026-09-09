@@ -44,7 +44,7 @@ final class PEvent
             $a[] = $oid;
         }
         if ($status === "pending" && $uid) {
-            $w[] = "(e.submitted_by=? OR e.event_date>=CURDATE())";
+            $w[] = "e.submitted_by=?";
             $a[] = $uid;
         }
         $where = " WHERE " . implode(" AND ", $w);

@@ -104,61 +104,206 @@ final class PageController
         view('pressreleases/press-release-upload', ['title' => 'Add Press Release']);
     }
 
-    public function calendar(): void {
-        $user=require_auth();
+    public function calendar(): void
+    {
+        $user = require_auth();
+
         $month = trim((string)($_GET['month'] ?? date('Y-m')));
-        $date = DateTimeImmutable::createFromFormat('!Y-m', $month) ?: new DateTimeImmutable('first day of this month');
-        $month = $date->format('Y-m');
-        $view = isset($_GET['view']) && in_array($_GET['view'], ['month', 'week', 'day'], true) ? $_GET['view'] : 'month';
-        
-        $selected=DateTimeImmutable::createFromFormat('!Y-m-d',(string)($_GET['selected']??date('Y-m-d'))) ?: new DateTimeImmutable('today');
 
-        if($view==='week'){
-            $from=$selected->modify('-'.((int)$selected->format('N')-1).' days');$to=$from->modify('+6 days');
-        }elseif($view==='day'){
-            $from=$to=$selected;
-        }else{
-            $from=$date->modify('first day of this month')->modify('-'.((int)$date->format('N')-1).' days');
-            $to=$date->modify('last day of this month')->modify('+'.(7-(int)$date->modify('last day of this month')->format('N')).' days');
+        $date = DateTimeImmutable::createFromFormat('!Y-m', $month)
+            ?: new DateTimeImmutable('first day of this month');
+
+        $month = $date->format('Y-m');
+
+        $view = isset($_GET['view'])
+            && in_array($_GET['view'], ['month', 'week', 'day'], true)
+            ? $_GET['view']
+            : 'month';
+
+        $selected = DateTimeImmutable::createFromFormat(
+            '!Y-m-d',
+            (string)($_GET['selected'] ?? date('Y-m-d'))
+        ) ?: new DateTimeImmutable('today');
+
+
+        if ($view === 'week') {
+
+            $from = $selected->modify(
+                '-' . ((int)$selected->format('N') - 1) . ' days'
+            );
+
+            $to = $from->modify('+6 days');
+
+        } elseif ($view === 'day') {
+
+            $from = $to = $selected;
+
+        } else {
+
+            $from = $date
+                ->modify('first day of this month')
+                ->modify('-' . ((int)$date->format('N') - 1) . ' days');
+
+            $lastDay = $date->modify('last day of this month');
+
+            $to = $lastDay->modify(
+                '+' . (7 - (int)$lastDay->format('N')) . ' days'
+            );
         }
-        $oid=(int)($_GET['organizer']??0);
-        $oid=$oid > 0 && Organizer::exists($oid) ? $oid : null;
-
-        $per=(string)($_GET['per_page']??'5');
-        $limit=in_array($per,['5','10','50','100','all'],true)?($per==='all'?null:(int)$per):5;
-        $pper=(string)($_GET['pending_per_page']??'5');
-        $plimit=in_array($pper,['5','10','50','100','all'],true)?($pper==='all'?null:(int)$pper):5;
-        
-        view('calendar/index',
-                ['title'=>'Calendar',
-                 'month'=>$month,
-                 'monthDate'=>$date,
-                 'gridStart'=>$from,
-                 'gridEnd'=>$to,
-                 'view'=>$view,
-                 'selected'=>$selected,
-                 'organizerId'=>$oid,
-                 'organizers'=>Organizer::all(),
-                 'events'=>PEvent::calendar($from->format('Y-m-d'),$to->format('Y-m-d'),$oid),
-                 'upcoming'=>PEvent::paginated('approved',max(1,(int)($_GET['page']??1)),$limit,$oid),
-                 'pending'=>PEvent::paginated('pending',max(1,(int)($_GET['pending_page']??1)),$plimit,$oid,(int)$user['id']),
-                 'per'=>$per,
-                 'pper'=>$pper]);
 
 
-        /*$month = trim((string)($_GET['month'] ?? date('Y-m')));
-        $date = DateTimeImmutable::createFromFormat('!Y-m', $month) ?: new DateTimeImmutable('first day of this month');
-        $month = $date->format('Y-m');
-        $from = $date->modify('first day of this month')->modify('-'.((int)$date->format('N') - 1).' days');
-        $to = $date->modify('last day of this month')->modify('+'.(7 - (int)$date->modify('last day of this month')->format('N')).' days');
-        view('calendar/index', ['title'=>'Calendar', 
-                                'month'=>$month, 
-                                'monthDate'=>$date, 
-                                'gridStart'=>$from, 
-                                'gridEnd'=>$to, 
-                                'events'=>PEvent::month($from->format('Y-m-d'), $to->format('Y-m-d')), 
-                                'upcoming'=>PEvent::upcoming(), 'mine'=>PEvent::mine((int)current_user()['id']), 
-                                'pending'=>PEvent::pendingVisible((int)current_user()['id'])]);*/
+        $oid = (int)($_GET['organizer'] ?? 0);
+
+        $oid = $oid > 0 && Organizer::exists($oid)
+            ? $oid
+            : null;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pagination settings
+        |--------------------------------------------------------------------------
+        */
+
+        $per = (string)($_GET['per_page'] ?? '5');
+
+        $limit = in_array(
+            $per,
+            ['5', '10', '50', '100', 'all'],
+            true
+        )
+            ? ($per === 'all' ? null : (int)$per)
+            : 5;
+
+
+        $pper = (string)($_GET['pending_per_page'] ?? '5');
+
+        $plimit = in_array(
+            $pper,
+            ['5', '10', '50', '100', 'all'],
+            true
+        )
+            ? ($pper === 'all' ? null : (int)$pper)
+            : 5;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AJAX pagination
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            isset($_GET['ajax'])
+            && $_GET['ajax'] === '1'
+        ) {
+
+            $type = $_GET['type'] ?? '';
+
+            header('Content-Type: application/json; charset=utf-8');
+
+
+            if ($type === 'upcoming') {
+
+                $page = max(1, (int)($_GET['page'] ?? 1));
+
+                echo json_encode(
+                    PEvent::paginated(
+                        'approved',
+                        $page,
+                        $limit,
+                        $oid
+                    )
+                );
+
+                exit;
+            }
+
+
+            if ($type === 'pending') {
+
+                $page = max(1, (int)($_GET['page'] ?? 1));
+
+                echo json_encode(
+                    PEvent::paginated(
+                        'pending',
+                        $page,
+                        $plimit,
+                        $oid,
+                        (int)$user['id']
+                    )
+                );
+
+                exit;
+            }
+
+
+            http_response_code(400);
+
+            echo json_encode([
+                'error' => 'Invalid pagination type.'
+            ]);
+
+            exit;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Normal page render
+        |--------------------------------------------------------------------------
+        */
+
+        $upcomingPage = max(
+            1,
+            (int)($_GET['page'] ?? 1)
+        );
+
+        $pendingPage = max(
+            1,
+            (int)($_GET['pending_page'] ?? 1)
+        );
+
+
+        view('calendar/index', [
+            'title' => 'Calendar',
+
+            'month' => $month,
+            'monthDate' => $date,
+
+            'gridStart' => $from,
+            'gridEnd' => $to,
+
+            'view' => $view,
+            'selected' => $selected,
+
+            'organizerId' => $oid,
+            'organizers' => Organizer::all(),
+
+            'events' => PEvent::calendar(
+                $from->format('Y-m-d'),
+                $to->format('Y-m-d'),
+                $oid
+            ),
+
+            'upcoming' => PEvent::paginated(
+                'approved',
+                $upcomingPage,
+                $limit,
+                $oid
+            ),
+
+            'pending' => PEvent::paginated(
+                'pending',
+                $pendingPage,
+                $plimit,
+                $oid,
+                (int)$user['id']
+            ),
+
+            'per' => $per,
+            'pper' => $pper
+        ]);
     }
 
     public function eventDetail(array $params): void {
