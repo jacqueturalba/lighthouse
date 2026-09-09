@@ -1,57 +1,12 @@
 <?php
 declare(strict_types=1);
-
-require_once dirname(__DIR__).'/View.php';
-require_once dirname(__DIR__).'/Models/PEvent.php';
-
-final class EventController
-{
-    public function store(): void
-    {
-        $user = require_auth();
-        csrf();
-        $data = $this->validated($_POST);
-        if ($data['error']) { flash('error', $data['error']); redirect('/calendar'); }
-        PEvent::create($data, (int)$user['id']);
-        log_event('event_submitted', ['user_id' => $user['id']]);
-        flash('success', 'Event submitted for review.');
-        redirect('/calendar');
-    }
-
-    public function review(array $params): void
-    {
-        $reviewer = require_super_admin();
-        csrf();
-        $status = ($_POST['status'] ?? '') === 'approved' ? 'approved' : 'rejected';
-        $reason = trim((string)($_POST['reason'] ?? ''));
-        if ($status === 'rejected' && $reason === '') { flash('error', 'A rejection reason is required.'); redirect('/event-review'); }
-        PEvent::review((int)$params['id'], $status, (int)$reviewer['id'], $reason ?: null);
-        log_event('event_'.$status, ['event_id' => (int)$params['id'], 'reviewer_id' => $reviewer['id']]);
-        flash('success', 'Event '.$status.'.');
-        redirect('/event-review');
-    }
-
-    private function validated(array $input): array
-    {
-        $title = trim((string)($input['title'] ?? ''));
-        $description = trim((string)($input['description'] ?? ''));
-        $date = trim((string)($input['event_date'] ?? ''));
-        $location = trim((string)($input['location'] ?? ''));
-        $organizer = trim((string)($input['organizer'] ?? ''));
-        $website = trim((string)($input['website_url'] ?? ''));
-        $start = trim((string)($input['start_time'] ?? ''));
-        $end = trim((string)($input['end_time'] ?? ''));
-        $errors = [];
-        if ($title === '' || mb_strlen($title) > 180) $errors[] = 'Enter an event title under 180 characters.';
-        if ($description === '') $errors[] = 'Add an event description.';
-        $dateObject = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
-        if (!$dateObject || $dateObject->format('Y-m-d') !== $date) $errors[] = 'Choose a valid event date.';
-        if ($location === '' || mb_strlen($location) > 180) $errors[] = 'Enter a location under 180 characters.';
-        if ($organizer === '' || mb_strlen($organizer) > 160) $errors[] = 'Enter an organizer under 160 characters.';
-        if ($website !== '' && !filter_var($website, FILTER_VALIDATE_URL)) $errors[] = 'Enter a valid website URL.';
-        if ($start !== '' && !preg_match('/^([01]\\d|2[0-3]):[0-5]\\d$/', $start)) $errors[] = 'Enter a valid start time.';
-        if ($end !== '' && !preg_match('/^([01]\\d|2[0-3]):[0-5]\\d$/', $end)) $errors[] = 'Enter a valid end time.';
-        if ($start !== '' && $end !== '' && $end <= $start) $errors[] = 'End time must be after start time.';
-        return ['title'=>$title, 'description'=>$description, 'event_date'=>$date, 'start_time'=>$start, 'end_time'=>$end, 'location'=>$location, 'organizer'=>$organizer, 'website_url'=>$website, 'material_request'=>trim((string)($input['material_request'] ?? '')), 'error'=>implode(' ', $errors)];
-    }
+require_once dirname(__DIR__).'/View.php'; require_once dirname(__DIR__).'/Models/PEvent.php'; require_once dirname(__DIR__).'/Models/Organizer.php';
+final class EventController {
+ public function store():void{$u=require_auth();csrf();try{$d=$this->validated($_POST);PEvent::create($d,(int)$u['id']);log_event('event_submitted',['user_id'=>$u['id']]);flash('success','Event submitted for review.');}catch(Throwable $e){flash('error',$e->getMessage());}redirect('/calendar');}
+ public function update(array $p):void{$u=require_auth();csrf();$event=PEvent::find((int)$p['id']);if(!$event||(!$this->mayEdit($event,$u))){http_response_code(403);render('Access denied','<p>You do not have permission to update this event.</p>');return;}try{PEvent::update((int)$event['id'],$this->validated($_POST));flash('success','Event updated.');}catch(Throwable $e){flash('error',$e->getMessage());}redirect('/events/'.(int)$p['id']);}
+ public function delete(array $p):void{$u=require_super_admin();csrf();$id=(int)$p['id'];if($id<=0||!PEvent::delete($id)){flash('error','Event not found.');}else{log_event('event_deleted',['event_id'=>$id,'user_id'=>$u['id']]);flash('success','Event deleted.');}redirect('/calendar');}
+ public function review(array $p):void{$r=require_super_admin();csrf();$status=($_POST['status']??'')==='approved'?'approved':'rejected';$reason=trim((string)($_POST['reason']??''));if($status==='rejected'&&$reason===''){flash('error','A rejection reason is required.');redirect('/event-review');}PEvent::review((int)$p['id'],$status,(int)$r['id'],$reason?:null);flash('success','Event '.$status.'.');redirect('/event-review');}
+ public function organizerUpdate(array $p):void{require_super_admin();csrf();try{Organizer::update((int)$p['id'],(string)($_POST['name']??''),(string)($_POST['color']??''));flash('success','Organizer updated.');}catch(Throwable $e){flash('error',$e->getMessage());}redirect('/organizers');}
+ public function mayEdit(array $e,array $u):bool{return $u['role']==='super_admin'||((int)$e['submitted_by']===(int)$u['id']&&$e['status']==='pending');}
+ private function validated(array $i):array{$title=trim((string)($i['title']??''));$description=trim((string)($i['description']??''));$date=trim((string)($i['event_date']??''));$location=trim((string)($i['location']??''));$selected=trim((string)($i['organizer']??''));$custom=trim((string)($i['custom_organizer']??''));$org=$selected==='__other__'?$custom:$selected;$website=trim((string)($i['website_url']??''));$start=trim((string)($i['start_time']??''));$end=trim((string)($i['end_time']??''));if($title===''||mb_strlen($title)>180)throw new InvalidArgumentException('Enter an event title under 180 characters.');if($description==='')throw new InvalidArgumentException('Add an event description.');$d=DateTimeImmutable::createFromFormat('!Y-m-d',$date);if(!$d||$d->format('Y-m-d')!==$date)throw new InvalidArgumentException('Choose a valid event date.');if($location===''||mb_strlen($location)>180)throw new InvalidArgumentException('Enter a location under 180 characters.');if($website!==''&&!filter_var($website,FILTER_VALIDATE_URL))throw new InvalidArgumentException('Enter a valid website URL.');if(($start!==''&&!preg_match('/^([01]\\d|2[0-3]):[0-5]\\d$/',$start))||($end!==''&&!preg_match('/^([01]\\d|2[0-3]):[0-5]\\d$/',$end))||($start!==''&&$end!==''&&$end<=$start))throw new InvalidArgumentException('Enter valid event times with an end after the start.');$o=Organizer::resolve($org);return compact('title','description','date','location','website','start','end')+['event_date'=>$date,'website_url'=>$website,'start_time'=>$start,'end_time'=>$end,'organizer'=>$o['name'],'organizer_id'=>$o['id'],'material_request'=>trim((string)($i['material_request']??''))];}
 }
