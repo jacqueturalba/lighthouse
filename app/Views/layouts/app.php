@@ -8,11 +8,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css?v=<?= config('VERSION') ?>" rel="stylesheet">
     <link href="/assets/css/app.css?v=<?= config('VERSION') ?>" rel="stylesheet">
   </head>
-  <body class="<?= (in_array(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), ['/login', '/forgot-password', '/reset-password'])) ? 'lh-login-page' : 'auth-class' ?>"> <?php if ($auth && $user): require __DIR__.'/navigation.php'; endif; ?>
+  <body class="<?= (in_array(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), ['/login', '/forgot-password', '/reset-password'])) ? 'lh-login-page' : 'auth-class' ?>"> 
+  <?php if ($auth && $user): require __DIR__.'/navigation.php'; endif; ?>
   <div id="page-loader" class="page-loader">
       <div class="spinner-border" role="status" aria-label="Loading"></div>
   </div>
-    <main class="container lh-shell py-4 py-lg-5 page-content" id="page-content"> <?php if ($success): ?>
+    <main class="<?= (in_array(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), ['/sflex'])) ? 'container-fluid' : 'container lh-shell' ?>  py-4 py-lg-5 page-content" id="page-content"> 
+      <?php if ($success): ?>
         <div class="alert alert-success d-flex gap-2" data-auto-dismiss>
           <i class="bi bi-check-circle-fill"></i>
           <div> <?= e($success) ?></div>

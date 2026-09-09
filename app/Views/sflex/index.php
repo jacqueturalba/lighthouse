@@ -1,5 +1,5 @@
-<div class="row g-4">
-  <aside class="col-lg-3">
+<div class="row g-2">
+  <aside class="col-lg-2 me-4">
     <div class="lh-card d-grid gap-2">
       <a class="btn btn-lh-primary" href="/sflex/create">
         <i class="bi bi-plus-lg"></i> Create new post </a>
@@ -9,16 +9,16 @@
       <?php endif;?>
     </div>
   </aside>
-  <main class="col-lg-7">
+  <main class="col-lg-9 d-grid">
     <div class="d-flex justify-content-between mb-3">
       <div>
         <span class="lh-kicker">Community</span>
         <h1 class="lh-page-title">SFlex</h1>
       </div>
     </div>
-    <div id="sflex-feed" class="d-grid gap-3"> 
+    <div id="sflex-feed" class="row gap-3"> 
         <?php foreach($posts as$p):?> 
-            <article class="lh-card sflex-post">
+            <article class="col-lg-3 col-md-4 col-sm-6 lh-card sflex-post">
                 <div class="small text-secondary mb-2">
                     <strong> <?=e($p['author'])?> </strong> · <?=e(date('M j, Y',strtotime($p['created_at'])))?>
                 </div> 
