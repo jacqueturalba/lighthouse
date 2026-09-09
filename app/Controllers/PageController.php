@@ -8,6 +8,7 @@ require_once __DIR__.'/../Models/PromotionKitRequest.php';
 require_once __DIR__.'/../Models/PEvent.php';
 require_once __DIR__.'/../Models/Organizer.php';
 require_once __DIR__.'/../Models/MaterialRequest.php';
+require_once __DIR__.'/../Models/SFlexPost.php';
 
 final class PageController
 {
@@ -376,4 +377,7 @@ final class PageController
         $page = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/', '/'); 
         view('static/placeholder', ['title' => ucwords(str_replace('-', ' ', $page))]); 
     }
+    public function sflex(): void {$u=require_auth();view('sflex/index',['title'=>'SFlex','posts'=>SFlexPost::feed((int)$u['id'],0)]);}
+    public function sflexCreate(): void {require_auth();view('sflex/create',['title'=>'Create post']);}
+    public function sflexReview(): void {require_super_admin();view('sflex/review',['title'=>'Review SFlex posts','posts'=>SFlexPost::pending()]);}
 }

@@ -8,6 +8,7 @@ require dirname(__DIR__).'/app/Controllers/PromotionKitRequestController.php';
 require dirname(__DIR__).'/app/Controllers/EventController.php';
 require dirname(__DIR__).'/app/Controllers/MaterialRequestController.php';
 require dirname(__DIR__).'/app/Controllers/PressReleaseController.php';
+require dirname(__DIR__).'/app/Controllers/SFlexController.php';
 
 $storage = new StorageController();
 $router->get('/storage/{type}/{folder}/{file}', [$storage, 'show']);
@@ -16,6 +17,9 @@ $pages = new PageController();
 $router->get('/', [$pages, 'home']);
 
 $router->get('/calendar', [$pages, 'calendar']);
+$router->get('/sflex', [$pages, 'sflex']);
+$router->get('/sflex/create', [$pages, 'sflexCreate']);
+$router->get('/sflex/review', [$pages, 'sflexReview']);
 $router->get('/events/{id}', [$pages, 'eventDetail']);
 $router->get('/events/{id}/edit', [$pages, 'eventEdit']);
 $router->get('/organizers', [$pages, 'organizers']);
@@ -48,6 +52,12 @@ $router->post('/promotion-kits/{id}/archive', [$requests, 'archive']);
 $router->post('/promotion-kit-upload', [$requests, 'upload']);
 
 $events = new EventController();
+$sflex = new SFlexController();
+$router->get('/sflex-media/{type}/{date}/{file}', [$sflex, 'media']);
+$router->post('/sflex', [$sflex, 'create']);
+$router->post('/sflex/{id}/react', [$sflex, 'react']);
+$router->post('/sflex/{id}/comment', [$sflex, 'comment']);
+$router->post('/sflex/{id}/review', [$sflex, 'review']);
 $router->post('/events', [$events, 'store']);
 $router->post('/events/{id}/review', [$events, 'review']);
 $router->post('/events/{id}/edit', [$events, 'update']);

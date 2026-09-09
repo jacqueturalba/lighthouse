@@ -1427,3 +1427,28 @@ body {
 /* =========================================================
    END Promotion Kit Preview
    ========================================================= */
+
+
+ /* =========================================================
+   START SFlex
+    ========================================================= */
+
+.sflex-post {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.sflex-media {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: .5rem;
+}
+
+.sflex-media img,
+.sflex-media video {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}

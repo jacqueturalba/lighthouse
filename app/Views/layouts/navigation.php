@@ -16,6 +16,7 @@
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/calendar">Calendar</a>
         </li>
+        <li class="nav-item"><a class="nav-link lh-nav-link" href="/sflex">SFlex</a></li>
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/material-requests">Materials</a>
         </li>
