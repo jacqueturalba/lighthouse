@@ -123,10 +123,12 @@ final class PageController
         }
         $oid=(int)($_GET['organizer']??0);
         $oid=$oid > 0 && Organizer::exists($oid) ? $oid : null;
-        $per=(string)($_GET['per_page']??'100');
-        $limit=in_array($per,['5','10','50','100','all'],true)?($per==='all'?null:(int)$per):100;
-        $pper=(string)($_GET['pending_per_page']??'100');
-        $plimit=in_array($pper,['5','10','50','100','all'],true)?($pper==='all'?null:(int)$pper):100;
+
+        $per=(string)($_GET['per_page']??'5');
+        $limit=in_array($per,['5','10','50','100','all'],true)?($per==='all'?null:(int)$per):5;
+        $pper=(string)($_GET['pending_per_page']??'5');
+        $plimit=in_array($pper,['5','10','50','100','all'],true)?($pper==='all'?null:(int)$pper):5;
+        
         view('calendar/index',
                 ['title'=>'Calendar',
                  'month'=>$month,
@@ -160,16 +162,26 @@ final class PageController
     }
 
     public function eventDetail(array $params): void {
-        require_auth();
+        
+        $user = require_auth();
+        $admin = $user;
+
         $event = PEvent::find((int)$params['id']);
-        if (!$event || ($event['status'] !== 'approved' 
+        /*if (!$event || ($event['status'] !== 'approved' 
             && (int)$event['submitted_by'] !== (int)current_user()['id'] 
             && current_user()['role'] !== 'super_admin')) { 
                 http_response_code(404); 
                 render('Event not found', '<p>This event is not available.</p>'); 
                 return; 
-        }
-        view('calendar/detail', ['title'=>$event['title'], 'event'=>$event, 
+        }*/
+
+        if (!$event || ($event['status'] !== 'approved' 
+            && (int)$event['submitted_by'] !== (int)current_user()['id'])) { 
+                http_response_code(404); 
+                render('Event not found', '<p>This event is not available.</p>'); 
+                return; 
+        }        
+        view('calendar/detail', ['title'=>$event['title'], 'admin'=>$admin, 'event'=>$event, 
                                  'materialRequest'=>MaterialRequest::findByEvent((int)$event['id']), 'user'=>current_user()]);
     }
 
@@ -177,8 +189,22 @@ final class PageController
         require_super_admin();
         view('calendar/review', ['title'=>'Event Review', 'events'=>PEvent::forReview()]);
     }
-    public function eventEdit(array $params): void {$user=require_auth();$event=PEvent::find((int)$params['id']);if(!$event||!($user['role']==='super_admin'||((int)$event['submitted_by']===(int)$user['id']&&$event['status']==='pending'))){http_response_code(404);render('Event not found','<p>This event is not available.</p>');return;}view('calendar/edit',['title'=>'Edit event','event'=>$event,'organizers'=>Organizer::all()]);}
-    public function organizers(): void {require_super_admin();view('calendar/organizers',['title'=>'Manage organizers','organizers'=>Organizer::custom()]);}
+
+    public function eventEdit(array $params): void {
+        $user=require_auth();
+        $event=PEvent::find((int)$params['id']);
+        if(!$event||!($user['role']==='super_admin'||((int)$event['submitted_by']===(int)$user['id']&&$event['status']==='pending'))){
+            http_response_code(404);
+            render('Event not found','<p>This event is not available.</p>');
+            return;
+        }
+        view('calendar/edit',['title'=>'Edit event','event'=>$event,'organizers'=>Organizer::all()]);
+    }
+
+    public function organizers(): void {
+        require_super_admin();
+        view('calendar/organizers',['title'=>'Manage organizers','organizers'=>Organizer::custom()]);
+    }
 
     public function materialRequests(): void {
         $user = require_auth();

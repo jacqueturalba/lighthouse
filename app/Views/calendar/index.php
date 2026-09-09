@@ -179,10 +179,17 @@ $today = date('Y-m-d');
             <input class="form-control" type="time" name="end_time" aria-label="End time">
           </div>
         </div>
-        <input class="form-control" name="organizer" placeholder="Organizer" required>
         <input class="form-control" type="url" name="website_url" placeholder="Website URL">
         <textarea class="form-control" name="description" rows="3" placeholder="Describe the event" required></textarea>
         <textarea class="form-control" name="material_request" rows="2" placeholder="Materials needed from MoP (optional)"></textarea>
+        <select class="form-select" name="organizer" data-org required>
+          <option value="">Organizer</option>
+          <?php foreach ($organizers as $o): ?>
+          <option value="<?= e($o["name"]) ?>"><?= e($o["name"]) ?></option>
+          <?php endforeach; ?>
+          <option value="__other__">Others</option>
+        </select>
+        <input class="form-control d-none" name="custom_organizer" data-custom>
         <button class="btn btn-lh-primary" type="submit">Submit for review</button>
       </form>
     </section>
@@ -216,4 +223,11 @@ $today = date('Y-m-d');
     <?php endif; ?>
 </div>
 </div>
-<script>document.querySelector('[data-org]').onchange=function(){let i=document.querySelector('[data-custom]');i.classList.toggle('d-none',this.value!=='__other__');i.required=this.value==='__other__'}</script>
+<script>
+document.querySelector('[data-org]').onchange=function(){
+  let i=document.querySelector('[data-custom]');
+  i.classList.toggle('d-none',this.value!=='__other__');
+  i.required=this.value==='__other__';
+}
+</script>
+
