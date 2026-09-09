@@ -95,9 +95,19 @@ body {
 .lh-calendar-day.is-muted { background: #f8fafc; color: #a6b2c2; }
 .lh-calendar-day.is-today { border-color: var(--lh-gold); box-shadow: inset 0 3px 0 var(--lh-gold); }
 .lh-calendar-number { font-size: .78rem; font-weight: 700; color: var(--lh-muted); margin-bottom: .45rem; }
-.lh-calendar-event { display: block; margin-top: .3rem; border-radius: .35rem; padding: .28rem .35rem; background: #eef4ff; color: var(--lh-blue); font-size: .72rem; line-height: 1.25; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lh-calendar-event:hover { background: #dbe8ff; color: var(--lh-blue-dark); }
+.lh-calendar-event { display: block; margin-top: .3rem; border-radius: .35rem; padding: .28rem .35rem; background: color-mix(in srgb, var(--event-color, var(--lh-blue)) 14%, white); color: var(--event-color, var(--lh-blue)); font-size: .72rem; line-height: 1.25; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-left: 3px solid var(--event-color, var(--lh-blue)); }
+.lh-calendar-event:hover { background: color-mix(in srgb, var(--event-color, var(--lh-blue)) 24%, white); color: var(--event-color, var(--lh-blue-dark)); }
 @media (max-width: 767.98px) { .lh-calendar-day { min-height: 5rem; padding: .35rem; } .lh-calendar-event { font-size: 0; padding: .3rem; width: .5rem; height: .5rem; border-radius: 50%; } }
+
+.lh-calendar-day {
+    cursor: pointer;
+}
+
+.lh-calendar-event {
+    cursor: pointer;
+}
+
+
 .lh-card {
   background: #fff;
   border: 0;

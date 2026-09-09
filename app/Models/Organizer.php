@@ -1,0 +1,10 @@
+<?php
+declare(strict_types=1);
+final class Organizer {
+ public const DEFAULTS=['ZCMC','SCJ','HWPL','Area 1','Area 2','Area 3']; private const COLORS=['#145da0','#6f42c1','#198754','#d97706','#dc3545','#0d6efd','#0f766e','#9333ea'];
+ public static function all():array{return db()->query('SELECT * FROM event_organizers ORDER BY is_default DESC,name')->fetchAll();}
+ public static function exists(int $id):bool{$s=db()->prepare('SELECT 1 FROM event_organizers WHERE id=?');$s->execute([$id]);return (bool)$s->fetchColumn();}
+ public static function custom():array{return db()->query('SELECT * FROM event_organizers WHERE is_default=0 ORDER BY name')->fetchAll();}
+ public static function resolve(string $name,?string $color=null):array{$name=preg_replace('/\s+/',' ',trim($name))??'';$normalized=mb_strtolower($name);if($name===''||mb_strlen($name)>160)throw new InvalidArgumentException('Enter an organizer name under 160 characters.');$s=db()->prepare('SELECT * FROM event_organizers WHERE normalized_name=? LIMIT 1');$s->execute([$normalized]);if($r=$s->fetch())return $r;$color??=self::COLORS[(int)db()->query('SELECT COUNT(*) FROM event_organizers')->fetchColumn()%count(self::COLORS)];$s=db()->prepare('INSERT INTO event_organizers (name,normalized_name,color,is_default) VALUES (?,?,?,0)');$s->execute([$name,$normalized,$color]);return ['id'=>(int)db()->lastInsertId(),'name'=>$name,'color'=>$color,'is_default'=>0];}
+ public static function update(int $id,string $name,string $color):bool{$name=preg_replace('/\s+/',' ',trim($name))??'';$normalized=mb_strtolower($name);if($id<=0||$name===''||mb_strlen($name)>160||!preg_match('/^#[0-9a-fA-F]{6}$/',$color))throw new InvalidArgumentException('Enter a valid organizer name and color.');$s=db()->prepare('SELECT id FROM event_organizers WHERE normalized_name=? AND id<>?');$s->execute([$normalized,$id]);if($s->fetch())throw new InvalidArgumentException('An organizer with that name already exists.');$s=db()->prepare('UPDATE event_organizers SET name=?,normalized_name=?,color=? WHERE id=?');$s->execute([$name,$normalized,$color,$id]);return $s->rowCount()>0;}
+}

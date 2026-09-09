@@ -209,3 +209,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+document.querySelectorAll('.lh-calendar-day[data-href]').forEach(day => {
+
+    day.addEventListener('click', function (event) {
+
+        // Don't redirect when clicking an event link
+        if (event.target.closest('.lh-calendar-event')) {
+            return;
+        }
+
+        window.location.href = this.dataset.href;
+    });
+
+    day.addEventListener('keydown', function (event) {
+
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            window.location.href = this.dataset.href;
+        }
+
+    });
+
+});

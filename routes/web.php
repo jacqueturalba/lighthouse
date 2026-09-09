@@ -17,6 +17,8 @@ $router->get('/', [$pages, 'home']);
 
 $router->get('/calendar', [$pages, 'calendar']);
 $router->get('/events/{id}', [$pages, 'eventDetail']);
+$router->get('/events/{id}/edit', [$pages, 'eventEdit']);
+$router->get('/organizers', [$pages, 'organizers']);
 $router->get('/event-review', [$pages, 'eventReview']);
 
 $router->get('/press-releases', [$pages, 'pressReleases']);
@@ -48,6 +50,9 @@ $router->post('/promotion-kit-upload', [$requests, 'upload']);
 $events = new EventController();
 $router->post('/events', [$events, 'store']);
 $router->post('/events/{id}/review', [$events, 'review']);
+$router->post('/events/{id}/edit', [$events, 'update']);
+$router->post('/events/{id}/delete', [$events, 'delete']);
+$router->post('/organizers/{id}', [$events, 'organizerUpdate']);
 
 $materialRequests = new MaterialRequestController();
 $router->get('/material-requests', [$pages, 'materialRequests']);

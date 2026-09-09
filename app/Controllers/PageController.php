@@ -6,6 +6,7 @@ require_once __DIR__.'/../Models/PressRelease.php';
 require_once __DIR__.'/../Models/PromotionKit.php';
 require_once __DIR__.'/../Models/PromotionKitRequest.php';
 require_once __DIR__.'/../Models/PEvent.php';
+require_once __DIR__.'/../Models/Organizer.php';
 require_once __DIR__.'/../Models/MaterialRequest.php';
 
 final class PageController
@@ -104,16 +105,58 @@ final class PageController
     }
 
     public function calendar(): void {
-        require_auth();
+        $user=require_auth();
         $month = trim((string)($_GET['month'] ?? date('Y-m')));
+        $date = DateTimeImmutable::createFromFormat('!Y-m', $month) ?: new DateTimeImmutable('first day of this month');
+        $month = $date->format('Y-m');
+        $view = isset($_GET['view']) && in_array($_GET['view'], ['month', 'week', 'day'], true) ? $_GET['view'] : 'month';
+        
+        $selected=DateTimeImmutable::createFromFormat('!Y-m-d',(string)($_GET['selected']??date('Y-m-d'))) ?: new DateTimeImmutable('today');
+
+        if($view==='week'){
+            $from=$selected->modify('-'.((int)$selected->format('N')-1).' days');$to=$from->modify('+6 days');
+        }elseif($view==='day'){
+            $from=$to=$selected;
+        }else{
+            $from=$date->modify('first day of this month')->modify('-'.((int)$date->format('N')-1).' days');
+            $to=$date->modify('last day of this month')->modify('+'.(7-(int)$date->modify('last day of this month')->format('N')).' days');
+        }
+        $oid=(int)($_GET['organizer']??0);
+        $oid=$oid > 0 && Organizer::exists($oid) ? $oid : null;
+        $per=(string)($_GET['per_page']??'100');
+        $limit=in_array($per,['5','10','50','100','all'],true)?($per==='all'?null:(int)$per):100;
+        $pper=(string)($_GET['pending_per_page']??'100');
+        $plimit=in_array($pper,['5','10','50','100','all'],true)?($pper==='all'?null:(int)$pper):100;
+        view('calendar/index',
+                ['title'=>'Calendar',
+                 'month'=>$month,
+                 'monthDate'=>$date,
+                 'gridStart'=>$from,
+                 'gridEnd'=>$to,
+                 'view'=>$view,
+                 'selected'=>$selected,
+                 'organizerId'=>$oid,
+                 'organizers'=>Organizer::all(),
+                 'events'=>PEvent::calendar($from->format('Y-m-d'),$to->format('Y-m-d'),$oid),
+                 'upcoming'=>PEvent::paginated('approved',max(1,(int)($_GET['page']??1)),$limit,$oid),
+                 'pending'=>PEvent::paginated('pending',max(1,(int)($_GET['pending_page']??1)),$plimit,$oid,(int)$user['id']),
+                 'per'=>$per,
+                 'pper'=>$pper]);
+
+
+        /*$month = trim((string)($_GET['month'] ?? date('Y-m')));
         $date = DateTimeImmutable::createFromFormat('!Y-m', $month) ?: new DateTimeImmutable('first day of this month');
         $month = $date->format('Y-m');
         $from = $date->modify('first day of this month')->modify('-'.((int)$date->format('N') - 1).' days');
         $to = $date->modify('last day of this month')->modify('+'.(7 - (int)$date->modify('last day of this month')->format('N')).' days');
-        view('calendar/index', ['title'=>'Calendar', 'month'=>$month, 'monthDate'=>$date, 'gridStart'=>$from, 
-                                'gridEnd'=>$to, 'events'=>PEvent::month($from->format('Y-m-d'), $to->format('Y-m-d')), 
+        view('calendar/index', ['title'=>'Calendar', 
+                                'month'=>$month, 
+                                'monthDate'=>$date, 
+                                'gridStart'=>$from, 
+                                'gridEnd'=>$to, 
+                                'events'=>PEvent::month($from->format('Y-m-d'), $to->format('Y-m-d')), 
                                 'upcoming'=>PEvent::upcoming(), 'mine'=>PEvent::mine((int)current_user()['id']), 
-                                'pending'=>PEvent::pendingVisible((int)current_user()['id'])]);
+                                'pending'=>PEvent::pendingVisible((int)current_user()['id'])]);*/
     }
 
     public function eventDetail(array $params): void {
@@ -134,6 +177,8 @@ final class PageController
         require_super_admin();
         view('calendar/review', ['title'=>'Event Review', 'events'=>PEvent::forReview()]);
     }
+    public function eventEdit(array $params): void {$user=require_auth();$event=PEvent::find((int)$params['id']);if(!$event||!($user['role']==='super_admin'||((int)$event['submitted_by']===(int)$user['id']&&$event['status']==='pending'))){http_response_code(404);render('Event not found','<p>This event is not available.</p>');return;}view('calendar/edit',['title'=>'Edit event','event'=>$event,'organizers'=>Organizer::all()]);}
+    public function organizers(): void {require_super_admin();view('calendar/organizers',['title'=>'Manage organizers','organizers'=>Organizer::custom()]);}
 
     public function materialRequests(): void {
         $user = require_auth();
