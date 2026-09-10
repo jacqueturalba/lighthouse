@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__).'/Auth.php';
 require_once dirname(__DIR__).'/Services/PromotionKitRequestService.php';
 require_once dirname(__DIR__).'/Models/PromotionKitDownload.php';
+require_once dirname(__DIR__).'/Models/UploadJob.php';
 
 final class PromotionKitRequestController
 {
@@ -249,7 +250,10 @@ final class PromotionKitRequestController
 
     public function upload(array $params = []): void
     {
-        $user = require_super_admin(); csrf();
+        $user = require_super_admin();
+        csrf();
+        $async = (($_POST['ajax'] ?? '') === '1');
+        $jobId = (int) ($_POST['upload_job_id'] ?? 0);
         $title = trim((string) ($_POST['title'] ?? ''));
         $description = trim((string) ($_POST['description'] ?? ''));
         $file = $_FILES['file'] ?? null;
@@ -311,9 +315,9 @@ final class PromotionKitRequestController
         if ($file && (int)$file['size'] > 50 * 1024 * 1024) 
             $errors[] = 'Files must be 50 MB or smaller.';
         
-        if ($errors) { 
-            flash('error', implode(' ', $errors)); 
-            redirect('/promotion-kit-upload'); 
+        if ($errors) {
+            $this->uploadError($async, $jobId, (int) $user['id'], implode(' ', $errors));
+            return;
         }
         
         $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage';
@@ -326,8 +330,8 @@ final class PromotionKitRequestController
         $stored = bin2hex(random_bytes(20)).'.'.$extension; $path = $folder.'/'.$stored;
         
         if (!move_uploaded_file($file['tmp_name'], $directory.DIRECTORY_SEPARATOR.$stored)) { 
-            flash('error', 'The file could not be stored.'); 
-            redirect('/promotion-kit-upload'); 
+            $this->uploadError($async, $jobId, (int) $user['id'], 'The file could not be stored.');
+            return;
         }
 
         $accessType = $_POST['access_type'] ?? 'request';
@@ -336,21 +340,48 @@ final class PromotionKitRequestController
             $accessType = 'request';
         }
         
-        try { 
-            PromotionKit::create(['title'=>$title,'description'=>$description,'original'=>$file['name'],
+        try {
+            $kitId = PromotionKit::create(['title'=>$title,'description'=>$description,'original'=>$file['name'],
                                   'stored'=>$stored,'path'=>$path,'extension'=>$extension,'mime'=>$mime,
                                   'size'=>(int)$file['size'],'cover'=>null,'access_type' => $accessType,
                                   'user_id'=>(int)$user['id']]); 
         } catch (Throwable $e) { 
             @unlink($directory.DIRECTORY_SEPARATOR.$stored); 
-            
-            flash('error', 'The promotion kit could not be saved.'); 
-            
-            redirect('/promotion-kit-upload'); 
+            $this->uploadError($async, $jobId, (int) $user['id'], 'The promotion kit could not be saved.');
+            return;
+        }
+
+        if ($jobId > 0) {
+            UploadJob::complete($jobId, (int) $user['id'], 'promotion_kit', $kitId);
+        }
+
+        if ($async) {
+            $this->json(['ok' => true, 'message' => 'Promotion kit uploaded.', 'link' => '/promotion-kits/'.$kitId]);
+            return;
         }
         
         flash('success', 'Promotion kit uploaded.'); 
         
         redirect('/promotion-kits');
+    }
+
+    private function uploadError(bool $async, int $jobId, int $userId, string $message): void
+    {
+        if ($jobId > 0) {
+            UploadJob::fail($jobId, $userId, $message);
+        }
+        if ($async) {
+            $this->json(['error' => $message], 422);
+            return;
+        }
+        flash('error', $message);
+        redirect('/promotion-kit-upload');
+    }
+
+    private function json(array $data, int $status = 200): void
+    {
+        http_response_code($status);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 }

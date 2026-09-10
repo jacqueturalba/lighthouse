@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="csrf-token" content="<?= e($_SESSION['csrf'] ?? '') ?>">
     <title> <?= e($title) ?> · LIGHTHOUSE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css?v=<?= config('VERSION') ?>" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css?v=<?= config('VERSION') ?>" rel="stylesheet">
@@ -26,6 +27,21 @@
         <?php endif; ?> 
         <?= $content ?>
     </main>
+    <?php if ($auth && $user): ?>
+      <div id="lh-upload-manager" class="lh-upload-manager shadow-sm" hidden aria-live="polite">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <strong class="small"><i class="bi bi-cloud-arrow-up me-1"></i>Upload activity</strong>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary border border-0" data-upload-manager-minimize><i class="bi bi-dash-lg"></i></button>
+            <button type="button" class="btn-close btn-sm" aria-label="Dismiss upload activity" data-upload-manager-dismiss></button>
+          </div>
+        </div>
+        <div data-upload-manager-items></div>
+        <span class="mt-2 small text-muted d-flex p-1 fw-light" data-upload-manager-count>Do not close the browser tab or navigate away while uploading.</span>
+      </div>
+      <div id="lh-upload-toasts" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+      <button id="lh-upload-manager-open" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-3 shadow" hidden aria-label="Show upload activity"><i class="bi bi-cloud-arrow-up"></i></button>
+    <?php endif; ?>
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
