@@ -1427,3 +1427,181 @@ body {
 /* =========================================================
    END Promotion Kit Preview
    ========================================================= */
+
+
+ /* =========================================================
+   START SFlex
+    ========================================================= */
+
+.sflex-post {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.sflex-media {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+    background: #f4f7fb;
+    overflow: hidden;
+    border-radius: .5rem;
+}
+
+.sflex-media img,
+.sflex-media video {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.sflex-post-skeleton {
+    min-height: 25rem;
+    pointer-events: none;
+}
+
+.sflex-skeleton {
+    display: block;
+    border-radius: .4rem;
+    background: linear-gradient(100deg, #edf1f5 30%, #f8fafc 50%, #edf1f5 70%);
+    background-size: 200% 100%;
+    animation: sflex-skeleton-shimmer 1.45s ease-in-out infinite;
+}
+
+.sflex-skeleton-meta { width: 42%; height: .8rem; margin-bottom: .9rem; }
+.sflex-skeleton-media { width: 100%; aspect-ratio: 4 / 3; margin-bottom: 1rem; }
+.sflex-skeleton-line { width: 88%; height: .8rem; margin-bottom: .55rem; }
+.sflex-skeleton-line-short { width: 58%; }
+.sflex-skeleton-action { width: 4.5rem; height: 2rem; }
+
+@keyframes sflex-skeleton-shimmer {
+    to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sflex-skeleton { animation: none; }
+}
+#sflexComments {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 2000 !important;
+}
+.sflex-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.sflex-actions form {
+    margin: 0;
+}
+
+.sflex-reaction-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    min-height: 36px;
+    padding: .4rem .75rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 999px;
+    background: var(--bs-body-bg);
+    color: var(--bs-secondary-color);
+    cursor: pointer;
+    transition:
+        background-color .15s ease,
+        border-color .15s ease,
+        color .15s ease,
+        transform .15s ease;
+}
+
+.sflex-reaction-btn:hover {
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    transform: translateY(-1px);
+}
+
+.sflex-reaction-btn:active {
+    transform: scale(.96);
+}
+
+.sflex-reaction-btn.is-reacted {
+    color: var(--bs-primary);
+    border-color: rgba(var(--bs-primary-rgb), .35);
+    background: rgba(var(--bs-primary-rgb), .08);
+}
+
+.sflex-reaction-btn.is-reacted:hover {
+    background: rgba(var(--bs-primary-rgb), .13);
+}
+
+.sflex-reaction-btn i {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.sflex-reaction-label {
+    font-size: .85rem;
+}
+
+.sflex-reaction-count {
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.sflex-post-caption {
+    line-height: 1.6;
+}
+
+.sflex-comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.sflex-comment {
+    padding: .85rem 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+    background: var(--bs-tertiary-bg);
+}
+
+.sflex-comment-header {
+    margin-bottom: .35rem;
+    font-size: .85rem;
+}
+
+.sflex-comment-body {
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.sflex-comment-form textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+@media (max-width: 575.98px) {
+    .sflex-reaction-label {
+        display: none;
+    }
+
+    .sflex-reaction-btn {
+        min-width: 38px;
+        justify-content: center;
+        padding-left: .65rem;
+        padding-right: .65rem;
+    }
+
+    .sflex-comment-form .d-flex {
+        flex-direction: column;
+    }
+
+    .sflex-comment-form .btn {
+        align-self: flex-end !important;
+    }
+}

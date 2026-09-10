@@ -71,3 +71,19 @@
             </div>
         </div>
     </div>
+    <!-- SFLEX Modal -->
+<div class="modal fade" id="sflexComments" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5">Comments</h2>
+                <button class="btn-close" data-bs-dismiss="modal">
+
+                </button>
+            </div>
+            <div class="modal-body" id="sflex-comments-body">
+
+            </div>
+        </div>
+    </div>
+</div>

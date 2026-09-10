@@ -8,6 +8,7 @@ require_once __DIR__.'/../Models/PromotionKitRequest.php';
 require_once __DIR__.'/../Models/PEvent.php';
 require_once __DIR__.'/../Models/Organizer.php';
 require_once __DIR__.'/../Models/MaterialRequest.php';
+require_once __DIR__.'/../Models/SFlexPost.php';
 
 final class PageController
 {
@@ -375,5 +376,88 @@ final class PageController
         require_auth(); 
         $page = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/', '/'); 
         view('static/placeholder', ['title' => ucwords(str_replace('-', ' ', $page))]); 
+    }
+    public function sflex(): void
+    {
+        $u = require_auth();
+
+        if (($_GET['ajax'] ?? '') === '1') {
+            $page = max(1, (int)($_GET['page'] ?? 1));
+            $feed = SFlexPost::feedPage((int)$u['id'], $page);
+
+            ob_start();
+            $posts = $feed['posts'];
+            require dirname(__DIR__) . '/Views/sflex/_posts.php';
+            $html = ob_get_clean();
+
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'html' => $html,
+                'has_more' => $feed['has_more'],
+                'next_page' => $feed['next_page'],
+            ]);
+            return;
+        }
+
+        $feed = SFlexPost::feedPage((int)$u['id'], 1);
+        view('sflex/index', [
+            'title' => 'SFlex',
+            'posts' => $feed['posts'],
+            'hasMore' => $feed['has_more'],
+            'nextPage' => $feed['next_page'],
+        ]);
+    }
+
+    public function sflexCreate(): void
+    {
+        require_auth();
+        view('sflex/create', ['title' => 'Create post']);
+    }
+
+    public function sflexReview(): void
+    {
+        require_super_admin();
+
+        $user = current_user();
+
+        view('sflex/review', [
+            'title' => 'Review SFlex posts',
+            'posts' => SFlexPost::pending((int)$user['id'])
+        ]);
+    }
+
+    public function sflexRejected(): void
+    {
+        $u = require_auth();
+        view('sflex/rejected', [
+            'title' => 'Rejected SFlex posts',
+            'posts' => SFlexPost::rejected((int)$u['id'], $u['role'] === 'super_admin')
+        ]);
+    }
+
+    public function sflexPost(array $params): void
+    {
+        $u = require_auth();
+
+        $post = SFlexPost::find(
+            (int)$params['id'],
+            (int)$u['id']
+        );
+
+        if (
+            !$post || 
+            ($post['status'] !== 'approved' && 
+            (int)$post['user_id'] !== (int)$u['id'] && 
+            $u['role'] !== 'super_admin')
+        ) {
+            http_response_code(404);
+            render('Post not found', '<p>This post is unavailable.</p>');
+            return;
+        }
+
+        view('sflex/post', [
+            'title' => 'SFlex post',
+            'post'  => $post
+        ]);
     }
 }
