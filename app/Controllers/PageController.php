@@ -380,9 +380,31 @@ final class PageController
     public function sflex(): void
     {
         $u = require_auth();
+
+        if (($_GET['ajax'] ?? '') === '1') {
+            $page = max(1, (int)($_GET['page'] ?? 1));
+            $feed = SFlexPost::feedPage((int)$u['id'], $page);
+
+            ob_start();
+            $posts = $feed['posts'];
+            require dirname(__DIR__) . '/Views/sflex/_posts.php';
+            $html = ob_get_clean();
+
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'html' => $html,
+                'has_more' => $feed['has_more'],
+                'next_page' => $feed['next_page'],
+            ]);
+            return;
+        }
+
+        $feed = SFlexPost::feedPage((int)$u['id'], 1);
         view('sflex/index', [
             'title' => 'SFlex',
-            'posts' => SFlexPost::feed((int)$u['id'], 0)
+            'posts' => $feed['posts'],
+            'hasMore' => $feed['has_more'],
+            'nextPage' => $feed['next_page'],
         ]);
     }
 
@@ -416,7 +438,11 @@ final class PageController
     public function sflexPost(array $params): void
     {
         $u = require_auth();
-        $post = SFlexPost::find((int)$params['id']);
+
+        $post = SFlexPost::find(
+            (int)$params['id'],
+            (int)$u['id']
+        );
 
         if (
             !$post || 

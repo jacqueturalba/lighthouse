@@ -4,7 +4,7 @@
 </div>
 <div class="row gap-3"> 
     <?php foreach($posts as$p):?> 
-    <article class="col-3 lh-card">
+    <article class="col-lg-4 col-md-6 col-sm-12 lh-card">
         <strong> <?=e($p['author'])?> </strong>
         <p> <?=e($p['caption'])?> </p>
         <?php if($p['media_path']):?> 
@@ -23,6 +23,6 @@
         </form>
     </article> 
     <?php endforeach;if(!$posts):?> 
-    <div class="lh-card">No posts awaiting review.</div> 
+    <div class="lh-card text-secondary">No posts awaiting review.</div> 
     <?php endif;?> 
 </div>

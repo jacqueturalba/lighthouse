@@ -30,6 +30,45 @@ final class SFlexPost
         return $rows;
     }
 
+    /**
+     * Return one feed batch plus whether another batch is available.  Fetching
+     * one extra row avoids a separate COUNT query on every infinite-scroll hit.
+     */
+    public static function feedPage(int $user, int $page, int $perPage = 5): array
+    {
+        $page = max(1, $page);
+        $offset = ($page - 1) * $perPage;
+
+        $s = db()->prepare(
+            self::select()
+            . " WHERE p.status = 'approved' ORDER BY p.created_at DESC LIMIT "
+            . ($perPage + 1)
+            . " OFFSET ?"
+        );
+        $s->bindValue(1, $user, PDO::PARAM_INT);
+        $s->bindValue(2, $offset, PDO::PARAM_INT);
+        $s->execute();
+        $rows = $s->fetchAll();
+
+        $hasMore = count($rows) > $perPage;
+        if ($hasMore) {
+            array_pop($rows);
+        }
+
+        foreach ($rows as &$r) {
+            $q = db()->prepare('SELECT reaction, COUNT(*) total FROM sflex_reactions WHERE post_id = ? GROUP BY reaction');
+            $q->execute([$r['id']]);
+            $r['counts'] = $q->fetchAll();
+        }
+        unset($r);
+
+        return [
+            'posts' => $rows,
+            'has_more' => $hasMore,
+            'next_page' => $hasMore ? $page + 1 : null,
+        ];
+    }
+
     public static function create(int $user, string $caption, ?string $path, ?string $type, string $status): void
     {
         db()->prepare('INSERT INTO sflex_posts(user_id, caption, media_path, media_type, status) VALUES(?, ?, ?, ?, ?)')
@@ -146,5 +185,53 @@ final class SFlexPost
     {
         db()->prepare('INSERT INTO sflex_comments(post_id, user_id, body) VALUES(?, ?, ?)')
           ->execute([$post, $user, $body]);
+    }
+
+    public static function find(int $id, int $userId): ?array
+    {
+        $s = db()->prepare(
+            "SELECT p.*, u.name author,
+                    (
+                        SELECT reaction
+                        FROM sflex_reactions r
+                        WHERE r.post_id = p.id
+                        AND r.user_id = ?
+                    ) mine
+            FROM sflex_posts p
+            JOIN users u ON u.id = p.user_id
+            WHERE p.id = ?"
+        );
+
+        $s->execute([$userId, $id]);
+
+        $row = $s->fetch();
+
+        if (!$row) {
+            return null;
+        }
+
+        $q = db()->prepare(
+            "SELECT reaction, COUNT(*) total
+            FROM sflex_reactions
+            WHERE post_id = ?
+            GROUP BY reaction"
+        );
+
+        $q->execute([$id]);
+        $row['counts'] = $q->fetchAll();
+
+        $q = db()->prepare(
+            "SELECT c.*, u.name author
+            FROM sflex_comments c
+            JOIN users u ON u.id = c.user_id
+            WHERE c.post_id = ?
+            AND c.hidden_at IS NULL
+            ORDER BY c.created_at ASC"
+        );
+
+        $q->execute([$id]);
+        $row['comments'] = $q->fetchAll();
+
+        return $row;
     }
 }
