@@ -16,11 +16,29 @@
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/calendar">Calendar</a>
         </li>
-        <li class="nav-item"><a class="nav-link lh-nav-link" href="/sflex">SFlex</a></li>
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/material-requests">Materials</a>
         </li>
 
+
+
+        <li class="nav-item">
+          <a class="nav-link lh-nav-link" href="/sflex">
+          <i class="bi bi-skype"></i>
+          SFlex
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <button class="btn btn-outline-warning py-0 px-1" type="button">
+          <a class="nav-link lh-nav-link btn py-1" href="/profile" alt="Profile" 
+             data-bs-toggle="tooltip" data-bs-placement="top"
+             data-bs-custom-class="custom-tooltip"
+             data-bs-title="Profile">
+            <i class="bi bi-person-circle me-1"></i>
+          </a>
+          </button>
+        </li>
         <?php if ($user['role'] === 'super_admin'): ?> 
 
 
@@ -42,17 +60,6 @@
 
 
         <?php endif; ?> 
-        
-        <li class="nav-item">
-          <button class="btn btn-outline-warning py-0 px-1" type="button">
-          <a class="nav-link lh-nav-link btn py-1" href="/profile" alt="Profile" 
-             data-bs-toggle="tooltip" data-bs-placement="top"
-             data-bs-custom-class="custom-tooltip"
-             data-bs-title="Profile">
-            <i class="bi bi-person-circle me-1"></i>
-          </a>
-          </button>
-        </li>
         <li class="nav-item">
           <form method="post" action="/logout" class="ms-lg-2">
             <input type="hidden" name="_token" value="<?= e($_SESSION['csrf']) ?>">
