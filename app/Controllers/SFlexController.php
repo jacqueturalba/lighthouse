@@ -1,12 +1,15 @@
 <?php declare(strict_types=1);
 require_once dirname(__DIR__) . "/View.php";
 require_once dirname(__DIR__) . "/Models/SFlexPost.php";
+require_once dirname(__DIR__) . "/Models/UploadJob.php";
 final class SFlexController
 {
     public function create(): void
     {
         $u = require_auth();
         csrf();
+        $async = (($_POST['ajax'] ?? '') === '1');
+        $jobId = (int) ($_POST['upload_job_id'] ?? 0);
         $caption = trim((string) ($_POST["caption"] ?? ""));
         $f = $_FILES["media"] ?? null;
         $path = null;
@@ -15,19 +18,16 @@ final class SFlexController
             $caption === "" &&
             (!$f || ($f["error"] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE)
         ) {
-            flash("error", "Add a caption or media.");
-            redirect("/sflex/create");
+            $this->uploadError($async, $jobId, (int) $u['id'], "Add a caption or media.");
+            return;
         }
         if ($f && ($f["error"] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
             if (
                 $f["error"] !== UPLOAD_ERR_OK ||
                 (int) $f["size"] > 4 * 1024 * 1024 * 1024
             ) {
-                flash(
-                    "error",
-                    "The media upload failed or is larger than 4 GB."
-                );
-                redirect("/sflex/create");
+                $this->uploadError($async, $jobId, (int) $u['id'], "The media upload failed or is larger than 4 GB.");
+                return;
             }
             $mime = (new finfo(FILEINFO_MIME_TYPE))->file($f["tmp_name"]);
             $type = str_starts_with($mime, "image/")
@@ -36,8 +36,8 @@ final class SFlexController
                     ? "video"
                     : null);
             if (!$type) {
-                flash("error", "Upload a valid image or video.");
-                redirect("/sflex/create");
+                $this->uploadError($async, $jobId, (int) $u['id'], "Upload a valid image or video.");
+                return;
             }
             $ext = $type === "image" ? "jpg" : "mp4";
             $folder = "sflex/" . $type . "/" . date("Y-m-d");
@@ -47,8 +47,8 @@ final class SFlexController
             }
             $name = bin2hex(random_bytes(16)) . "." . $ext;
             if (!move_uploaded_file($f["tmp_name"], $dir . "/" . $name)) {
-                flash("error", "Media could not be stored.");
-                redirect("/sflex/create");
+                $this->uploadError($async, $jobId, (int) $u['id'], "Media could not be stored.");
+                return;
             }
             $path = $folder . "/" . $name;
         }
@@ -59,6 +59,19 @@ final class SFlexController
             $type,
             $u["role"] === "super_admin" ? "approved" : "pending"
         );
+        $postId = (int) db()->lastInsertId();
+        if ($jobId > 0) {
+            UploadJob::complete($jobId, (int) $u['id'], 'sflex', $postId);
+        }
+        if ($async) {
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode([
+                'ok' => true,
+                'message' => $u['role'] === 'super_admin' ? 'Post published.' : 'Post sent for approval.',
+                'link' => '/sflex/post/'.$postId,
+            ]);
+            return;
+        }
         flash(
             "success",
             $u["role"] === "super_admin"
@@ -66,6 +79,21 @@ final class SFlexController
                 : "Post sent for approval."
         );
         redirect("/sflex");
+    }
+
+    private function uploadError(bool $async, int $jobId, int $userId, string $message): void
+    {
+        if ($jobId > 0) {
+            UploadJob::fail($jobId, $userId, $message);
+        }
+        if ($async) {
+            http_response_code(422);
+            header("Content-Type: application/json; charset=utf-8");
+            echo json_encode(['error' => $message]);
+            return;
+        }
+        flash("error", $message);
+        redirect("/sflex/create");
     }
     public function media(array $p): void
     {

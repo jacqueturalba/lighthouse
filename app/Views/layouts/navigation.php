@@ -24,7 +24,7 @@
 
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/sflex">
-          <i class="bi bi-skype"></i>
+          <i class="bi bi-broadcast-pin"></i>
           SFlex
           </a>
         </li>

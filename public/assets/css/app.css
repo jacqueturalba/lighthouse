@@ -1482,6 +1482,21 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .sflex-skeleton { animation: none; }
 }
+
+.lh-upload-manager {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1080;
+    width: min(22rem, calc(100vw - 2rem));
+    padding: 1rem;
+    border: 1px solid rgba(13, 110, 253, .15);
+    border-radius: .75rem;
+    background: #fff;
+}
+
+.lh-upload-manager .progress { height: .45rem; }
+.lh-upload-job + .lh-upload-job { margin-top: .8rem; padding-top: .8rem; border-top: 1px solid #edf1f5; }
 #sflexComments {
     position: fixed !important;
     top: 0 !important;

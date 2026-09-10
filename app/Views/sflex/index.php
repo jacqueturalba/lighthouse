@@ -15,7 +15,7 @@
   <div class="row gap-3 m-3 justify-content-center">
     <div class="col-lg-10">
       <section class="lh-card mt-3">
-        <form method="post" action="/sflex" enctype="multipart/form-data" class="d-grid gap-3">
+        <form method="post" action="/sflex" enctype="multipart/form-data" class="d-grid gap-3" data-async-upload="sflex">
           <input type="hidden" name="_token" value="<?=e($_SESSION['csrf'])?>">
           <textarea class="form-control" name="caption" rows="1" placeholder="What spark do you want to share?"></textarea>
           <input class="form-control" type="file" name="media" accept="image/*,video/*">
@@ -28,7 +28,7 @@
 
     <div id="sflex-feed" class="row gap-3 d-flex justify-content-center" data-next-page="<?= e((string)($nextPage ?? '')) ?>" data-has-more="<?= !empty($hasMore) ? 'true' : 'false' ?>">
       <?php require __DIR__ . '/_posts.php'; ?>
-      <?php if(!$posts):?> 
+      <?php if(!$posts):?>
         <div class="lh-card p-4 text-secondary">No approved posts yet.</div> 
       <?php endif;?> 
     </div>

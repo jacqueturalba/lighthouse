@@ -9,6 +9,7 @@ require dirname(__DIR__).'/app/Controllers/EventController.php';
 require dirname(__DIR__).'/app/Controllers/MaterialRequestController.php';
 require dirname(__DIR__).'/app/Controllers/PressReleaseController.php';
 require dirname(__DIR__).'/app/Controllers/SFlexController.php';
+require dirname(__DIR__).'/app/Controllers/UploadController.php';
 
 $storage = new StorageController();
 $router->get('/storage/{type}/{folder}/{file}', [$storage, 'show']);
@@ -55,6 +56,11 @@ $router->post('/promotion-kit-upload', [$requests, 'upload']);
 
 $events = new EventController();
 $sflex = new SFlexController();
+$uploads = new UploadController();
+$router->post('/uploads/start', [$uploads, 'start']);
+$router->post('/uploads/{id}/progress', [$uploads, 'progress']);
+$router->post('/uploads/{id}/fail', [$uploads, 'fail']);
+$router->get('/uploads/status', [$uploads, 'status']);
 $router->get('/sflex-media/{type}/{date}/{file}', [$sflex, 'media']);
 $router->post('/sflex', [$sflex, 'create']);
 $router->post('/sflex/{id}/react', [$sflex, 'react']);

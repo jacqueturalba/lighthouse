@@ -19,7 +19,14 @@
           </div>
         </div>
       </div>
+      <!-- Caption -->
+      <?php if (trim((string)$post['caption']) !== ''): ?>
 
+        <div class="sflex-post-caption mb-3">
+          <?=nl2br(e($post['caption']))?>
+        </div>
+
+      <?php endif; ?>
       <!-- Media -->
       <?php if ($post['media_path']): ?>
 
@@ -41,18 +48,9 @@
             <img
               src="<?=$url?>"
               alt="Post media"
-              loading="lazy">
+              loading="lazy" class="img-fluid">
 
           <?php endif; ?>
-        </div>
-
-      <?php endif; ?>
-
-      <!-- Caption -->
-      <?php if (trim((string)$post['caption']) !== ''): ?>
-
-        <div class="sflex-post-caption mb-3">
-          <?=nl2br(e($post['caption']))?>
         </div>
 
       <?php endif; ?>

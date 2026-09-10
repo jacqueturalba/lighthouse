@@ -6,7 +6,7 @@
 </section>
 <section class="card lh-card">
     <div class="card-body p-4 p-lg-5">
-        <form method="post" action="/promotion-kit-upload" enctype="multipart/form-data" class="row g-4">
+        <form method="post" action="/promotion-kit-upload" enctype="multipart/form-data" class="row g-4" data-async-upload="promotion_kit">
             <input type="hidden" name="_token" value="<?= e($_SESSION['csrf']) ?>">
             <div class="col-12">
                 <label class="form-label" for="title">Title</label>
