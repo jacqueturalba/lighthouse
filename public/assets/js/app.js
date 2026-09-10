@@ -293,17 +293,75 @@ document.addEventListener('DOMContentLoaded', () => {
         if (job.status === 'failed') return job.error_message || 'Upload failed. Please select the file and try again.';
         return `Uploading ${Math.max(0, Math.min(100, Number(job.progress) || 0))}%`;
     };
+    const cleanupOldJobs = () => {
+        [...jobs.entries()].forEach(([id, job]) => {
+            // Completed jobs are no longer needed in the client-side manager.
+            if (job.status === 'completed') {
+                jobs.delete(id);
+            }
+        });
+
+        // Remove any stale job elements that may already exist in the DOM.
+        items.querySelectorAll('.lh-upload-job').forEach((element) => {
+            const jobId = Number(element.dataset.jobId);
+
+            if (!jobId || !jobs.has(jobId)) {
+                element.remove();
+            }
+        });
+    };
+
     const render = () => {
-        const visible = [...jobs.values()].filter((job) => job.status !== 'completed');
-        const dismissed = localStorage.getItem('lh-upload-manager-dismissed') === '1';
-        const minimized = localStorage.getItem('lh-upload-manager-minimized') === '1';
-        manager.hidden = visible.length === 0 || dismissed || minimized;
-        if (managerOpen) managerOpen.hidden = visible.length === 0 || dismissed || !minimized;
+        cleanupOldJobs();
+
+        const visible = [...jobs.values()].filter(
+            (job) => job.status !== 'completed'
+        );
+
+        const dismissed =
+            localStorage.getItem('lh-upload-manager-dismissed') === '1';
+
+        const minimized =
+            localStorage.getItem('lh-upload-manager-minimized') === '1';
+
+        manager.hidden =
+            visible.length === 0 || dismissed || minimized;
+
+        if (managerOpen) {
+            managerOpen.hidden =
+                visible.length === 0 || dismissed || !minimized;
+        }
+
         items.innerHTML = visible.map((job) => `
-            <div class="lh-upload-job">
-                <div class="d-flex justify-content-between gap-2 small"><span>${escapeHtml(labelFor(job))}</span><span>${escapeHtml(statusText(job))}</span></div>
-                ${job.status === 'failed' ? `<a class="small" href="${retryUrlFor(job)}">Select file and try again</a>` : `<div class="progress mt-2" role="progressbar" aria-label="Upload progress" aria-valuenow="${Number(job.progress) || 0}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width:${Number(job.progress) || 0}%"></div></div>`}
-            </div>`).join('');
+            <div class="lh-upload-job" data-job-id="${Number(job.id)}">
+                <div class="d-flex justify-content-between gap-2 small">
+                    <span>${escapeHtml(labelFor(job))}</span>
+                    <span>${escapeHtml(statusText(job))}</span>
+                </div>
+
+                ${
+                    job.status === 'failed'
+                        ? `<a class="small" href="${retryUrlFor(job)}">
+                            Select file and try again
+                        </a>`
+                        : `
+                            <div
+                                class="progress mt-2"
+                                role="progressbar"
+                                aria-label="Upload progress"
+                                aria-valuenow="${Number(job.progress) || 0}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            >
+                                <div
+                                    class="progress-bar progress-bar-striped progress-bar-animated"
+                                    style="width:${Number(job.progress) || 0}%"
+                                ></div>
+                            </div>
+                        `
+                }
+            </div>
+        `).join('');
     };
     const notify = (message, type = 'success', link = '') => {
         if (!toasts || !message) return;
@@ -327,7 +385,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/uploads/status', { credentials: 'same-origin', headers: { Accept: 'application/json' } });
             if (!response.ok) return;
             const data = await response.json();
-            (data.jobs || []).forEach((job) => jobs.set(Number(job.id), job));
+            const serverJobs = data.jobs || [];
+            const serverJobIds = new Set(
+                serverJobs.map((job) => Number(job.id))
+            );
+
+            serverJobs.forEach((job) => {
+                const id = Number(job.id);
+
+                // Do not restore completed jobs.
+                if (job.status === 'completed') {
+                    jobs.delete(id);
+                    return;
+                }
+
+                jobs.set(id, job);
+            });
+
+            // Remove client-side jobs that no longer exist on the server.
+            [...jobs.keys()].forEach((id) => {
+                if (!serverJobIds.has(id)) {
+                    jobs.delete(id);
+                }
+            });
+
             render();
         } catch (_) { /* Status recovery is non-critical while offline. */ }
     };
@@ -336,9 +417,18 @@ document.addEventListener('DOMContentLoaded', () => {
         render();
     };
 
-    document.querySelector('[data-upload-manager-minimize]')?.addEventListener('click', () => { localStorage.setItem('lh-upload-manager-minimized','1'); render(); });
-    document.querySelector('[data-upload-manager-dismiss]')?.addEventListener('click', () => { localStorage.setItem('lh-upload-manager-dismissed','1'); render(); });
-    managerOpen?.addEventListener('click', () => { localStorage.removeItem('lh-upload-manager-minimized'); render(); });
+    document.querySelector('[data-upload-manager-minimize]')?.addEventListener('click', () => { 
+        localStorage.setItem('lh-upload-manager-minimized','1'); 
+        render(); 
+    });
+    document.querySelector('[data-upload-manager-dismiss]')?.addEventListener('click', () => { 
+        localStorage.setItem('lh-upload-manager-dismissed','1'); 
+        render(); 
+    });
+    managerOpen?.addEventListener('click', () => { 
+        localStorage.removeItem('lh-upload-manager-minimized'); 
+        render(); 
+    });
     refresh();
     window.setInterval(refresh, 15000);
 
@@ -356,8 +446,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const type = form.dataset.asyncUpload;
             let jobId;
             try {
-                const started = await post('/uploads/start', { upload_type: type, original_filename: file.name, file_size: file.size });
+                const started = await post('/uploads/start', { 
+                    upload_type: type, 
+                    original_filename: file.name, 
+                    file_size: file.size 
+                });
+
                 jobId = Number(started.id);
+
+                // A new upload should always bring the upload manager back.
+                localStorage.removeItem('lh-upload-manager-dismissed');
+                //localStorage.removeItem('lh-upload-manager-minimized');
+
                 updateProgress(jobId, 0, type, file.name);
             } catch (error) {
                 notify(error.message || 'Could not prepare the upload.', 'danger');
