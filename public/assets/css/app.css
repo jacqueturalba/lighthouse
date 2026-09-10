@@ -1483,6 +1483,8 @@ body {
     .sflex-skeleton { animation: none; }
 }
 
+.sflex-carousel .carousel-item img,.sflex-carousel .carousel-item video{width:100%;height:100%;object-fit:contain;background:#f4f7fb}.sflex-reaction-picker{position:relative}.sflex-reaction-options{position:absolute;bottom:calc(100% + .4rem);left:0;display:flex;gap:.25rem;padding:.35rem;border:1px solid #e5eaf1;border-radius:2rem;background:#fff;box-shadow:0 .35rem 1rem rgba(0,0,0,.12);opacity:0;visibility:hidden;transform:translateY(.35rem);transition:.18s ease;z-index:5}.sflex-reaction-picker:hover .sflex-reaction-options,.sflex-reaction-picker:focus-within .sflex-reaction-options,.sflex-reaction-picker.is-open .sflex-reaction-options{opacity:1;visibility:visible;transform:none}.sflex-reaction-options button{font-size:1.1rem;line-height:1}.sflex-reaction-options button:hover{transform:scale(1.15)}
+
 .lh-upload-manager {
     position: fixed;
     right: 1rem;
@@ -1497,6 +1499,7 @@ body {
 
 .lh-upload-manager .progress { height: .45rem; }
 .lh-upload-job + .lh-upload-job { margin-top: .8rem; padding-top: .8rem; border-top: 1px solid #edf1f5; }
+.lh-file-drop{padding:.75rem;border:1px dashed #9db7d7;border-radius:.75rem;background:#f8fbff}.lh-file-drop.is-dragging{border-color:#0d6efd;background:#edf5ff}.lh-upload-preview{position:relative;width:72px;height:72px}.lh-upload-preview img,.lh-upload-preview video{width:100%;height:100%;object-fit:cover;border-radius:.5rem}.lh-upload-preview button{position:absolute;top:-.35rem;right:-.35rem;width:1.35rem;height:1.35rem;padding:0;border-radius:50%;line-height:1;background:#fff}
 #sflexComments {
     position: fixed !important;
     top: 0 !important;

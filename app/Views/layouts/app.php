@@ -31,12 +31,16 @@
       <div id="lh-upload-manager" class="lh-upload-manager shadow-sm" hidden aria-live="polite">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <strong class="small"><i class="bi bi-cloud-arrow-up me-1"></i>Upload activity</strong>
-          <button type="button" class="btn-close btn-sm" aria-label="Hide upload activity" data-upload-manager-close></button>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary border border-0" data-upload-manager-minimize><i class="bi bi-dash-lg"></i></button>
+            <button type="button" class="btn-close btn-sm" aria-label="Dismiss upload activity" data-upload-manager-dismiss></button>
+          </div>
         </div>
         <div data-upload-manager-items></div>
         <span class="mt-2 small text-muted d-flex p-1 fw-light" data-upload-manager-count>Do not close the browser tab or navigate away while uploading.</span>
       </div>
       <div id="lh-upload-toasts" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+      <button id="lh-upload-manager-open" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-3 shadow" hidden aria-label="Show upload activity"><i class="bi bi-cloud-arrow-up"></i></button>
     <?php endif; ?>
 
     <script>

@@ -435,6 +435,12 @@ final class PageController
         ]);
     }
 
+    public function sflexSubmissions(): void
+    {
+        $u = require_auth();
+        view('sflex/submissions', ['title' => 'My SFlex posts', 'posts' => SFlexPost::submissions((int)$u['id'])]);
+    }
+
     public function sflexPost(array $params): void
     {
         $u = require_auth();

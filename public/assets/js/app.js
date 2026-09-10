@@ -239,10 +239,45 @@ document.querySelectorAll('.lh-calendar-day[data-href]').forEach(day => {
  */
 document.addEventListener('DOMContentLoaded', () => {
     const manager = document.getElementById('lh-upload-manager');
+    const managerOpen = document.getElementById('lh-upload-manager-open');
     const items = document.querySelector('[data-upload-manager-items]');
     const toasts = document.getElementById('lh-upload-toasts');
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
     if (!manager || !items || !token) return;
+
+    document.querySelectorAll('[data-multi-upload="sflex"]').forEach((zone) => {
+        const input = zone.querySelector('input[type="file"]');
+        const summary = zone.querySelector('[data-upload-summary]');
+        const previews = zone.querySelector('[data-upload-previews]');
+        let files = [];
+        const message = (text, invalid = false) => { summary.textContent = text; summary.classList.toggle('text-danger', invalid); };
+        const render = () => {
+            input._lhFiles = files;
+            previews.innerHTML = '';
+            files.forEach((file, index) => {
+                const item = document.createElement('div'); item.className = 'lh-upload-preview';
+                const url = URL.createObjectURL(file);
+                item.innerHTML = file.type.startsWith('video/') ? `<video muted src="${url}"></video>` : `<img src="${url}" alt="Selected image">`;
+                const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'btn-close shadow-sm'; remove.setAttribute('aria-label', `Remove ${file.name}`);
+                remove.addEventListener('click', () => { URL.revokeObjectURL(url); files.splice(index, 1); render(); });
+                item.append(remove); previews.append(item);
+            });
+            message(files.length ? (files[0].type.startsWith('video/') ? '1 video selected' : `${files.length} / 10 images selected`) : 'Drop up to 10 images here, or click to browse. A video must be uploaded alone.');
+        };
+        const add = (incoming) => {
+            const next = Array.from(incoming);
+            if (!next.length) return;
+            if (next.some(file => !file.type.startsWith('image/') && !file.type.startsWith('video/'))) { message('Only image or video files are allowed.', true); return; }
+            const combined = [...files, ...next];
+            const hasVideo = combined.some(file => file.type.startsWith('video/'));
+            if ((hasVideo && combined.length !== 1) || (!hasVideo && combined.length > 10)) { message('Choose up to 10 images, or one video by itself.', true); return; }
+            files = combined; render();
+        };
+        input.addEventListener('change', () => { files = []; add(input.files); });
+        ['dragenter','dragover'].forEach(eventName => zone.addEventListener(eventName, event => { event.preventDefault(); zone.classList.add('is-dragging'); }));
+        ['dragleave','drop'].forEach(eventName => zone.addEventListener(eventName, event => { event.preventDefault(); zone.classList.remove('is-dragging'); }));
+        zone.addEventListener('drop', event => add(event.dataTransfer.files));
+    });
 
     const jobs = new Map();
     let activeUploads = 0;
@@ -260,7 +295,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const render = () => {
         const visible = [...jobs.values()].filter((job) => job.status !== 'completed');
-        manager.hidden = visible.length === 0;
+        const dismissed = localStorage.getItem('lh-upload-manager-dismissed') === '1';
+        const minimized = localStorage.getItem('lh-upload-manager-minimized') === '1';
+        manager.hidden = visible.length === 0 || dismissed || minimized;
+        if (managerOpen) managerOpen.hidden = visible.length === 0 || dismissed || !minimized;
         items.innerHTML = visible.map((job) => `
             <div class="lh-upload-job">
                 <div class="d-flex justify-content-between gap-2 small"><span>${escapeHtml(labelFor(job))}</span><span>${escapeHtml(statusText(job))}</span></div>
@@ -298,14 +336,17 @@ document.addEventListener('DOMContentLoaded', () => {
         render();
     };
 
-    document.querySelector('[data-upload-manager-close]')?.addEventListener('click', () => { manager.hidden = true; });
+    document.querySelector('[data-upload-manager-minimize]')?.addEventListener('click', () => { localStorage.setItem('lh-upload-manager-minimized','1'); render(); });
+    document.querySelector('[data-upload-manager-dismiss]')?.addEventListener('click', () => { localStorage.setItem('lh-upload-manager-dismissed','1'); render(); });
+    managerOpen?.addEventListener('click', () => { localStorage.removeItem('lh-upload-manager-minimized'); render(); });
     refresh();
     window.setInterval(refresh, 15000);
 
     document.querySelectorAll('form[data-async-upload]').forEach((form) => {
         form.addEventListener('submit', async (event) => {
             const input = form.querySelector('input[type="file"]');
-            const file = input?.files?.[0];
+            const selectedFiles = input?._lhFiles || Array.from(input?.files || []);
+            const file = selectedFiles[0];
             if (!file) return; // Caption-only SFlex posts retain the original form path.
             event.preventDefault();
             if (!form.reportValidity()) return;
@@ -325,6 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = new FormData(form);
+            // FormData is rebuilt explicitly so every picker/drop selection is
+            // sent, rather than depending on a browser's live FileList.
+            if (input && selectedFiles.length) {
+                data.delete(input.name);
+                selectedFiles.forEach((selected) => data.append(input.name, selected, selected.name));
+            }
             data.set('ajax', '1');
             data.set('upload_job_id', String(jobId));
             let lastReported = -1;

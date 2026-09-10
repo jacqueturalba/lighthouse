@@ -6,7 +6,7 @@
       <form method="post" action="/sflex" enctype="multipart/form-data" class="d-grid gap-3" data-async-upload="sflex">
         <input type="hidden" name="_token" value="<?=e($_SESSION['csrf'])?>">
         <textarea class="form-control" name="caption" rows="5" placeholder="Share with the community"></textarea>
-        <input class="form-control" type="file" name="media" accept="image/*,video/*">
+        <div class="lh-file-drop" data-multi-upload="sflex"><input class="form-control" type="file" name="media[]" accept="image/*,video/*" multiple><div class="small text-secondary mt-2" data-upload-summary>Drop up to 10 images here, or click to browse. A video must be uploaded alone.</div><div class="d-flex flex-wrap gap-2 mt-2" data-upload-previews></div></div>
         <small class="text-secondary">Images or videos up to 4 GB. Posts are reviewed before publishing.</small>
         <button class="btn btn-lh-primary">Submit post</button>
       </form>
