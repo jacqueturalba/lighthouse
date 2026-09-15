@@ -5,9 +5,26 @@ $labels=['like'=>'👍','heart'=>'❤️','smile'=>'😁','laugh'=>'😂','cry'=
 foreach($posts as $p): ?> 
   
   <article class="col-lg-3 col-md-4 col-sm-10 lh-card sflex-post" data-sflex-post="<?= (int)$p['id'] ?>">
-  <div class="small text-secondary mb-2">
+  <div class="d-flex justify-content-between small text-secondary mb-2">
     <strong> <?=e($p['author'])?> </strong> · <?=e(date('M j, Y',strtotime($p['created_at'])))?>
-  </div> 
+  <?php if((int)$p['user_id']===(int)$user['id']||$user['role']==='super_admin'):?>
+    <div class="dropdown">
+      <button class="btn btn-sm btn-link text-secondary p-0" data-bs-toggle="dropdown" aria-label="Post settings">
+        <i class="bi bi-three-dots"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <?php if((int)$p['user_id']===(int)$user['id']):?>
+          <li>
+            <button class="dropdown-item" data-sflex-edit data-post-id="<?= (int)$p['id']?>" data-caption="<?=e($p['caption'])?>">Edit</button>
+          </li>
+        <?php endif;?>
+        <li>
+          <button class="dropdown-item text-danger" data-sflex-delete data-post-id="<?= (int)$p['id']?>">Delete</button>
+        </li>
+      </ul>
+    </div>
+  <?php endif;?>
+  </div>
   <?php if(!empty($p['media'])): ?> 
   <div id="media-<?= (int)$p['id'] ?>" class="carousel slide sflex-carousel mb-3"  data-bs-ride="carousel">
       <div class="carousel-inner"> 
@@ -34,7 +51,7 @@ foreach($posts as $p): ?>
     <?php endif;?>
   </div> 
   <?php endif;?> 
-  <p class="mb-2"> <?=nl2br(e($p['caption']))?> </p> 
+  <p class="mb-2" data-sflex-caption><?=nl2br(e($p['caption']))?></p>
   <?php if($p['counts']):?> 
     <button class="btn btn-sm px-0 text-secondary" data-sflex-reaction-summary data-post-id="<?= (int)$p['id']?>"> 
       <?php foreach($p['counts'] as$c):?> 

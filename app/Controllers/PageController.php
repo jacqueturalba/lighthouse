@@ -387,6 +387,7 @@ final class PageController
 
             ob_start();
             $posts = $feed['posts'];
+            $user = $u;
             require dirname(__DIR__) . '/Views/sflex/_posts.php';
             $html = ob_get_clean();
 
@@ -405,6 +406,7 @@ final class PageController
             'posts' => $feed['posts'],
             'hasMore' => $feed['has_more'],
             'nextPage' => $feed['next_page'],
+            'user' => $u
         ]);
     }
 

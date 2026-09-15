@@ -59,7 +59,9 @@ document.addEventListener('click', async function (event) {
   form.append('_token', '<?= e($_SESSION['csrf']) ?>');
   form.append('reaction', button.dataset.reaction);
   const response = await fetch('/sflex/' + post.dataset.post + '/react', {method: 'POST', body: form});
-  if (response.ok) window.location.reload();
+  if (!response.ok || button.dataset.loading) return;
+  button.dataset.loading='1';
+  try { const data=await response.json(); const card=button.closest('[data-sflex-post]'); card.querySelectorAll('[data-reaction]').forEach(item=>item.classList.toggle('btn-primary',item.dataset.reaction===data.mine)); } finally { delete button.dataset.loading; }
 });
 document.addEventListener('click',async function(event){
   const button=event.target.closest('[data-bs-target^="#comments-"]');

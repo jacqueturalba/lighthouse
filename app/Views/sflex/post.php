@@ -5,7 +5,7 @@
       <i class="bi bi-arrow-left"></i> Back to SFlex
     </a>
 
-    <article class="lh-card mt-3">
+    <article class="lh-card mt-3" data-sflex-post="<?= (int)$post['id'] ?>">
 
       <!-- Post header -->
       <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
@@ -18,11 +18,12 @@
             <?=e(date('M j, Y g:i A', strtotime($post['created_at'])))?>
           </div>
         </div>
+        <?php if((int)$post['user_id']===(int)$user['id']||$user['role']==='super_admin'):?><div class="dropdown"><button class="btn btn-sm btn-link text-secondary" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></button><ul class="dropdown-menu dropdown-menu-end"><?php if((int)$post['user_id']===(int)$user['id']):?><li><button class="dropdown-item" data-sflex-edit data-post-id="<?= (int)$post['id']?>" data-caption="<?=e($post['caption'])?>">Edit</button></li><?php endif;?><li><button class="dropdown-item text-danger" data-sflex-delete data-post-id="<?= (int)$post['id']?>">Delete</button></li></ul></div><?php endif;?>
       </div>
       <!-- Caption -->
       <?php if (trim((string)$post['caption']) !== ''): ?>
 
-        <div class="sflex-post-caption mb-3">
+        <div class="sflex-post-caption mb-3" data-sflex-caption>
           <?=nl2br(e($post['caption']))?>
         </div>
 
@@ -222,8 +223,9 @@ document.addEventListener('click', async function (event) {
         }
     );
 
-    if (response.ok) {
-        window.location.reload();
-    }
+    if (!response.ok || button.dataset.loading) return;
+    button.dataset.loading='1';
+    try { const data=await response.json(); document.querySelectorAll('[data-reaction]').forEach(item=>item.classList.toggle('is-reacted',item.dataset.reaction===data.mine)); } finally { delete button.dataset.loading; }
 });
+document.querySelector('.sflex-comment-form')?.addEventListener('submit',async function(event){event.preventDefault();const form=event.currentTarget,button=form.querySelector('button'),fd=new FormData(form);fd.append('ajax','1');button.disabled=true;try{const response=await fetch(form.action,{method:'POST',body:fd});if(!response.ok)throw new Error();const body=form.querySelector('textarea');const list=document.querySelector('.sflex-comment-list');if(list){const entry=document.createElement('div');entry.className='sflex-comment';entry.textContent=body.value;list.append(entry);}body.value='';}catch(_){alert('Your comment could not be added.');}finally{button.disabled=false;}});
 </script>

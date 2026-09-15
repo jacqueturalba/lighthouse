@@ -161,6 +161,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const token = document.querySelector('meta[name="csrf-token"]')?.content;
+    if (!token) return;
+    let editingId = null;
+    const editModal = document.getElementById('sflexEdit');
+    document.addEventListener('click', async (event) => {
+        const edit = event.target.closest('[data-sflex-edit]');
+        const remove = event.target.closest('[data-sflex-delete]');
+        if (edit && editModal) { editingId = edit.dataset.postId; editModal.querySelector('[name="caption"]').value = edit.dataset.caption; editModal.querySelector('[data-sflex-edit-error]').textContent=''; bootstrap.Modal.getOrCreateInstance(editModal).show(); }
+        if (remove && confirm('Delete this post? This cannot be undone.')) { const body=new FormData();body.append('_token',token);const response=await fetch(`/sflex/${remove.dataset.postId}/delete`,{method:'POST',body});if(response.ok){document.querySelector(`[data-sflex-post="${remove.dataset.postId}"]`)?.remove();if(document.body.dataset.sflexDetail==='1')location.href='/sflex';}else alert('This post could not be deleted.'); }
+    });
+    document.getElementById('sflex-edit-form')?.addEventListener('submit', async (event) => { event.preventDefault(); const form=event.currentTarget, body=new FormData(form);body.append('_token',token);const response=await fetch(`/sflex/${editingId}/edit`,{method:'POST',body});const data=await response.json().catch(()=>({}));if(!response.ok){form.querySelector('[data-sflex-edit-error]').textContent=data.error||'Could not save changes.';return;}const card=document.querySelector(`[data-sflex-post="${editingId}"]`);card?.querySelector('[data-sflex-caption]')?.replaceChildren(data.caption);bootstrap.Modal.getOrCreateInstance(editModal).hide(); });
+});
+
 
 document.addEventListener('DOMContentLoaded', () => {
 

@@ -65,6 +65,8 @@ $router->get('/uploads/status', [$uploads, 'status']);
 $router->get('/sflex-media/{type}/{date}/{file}', [$sflex, 'media']);
 $router->post('/sflex', [$sflex, 'create']);
 $router->post('/sflex/{id}/react', [$sflex, 'react']);
+$router->post('/sflex/{id}/edit', [$sflex, 'update']);
+$router->post('/sflex/{id}/delete', [$sflex, 'delete']);
 $router->post('/sflex/{id}/comment', [$sflex, 'comment']);
 $router->post('/sflex/comments/{id}/delete', [$sflex, 'deleteComment']);
 $router->get('/sflex/{id}/comments', [$sflex, 'comments']);

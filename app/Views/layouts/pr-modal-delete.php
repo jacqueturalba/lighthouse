@@ -87,3 +87,4 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="sflexEdit" tabindex="-1"><div class="modal-dialog"><form class="modal-content" id="sflex-edit-form"><div class="modal-header"><h2 class="modal-title fs-5">Edit post</h2><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><textarea class="form-control" name="caption" rows="5" maxlength="10000" required></textarea><div class="text-danger small mt-2" data-sflex-edit-error></div></div><div class="modal-footer"><button class="btn btn-primary" type="submit">Save changes</button></div></form></div></div>
