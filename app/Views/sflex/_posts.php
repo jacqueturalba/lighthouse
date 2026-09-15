@@ -19,7 +19,20 @@ foreach($posts as $p): ?>
           </li>
         <?php endif;?>
         <li>
-          <button class="dropdown-item text-danger" data-sflex-delete data-post-id="<?= (int)$p['id']?>">Delete</button>
+          <!--<button class="dropdown-item text-danger" data-bs-toggle="modal" 
+          data-bs-target="#deleteSPostModal"
+          data-delete-title="<?= e($p['caption']) ?>"
+          data-sflex-delete data-post-id="<?= (int)$p['id']?>">Delete</button>-->
+
+          <button class="dropdown-item text-danger"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#deleteSPostModal"
+                  data-delete-title="<?= e($p['caption']) ?>"
+                  data-sflex-delete
+                  data-post-id="<?= (int)$p['id']?>">
+              Delete
+          </button>
+
         </li>
       </ul>
     </div>

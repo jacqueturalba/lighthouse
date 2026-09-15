@@ -161,19 +161,124 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
 document.addEventListener('DOMContentLoaded', () => {
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
     if (!token) return;
+
     let editingId = null;
+    let deletingId = null;
+
     const editModal = document.getElementById('sflexEdit');
+    const deleteSPostModal = document.getElementById('deleteSPostModal');
+    const confirmDeleteSPost = document.getElementById('confirmDeleteSPost');
+    const deleteSPostTitle = document.getElementById('deleteSPostTitle');
+
     document.addEventListener('click', async (event) => {
         const edit = event.target.closest('[data-sflex-edit]');
         const remove = event.target.closest('[data-sflex-delete]');
-        if (edit && editModal) { editingId = edit.dataset.postId; editModal.querySelector('[name="caption"]').value = edit.dataset.caption; editModal.querySelector('[data-sflex-edit-error]').textContent=''; bootstrap.Modal.getOrCreateInstance(editModal).show(); }
-        if (remove && confirm('Delete this post? This cannot be undone.')) { const body=new FormData();body.append('_token',token);const response=await fetch(`/sflex/${remove.dataset.postId}/delete`,{method:'POST',body});if(response.ok){document.querySelector(`[data-sflex-post="${remove.dataset.postId}"]`)?.remove();if(document.body.dataset.sflexDetail==='1')location.href='/sflex';}else alert('This post could not be deleted.'); }
+
+        // Edit
+        if (edit && editModal) {
+            editingId = edit.dataset.postId;
+
+            editModal.querySelector('[name="caption"]').value = edit.dataset.caption;
+            editModal.querySelector('[data-sflex-edit-error]').textContent = '';
+
+            bootstrap.Modal.getOrCreateInstance(editModal).show();
+            return;
+        }
+
+        // Delete - only prepare and show confirmation modal
+        if (remove && deleteSPostModal) {
+            deletingId = remove.dataset.postId;
+
+            if (deleteSPostTitle) {
+                deleteSPostTitle.textContent = remove.dataset.deleteTitle || '';
+            }
+
+            bootstrap.Modal.getOrCreateInstance(deleteSPostModal).show();
+        }
     });
-    document.getElementById('sflex-edit-form')?.addEventListener('submit', async (event) => { event.preventDefault(); const form=event.currentTarget, body=new FormData(form);body.append('_token',token);const response=await fetch(`/sflex/${editingId}/edit`,{method:'POST',body});const data=await response.json().catch(()=>({}));if(!response.ok){form.querySelector('[data-sflex-edit-error]').textContent=data.error||'Could not save changes.';return;}const card=document.querySelector(`[data-sflex-post="${editingId}"]`);card?.querySelector('[data-sflex-caption]')?.replaceChildren(data.caption);bootstrap.Modal.getOrCreateInstance(editModal).hide(); });
+
+    // Confirm Delete
+    confirmDeleteSPost?.addEventListener('click', async () => {
+        if (!deletingId) return;
+
+        const postId = deletingId;
+        const button = confirmDeleteSPost;
+
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Deleting...';
+
+        try {
+            const body = new FormData();
+            body.append('_token', token);
+
+            const response = await fetch(`/sflex/${postId}/delete`, {
+                method: 'POST',
+                body
+            });
+
+            if (!response.ok) {
+                throw new Error('Delete failed');
+            }
+
+            // Remove post from the page
+            document
+                .querySelector(`[data-sflex-post="${postId}"]`)
+                ?.remove();
+
+            // Close modal
+            bootstrap.Modal.getOrCreateInstance(deleteSPostModal).hide();
+
+            // If currently viewing the post detail page, return to SFlex
+            if (document.body.dataset.sflexDetail === '1') {
+                location.href = '/sflex';
+            }
+
+        } catch (error) {
+            alert('This post could not be deleted.');
+        } finally {
+            deletingId = null;
+
+            button.disabled = false;
+            button.innerHTML = '<i class="bi bi-trash me-1"></i> Yes, Delete';
+        }
+    });
+
+    // Edit form
+    document.getElementById('sflex-edit-form')?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const form = event.currentTarget;
+        const body = new FormData(form);
+
+        body.append('_token', token);
+
+        const response = await fetch(`/sflex/${editingId}/edit`, {
+            method: 'POST',
+            body
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            form.querySelector('[data-sflex-edit-error]').textContent =
+                data.error || 'Could not save changes.';
+            return;
+        }
+
+        const card = document.querySelector(`[data-sflex-post="${editingId}"]`);
+
+        card
+            ?.querySelector('[data-sflex-caption]')
+            ?.replaceChildren(data.caption);
+
+        bootstrap.Modal.getOrCreateInstance(editModal).hide();
+    });
 });
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
