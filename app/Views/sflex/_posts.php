@@ -65,14 +65,12 @@ foreach($posts as $p): ?>
   </div> 
   <?php endif;?> 
   <p class="mb-2" data-sflex-caption><?=nl2br(e($p['caption']))?></p>
-  <?php if($p['counts']):?> 
-    <button class="btn btn-sm px-0 text-secondary" data-sflex-reaction-summary data-post-id="<?= (int)$p['id']?>"> 
+    <button class="btn btn-sm px-0 text-secondary" data-sflex-reaction-summary data-post-id="<?= (int)$p['id']?>" data-sflex-reaction-counts>
       <?php foreach($p['counts'] as$c):?> 
         <?= $labels[$c['reaction']]??''?> 
         <?= (int)$c['total']?> 
       <?php endforeach;?> 
     </button> 
-  <?php endif;?> 
   <div class="d-flex align-items-center gap-2 border-top pt-2">
     <div class="sflex-reaction-picker" data-post="<?= (int)$p['id']?>">
       <button class="btn btn-sm 
@@ -88,7 +86,7 @@ foreach($posts as $p): ?>
       </div>
     </div>
     <button class="btn btn-sm btn-outline-secondary" data-bs-target="#comments-<?= (int)$p['id']?>">
-      <i class="bi bi-chat"></i> <?= (int)$p['comments']?> </button>
+      <i class="bi bi-chat"></i> <span data-sflex-comment-count><?= (int)$p['comments']?></span> </button>
   </div>
 </article> 
 <?php endforeach;?>

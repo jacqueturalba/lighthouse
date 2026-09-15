@@ -55,13 +55,22 @@ document.addEventListener('click', async function (event) {
   const button = event.target.closest('[data-reaction]');
   if (!button) return;
   const post = button.closest('[data-post]');
+  if (!post || post.dataset.reacting === '1') return;
+  post.dataset.reacting = '1';
   const form = new FormData();
   form.append('_token', '<?= e($_SESSION['csrf']) ?>');
   form.append('reaction', button.dataset.reaction);
-  const response = await fetch('/sflex/' + post.dataset.post + '/react', {method: 'POST', body: form});
-  if (!response.ok || button.dataset.loading) return;
-  button.dataset.loading='1';
-  try { const data=await response.json(); const card=button.closest('[data-sflex-post]'); card.querySelectorAll('[data-reaction]').forEach(item=>item.classList.toggle('btn-primary',item.dataset.reaction===data.mine)); } finally { delete button.dataset.loading; }
+  try {
+    const response = await fetch('/sflex/' + post.dataset.post + '/react', {method: 'POST', body: form});
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Could not update reaction.');
+    const card = button.closest('[data-sflex-post]');
+    const icons = {like:'👍',heart:'❤️',smile:'😁',laugh:'😂',cry:'😭'};
+    const picker = card.querySelector('.sflex-reaction-picker > button[data-reaction]');
+    picker.dataset.reaction = data.mine || 'like'; picker.textContent = icons[data.mine || 'like'];
+    picker.classList.toggle('btn-primary', !!data.mine); picker.classList.toggle('btn-outline-secondary', !data.mine);
+    card.querySelector('[data-sflex-reaction-counts]').innerHTML = data.counts.map(count => `${icons[count.reaction]} ${count.total}`).join(' ');
+  } catch (error) { alert(error.message); } finally { delete post.dataset.reacting; }
 });
 document.addEventListener('click',async function(event){
   const button=event.target.closest('[data-bs-target^="#comments-"]');
@@ -70,11 +79,12 @@ document.addEventListener('click',async function(event){
   const id=button.dataset.bsTarget.replace('#comments-','');
   const response=await fetch('/sflex/'+id+'/comments');
   if(!response.ok)return;const data=await response.json();
-  document.getElementById('sflex-comments-body').innerHTML='<div class="small text-secondary mb-3">Comments</div>'+data.comments.map(c=>'<div class="border-bottom py-2 '+(c.parent_id?'ms-3':'')+'" data-comment-id="'+c.id+'"><strong>'+escapeHtml(c.author)+'</strong>'+(c.hidden_at?'<span class="badge text-bg-warning ms-2">Hidden</span>':'')+'<div>'+escapeHtml(c.body)+'</div><small class="text-secondary">'+escapeHtml(c.created_at)+'</small><div><button class="btn btn-link btn-sm px-0" data-reply-comment="'+c.id+'">Reply</button>'+(Number(c.user_id)===sflexCurrentUserId?'<button class="btn btn-link btn-sm text-danger" data-delete-comment="'+c.id+'">Delete</button>':'')+'<?php if($user['role']==='super_admin'):?><button class="btn btn-link btn-sm text-danger" data-moderate-comment="'+c.id+'" data-action="remove">Delete</button><button class="btn btn-link btn-sm" data-moderate-comment="'+c.id+'" data-action="'+(c.hidden_at?'unhide':'hide')+'">'+(c.hidden_at?'Unhide':'Hide')+'</button><?php endif;?></div></div>').join('')+'<form class="mt-3" data-modal-comment-form><textarea class="form-control mb-2" name="body" maxlength="1000" placeholder="Write a comment"></textarea><button class="btn btn-primary btn-sm"><i class="bi bi-send"></i> Send</button></form>';
+  document.getElementById('sflexComments').dataset.postId=id;
+  document.getElementById('sflex-comments-body').innerHTML='<div class="small text-secondary mb-3">Comments</div>'+data.comments.map(c=>'<div class="border-bottom py-2 '+(c.parent_id?'ms-3':'')+'" data-comment-id="'+c.id+'"><strong>'+escapeHtml(c.author)+'</strong>'+(c.hidden_at?'<span class="badge text-bg-warning ms-2">Hidden</span>':'')+'<div>'+escapeHtml(c.body)+'</div><small class="text-secondary">'+escapeHtml(c.created_at)+'</small><div><button class="btn btn-link btn-sm px-0" data-reply-comment="'+c.id+'">Reply</button>'+(Number(c.user_id)===sflexCurrentUserId?'<button class="btn btn-link btn-sm text-danger" data-delete-comment="'+c.id+'">Delete</button>':'')+'<?php if($user['role']==='super_admin'):?><button class="btn btn-link btn-sm text-danger" data-moderate-comment="'+c.id+'" data-action="remove">Delete</button><button class="btn btn-link btn-sm" data-moderate-comment="'+c.id+'" data-action="'+(c.hidden_at?'unhide':'hide')+'">'+(c.hidden_at?'Unhide':'Hide')+'</button><?php endif;?></div></div>').join('')||'<p class="text-secondary">No comments yet.</p>';
   bootstrap.Modal.getOrCreateInstance(document.getElementById('sflexComments')).show();
 });
 document.addEventListener('click',async function(event){const reply=event.target.closest('[data-reply-comment]');const moderate=event.target.closest('[data-moderate-comment]');const remove=event.target.closest('[data-delete-comment]');if(reply){const host=reply.closest('[data-comment-id]');if(host.querySelector('form'))return;host.insertAdjacentHTML('beforeend','<form class="mt-2" data-modal-comment-form data-parent="'+reply.dataset.replyComment+'"><textarea class="form-control form-control-sm mb-1" name="body" maxlength="1000" placeholder="Write a reply"></textarea><button class="btn btn-sm btn-primary"><i class="bi bi-send"></i></button> <button type="button" class="btn btn-sm btn-link" data-cancel-reply>Cancel</button></form>');}if(event.target.closest('[data-cancel-reply]'))event.target.closest('form').remove();if(moderate||remove){const fd=new FormData();fd.append('_token','<?=e($_SESSION['csrf'])?>');let url;if(moderate){fd.append('action',moderate.dataset.action);url='/sflex/comments/'+moderate.dataset.moderateComment+'/moderate';}else url='/sflex/comments/'+remove.dataset.deleteComment+'/delete';const r=await fetch(url,{method:'POST',body:fd});if(r.ok)window.location.reload();}});
-document.addEventListener('submit',async function(event){const form=event.target.closest('[data-modal-comment-form]');if(!form)return;event.preventDefault();const id=document.querySelector('[data-bs-target^="#comments-"]')?.dataset.bsTarget.replace('#comments-','');const fd=new FormData(form);fd.append('_token','<?=e($_SESSION['csrf'])?>');fd.append('ajax','1');if(form.dataset.parent)fd.append('parent_id',form.dataset.parent);const r=await fetch('/sflex/'+id+'/comment',{method:'POST',body:fd});if(r.ok)document.querySelector('[data-bs-target="#comments-'+id+'"]').click();});
+document.addEventListener('submit',async function(event){const form=event.target.closest('[data-modal-comment-form]');if(!form)return;event.preventDefault();const modal=document.getElementById('sflexComments');const id=form.dataset.parent?modal.dataset.postId:modal.dataset.postId;const fd=new FormData(form);const submit=form.querySelector('[type="submit"]');const error=form.querySelector('[data-comment-error]');fd.append('_token','<?=e($_SESSION['csrf'])?>');fd.append('ajax','1');if(form.dataset.parent)fd.append('parent_id',form.dataset.parent);submit.disabled=true;if(error)error.textContent='';try{const r=await fetch('/sflex/'+id+'/comment',{method:'POST',body:fd});const data=await r.json();if(!r.ok)throw new Error(data.error||'Could not add comment.');form.reset();document.querySelectorAll('[data-sflex-post="'+id+'"] [data-sflex-comment-count]').forEach(count=>count.textContent=data.comment_count);const list=document.getElementById('sflex-comments-body');if(data.comment&&data.comment.id)list.insertAdjacentHTML('beforeend','<div class="border-bottom py-2"><strong>'+escapeHtml(data.comment.author)+'</strong><div>'+escapeHtml(data.comment.body)+'</div><small class="text-secondary">'+escapeHtml(data.comment.created_at)+'</small></div>');}catch(err){if(error)error.textContent=err.message;}finally{submit.disabled=false;}});
 function escapeHtml(value){
   const e=document.createElement('div');
   e.textContent=value;return e.innerHTML;

@@ -84,6 +84,11 @@
             <div class="modal-body" id="sflex-comments-body">
 
             </div>
+            <form class="modal-footer d-block" id="sflex-modal-comment-form" data-modal-comment-form>
+                <div class="text-danger small mb-2" data-comment-error></div>
+                <textarea class="form-control mb-2" name="body" maxlength="1000" placeholder="Write a comment" required></textarea>
+                <button class="btn btn-primary btn-sm" type="submit"><i class="bi bi-send"></i> Send</button>
+            </form>
         </div>
     </div>
 </div>
