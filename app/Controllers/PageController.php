@@ -449,7 +449,8 @@ final class PageController
 
         $post = SFlexPost::find(
             (int)$params['id'],
-            (int)$u['id']
+            (int)$u['id'],
+            $u['role'] === 'super_admin'
         );
 
         if (
