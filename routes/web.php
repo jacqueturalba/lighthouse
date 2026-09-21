@@ -69,6 +69,7 @@ $router->post('/sflex/{id}/edit', [$sflex, 'update']);
 $router->post('/sflex/{id}/delete', [$sflex, 'delete']);
 $router->post('/sflex/{id}/comment', [$sflex, 'comment']);
 $router->post('/sflex/comments/{id}/delete', [$sflex, 'deleteComment']);
+$router->post('/sflex/comments/{id}/edit', [$sflex, 'editComment']);
 $router->get('/sflex/{id}/comments', [$sflex, 'comments']);
 $router->get('/sflex/{id}/reactions', [$sflex, 'reactions']);
 $router->post('/sflex/comments/{id}/moderate', [$sflex, 'moderateComment']);

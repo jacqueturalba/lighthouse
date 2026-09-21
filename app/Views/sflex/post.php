@@ -123,7 +123,7 @@
 
             <?php foreach ($post['comments'] as $comment): ?>
 
-              <div class="sflex-comment">
+              <div class="sflex-comment" data-comment-id="<?= (int)$comment['id'] ?>">
 
                 <div class="sflex-comment-header">
 
@@ -141,6 +141,7 @@
                 <div class="sflex-comment-body">
                   <?=nl2br(e($comment['body']))?>
                 </div>
+                <div class="small"><button class="btn btn-link btn-sm px-0" data-inline-reply="<?= (int)$comment['id'] ?>">Reply</button><?php if((int)$comment['user_id']===(int)$user['id']): ?><button class="btn btn-link btn-sm" data-inline-edit="<?= (int)$comment['id'] ?>">Edit</button><button class="btn btn-link btn-sm text-danger" data-inline-delete="<?= (int)$comment['id'] ?>">Delete</button><?php endif; ?><?php if($user['role']==='super_admin'): ?><button class="btn btn-link btn-sm" data-inline-hide="<?= (int)$comment['id'] ?>">Hide</button><?php endif; ?></div>
 
               </div>
 
@@ -228,4 +229,5 @@ document.addEventListener('click', async function (event) {
     try { const data=await response.json(); document.querySelectorAll('[data-reaction]').forEach(item=>item.classList.toggle('is-reacted',item.dataset.reaction===data.mine)); } finally { delete button.dataset.loading; }
 });
 document.querySelector('.sflex-comment-form')?.addEventListener('submit',async function(event){event.preventDefault();const form=event.currentTarget,button=form.querySelector('button'),fd=new FormData(form);fd.append('ajax','1');button.disabled=true;try{const response=await fetch(form.action,{method:'POST',body:fd});if(!response.ok)throw new Error();const body=form.querySelector('textarea');const list=document.querySelector('.sflex-comment-list');if(list){const entry=document.createElement('div');entry.className='sflex-comment';entry.textContent=body.value;list.append(entry);}body.value='';}catch(_){alert('Your comment could not be added.');}finally{button.disabled=false;}});
+document.addEventListener('click',async event=>{const reply=event.target.closest('[data-inline-reply]'),edit=event.target.closest('[data-inline-edit]'),del=event.target.closest('[data-inline-delete]'),hide=event.target.closest('[data-inline-hide]');const action=reply||edit||del||hide;if(!action)return;const host=action.closest('[data-comment-id]');if(reply){host.insertAdjacentHTML('beforeend','<form data-inline-comment data-parent="'+reply.dataset.inlineReply+'"><textarea name="body" class="form-control form-control-sm" required></textarea><button class="btn btn-sm btn-primary mt-1">Send</button></form>');}if(edit){const body=host.querySelector('.sflex-comment-body');body.innerHTML='<form data-inline-edit-form data-id="'+edit.dataset.inlineEdit+'"><textarea name="body" class="form-control form-control-sm">'+body.textContent.trim()+'</textarea><button class="btn btn-sm btn-primary mt-1">Save</button></form>';}if(del||hide){const fd=new FormData();fd.append('_token','<?=e($_SESSION['csrf'])?>');let url;if(hide){fd.append('action','hide');url='/sflex/comments/'+hide.dataset.inlineHide+'/moderate';}else url='/sflex/comments/'+del.dataset.inlineDelete+'/delete';const r=await fetch(url,{method:'POST',body:fd});if(r.ok)host.remove();}});document.addEventListener('submit',async event=>{const form=event.target.closest('[data-inline-comment],[data-inline-edit-form]');if(!form)return;event.preventDefault();const fd=new FormData(form);fd.append('_token','<?=e($_SESSION['csrf'])?>');fd.append('ajax','1');let url=form.matches('[data-inline-edit-form]')?'/sflex/comments/'+form.dataset.id+'/edit':'/sflex/<?= (int)$post['id']?>/comment';if(form.dataset.parent)fd.append('parent_id',form.dataset.parent);const r=await fetch(url,{method:'POST',body:fd});const d=await r.json();if(!r.ok){alert(d.error||'Could not save comment.');return;}if(form.matches('[data-inline-edit-form]'))form.closest('.sflex-comment-body').textContent=d.body;else{form.reset();form.remove();}});
 </script>
