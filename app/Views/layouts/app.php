@@ -64,6 +64,6 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js?v=<?= config('VERSION') ?>"></script>
     <script src="/assets/js/app.js?v=<?= config('VERSION') ?>"></script>
-    <?php require __DIR__.'/pr-modal-delete.php'; ?>
+    <?php require __DIR__.'/modal-collection.php'; ?>
   </body>
 </html>
