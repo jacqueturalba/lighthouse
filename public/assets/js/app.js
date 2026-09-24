@@ -41,6 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
     updateThemeControls();
 });
 
+document.addEventListener('slid.bs.carousel', (event) => {
+    const indicator = event.target.querySelector('[data-carousel-indicator]');
+    if (!indicator || !Number.isInteger(event.to)) return;
+    indicator.textContent = `${event.to + 1} / ${indicator.dataset.total}`;
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     const togglePassword = document.getElementById("togglePassword");
     const password = document.getElementById("password");
