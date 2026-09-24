@@ -104,7 +104,7 @@
                     </div>
                     <!-- CONFIRM PASSWORD -->
                     <div class="lh-login-field">
-                        <label for="password">
+                        <label for="confirmpassword">
                             Confirm New Password
                         </label>
 

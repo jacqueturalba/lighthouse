@@ -66,7 +66,7 @@
                     </h2>
 
                     <p>
-                        No worries! Enter your email address and we'll send you a link to reset your your password.
+                        No worries! Enter your email address and we'll send you a link to reset your password.
                     </p>
                 </div>
 
