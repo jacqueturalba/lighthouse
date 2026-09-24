@@ -15,11 +15,35 @@ final class PromotionKit
         return db()->query("SELECT k.*, u.name AS uploader_name FROM promotion_kits k JOIN users u ON u.id=k.uploaded_by WHERE k.status='active' ORDER BY k.created_at DESC")->fetchAll();
     }
 
+    public static function withMedia(array $kits): array
+    {
+        if (!$kits) return $kits;
+        $ids = array_values(array_map(static fn(array $kit): int => (int)$kit['id'], $kits));
+        $marks = implode(',', array_fill(0, count($ids), '?'));
+        $s = db()->prepare("SELECT promotion_kit_id, file_path, original_file_name, mime_type FROM promotion_kit_media WHERE promotion_kit_id IN ($marks) ORDER BY promotion_kit_id, sort_order, id");
+        $s->execute($ids);
+        $media = [];
+        foreach ($s->fetchAll() as $item) $media[(int)$item['promotion_kit_id']][] = $item;
+        foreach ($kits as &$kit) $kit['media'] = $media[(int)$kit['id']] ?? [];
+        unset($kit);
+        return $kits;
+    }
+
+    public static function addMedia(int $kitId, array $media): void
+    {
+        $s = db()->prepare('INSERT INTO promotion_kit_media (promotion_kit_id, file_path, original_file_name, mime_type, sort_order) VALUES (?, ?, ?, ?, ?)');
+        foreach ($media as $index => $item) {
+            $s->execute([$kitId, $item['path'], $item['original'], $item['mime'], $index]);
+        }
+    }
+
     public static function find(int $id): ?array
     {
         $s = db()->prepare('SELECT k.*, u.name AS uploader_name FROM promotion_kits k JOIN users u ON u.id=k.uploaded_by WHERE k.id=?');
         $s->execute([$id]);
-        return $s->fetch() ?: null;
+        $kit = $s->fetch();
+        if (!$kit) return null;
+        return self::withMedia([$kit])[0];
     }
 
     public static function create(array $data): int

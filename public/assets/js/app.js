@@ -364,7 +364,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
     if (!manager || !items || !token) return;
 
-    document.querySelectorAll('[data-multi-upload="sflex"]').forEach((zone) => {
+    document.querySelectorAll('[data-multi-upload="sflex"],[data-multi-upload="promotion_kit"]').forEach((zone) => {
+        const uploadType = zone.dataset.multiUpload;
         const input = zone.querySelector('input[type="file"]');
         const summary = zone.querySelector('[data-upload-summary]');
         const previews = zone.querySelector('[data-upload-previews]');
@@ -376,16 +377,24 @@ document.addEventListener('DOMContentLoaded', () => {
             files.forEach((file, index) => {
                 const item = document.createElement('div'); item.className = 'lh-upload-preview';
                 const url = URL.createObjectURL(file);
-                item.innerHTML = file.type.startsWith('video/') ? `<video muted src="${url}"></video>` : `<img src="${url}" alt="Selected image">`;
+                if (file.type.startsWith('video/')) item.innerHTML = `<video muted src="${url}"></video>`;
+                else if (file.type.startsWith('image/')) item.innerHTML = `<img src="${url}" alt="Selected image">`;
+                else { item.classList.add('lh-upload-file-preview'); const label = document.createElement('span'); label.textContent = file.name; item.append(label); }
                 const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'btn-close shadow-sm'; remove.setAttribute('aria-label', `Remove ${file.name}`);
                 remove.addEventListener('click', () => { URL.revokeObjectURL(url); files.splice(index, 1); render(); });
                 item.append(remove); previews.append(item);
             });
-            message(files.length ? (files[0].type.startsWith('video/') ? '1 video selected' : `${files.length} / 10 images selected`) : 'Drop up to 10 images here, or click to browse. A video must be uploaded alone.');
+            message(files.length ? (uploadType === 'promotion_kit' ? (files.length === 1 && !files[0].type.startsWith('image/') ? `${files[0].name} selected` : `${files.length} / 10 images selected`) : (files[0].type.startsWith('video/') ? '1 video selected' : `${files.length} / 10 images selected`)) : (uploadType === 'promotion_kit' ? 'Select one ZIP, PDF, DOCX, PPTX, JPG, or PNG file, or choose up to 10 images.' : 'Drop up to 10 images here, or click to browse. A video must be uploaded alone.'));
         };
         const add = (incoming) => {
             const next = Array.from(incoming);
             if (!next.length) return;
+            if (uploadType === 'promotion_kit') {
+                const combined = [...files, ...next];
+                const images = combined.every(file => file.type.startsWith('image/'));
+                if ((!images && combined.length > 1) || (images && combined.length > 10) || combined.some(file => !file.type.startsWith('image/') && !/\.(zip|pdf|docx|pptx|jpe?g|png)$/i.test(file.name))) { message('Select one supported kit file, or up to 10 images.', true); return; }
+                files = combined; render(); return;
+            }
             if (next.some(file => !file.type.startsWith('image/') && !file.type.startsWith('video/'))) { message('Only image or video files are allowed.', true); return; }
             const combined = [...files, ...next];
             const hasVideo = combined.some(file => file.type.startsWith('video/'));

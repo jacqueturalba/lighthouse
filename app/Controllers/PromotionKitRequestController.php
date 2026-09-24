@@ -158,36 +158,84 @@ final class PromotionKitRequestController
             exit;
         }
 
-        /*
-        * Resolve the file safely.
-        */
-        $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage';
+        /* Resolve every attached file safely before recording or sending it. */
+        $root = realpath(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage');
+        $attached = $kit['media'] ?? [];
+        $attached[] = [
+            'file_path' => $row['file_path'],
+            'original_file_name' => $row['original_file_name'],
+            'mime_type' => $row['mime_type'],
+        ];
 
-        $file = $root
-            ? realpath(
-                $root . DIRECTORY_SEPARATOR .
-                ltrim($row['file_path'], '/\\')
-            )
-            : false;
+        $files = [];
+        $seenPaths = [];
+        foreach ($attached as $item) {
+            $path = $root ? realpath($root . DIRECTORY_SEPARATOR . ltrim($item['file_path'], '/\\')) : false;
+            if (!$path || !str_starts_with($path, $root . DIRECTORY_SEPARATOR) || !is_file($path) || !is_readable($path)) {
+                http_response_code(404);
+                render('File unavailable', '<p>The promotion kit file could not be found.</p>');
+                exit;
+            }
+            if (isset($seenPaths[$path])) continue;
+            $seenPaths[$path] = true;
+            $files[] = [
+                'path' => $path,
+                'name' => basename(str_replace('\\', '/', (string)$item['original_file_name'])),
+                'mime' => (string)($item['mime_type'] ?? ''),
+            ];
+        }
 
-        if (
-            !$root ||
-            !$file ||
-            !str_starts_with(
-                $file,
-                $root . DIRECTORY_SEPARATOR
-            ) ||
-            !is_file($file) ||
-            !is_readable($file)
-        ) {
+        if (!$files) {
             http_response_code(404);
-
-            render(
-                'File unavailable',
-                '<p>The promotion kit file could not be found.</p>'
-            );
-
+            render('File unavailable', '<p>The promotion kit file could not be found.</p>');
             exit;
+        }
+
+        $downloadFile = $files[0]['path'];
+        $downloadName = $files[0]['name'];
+        $downloadMime = $files[0]['mime'] ?: 'application/octet-stream';
+        $temporaryZip = null;
+        if (count($files) > 1) {
+            if (!class_exists(ZipArchive::class)) {
+                http_response_code(500);
+                render('Download unavailable', '<p>A ZIP archive could not be created.</p>');
+                exit;
+            }
+            $temporaryZip = tempnam(sys_get_temp_dir(), 'lh-kit-');
+            $zip = new ZipArchive();
+            if ($temporaryZip === false || $zip->open($temporaryZip, ZipArchive::OVERWRITE) !== true) {
+                if ($temporaryZip) @unlink($temporaryZip);
+                http_response_code(500);
+                render('Download unavailable', '<p>A ZIP archive could not be created.</p>');
+                exit;
+            }
+            $entryNames = [];
+            foreach ($files as $item) {
+                $entry = $item['name'] !== '' ? $item['name'] : basename($item['path']);
+                $base = pathinfo($entry, PATHINFO_FILENAME);
+                $extension = pathinfo($entry, PATHINFO_EXTENSION);
+                $suffix = 2;
+                while (isset($entryNames[strtolower($entry)])) {
+                    $entry = $base . ' (' . $suffix++ . ')' . ($extension !== '' ? '.' . $extension : '');
+                }
+                $entryNames[strtolower($entry)] = true;
+                if (!$zip->addFile($item['path'], $entry)) {
+                    $zip->close();
+                    @unlink($temporaryZip);
+                    http_response_code(500);
+                    render('Download unavailable', '<p>A ZIP archive could not be created.</p>');
+                    exit;
+                }
+            }
+            if (!$zip->close()) {
+                @unlink($temporaryZip);
+                http_response_code(500);
+                render('Download unavailable', '<p>A ZIP archive could not be created.</p>');
+                exit;
+            }
+            $downloadFile = $temporaryZip;
+            $downloadName = 'promotion-kit-' . $kitId . '.zip';
+            $downloadMime = 'application/zip';
         }
 
         /*
@@ -211,28 +259,12 @@ final class PromotionKitRequestController
         /*
         * Send the file.
         */
-        header(
-            'Content-Type: ' .
-            ($row['mime_type'] ?: 'application/octet-stream')
-        );
-
-        header(
-            'Content-Length: ' . filesize($file)
-        );
-
-        header(
-            'Content-Disposition: attachment; filename="' .
-            str_replace(
-                ['"', "\r", "\n"],
-                '',
-                basename($row['original_file_name'])
-            ) .
-            '"'
-        );
-
+        header('Content-Type: ' . $downloadMime);
+        header('Content-Length: ' . filesize($downloadFile));
+        header('Content-Disposition: attachment; filename="' . str_replace(['"', "\r", "\n"], '', $downloadName) . '"');
         header('X-Content-Type-Options: nosniff');
-
-        readfile($file);
+        readfile($downloadFile);
+        if ($temporaryZip) @unlink($temporaryZip);
         exit;
     }
 
@@ -256,12 +288,27 @@ final class PromotionKitRequestController
         $jobId = (int) ($_POST['upload_job_id'] ?? 0);
         $title = trim((string) ($_POST['title'] ?? ''));
         $description = trim((string) ($_POST['description'] ?? ''));
-        $file = $_FILES['file'] ?? null;
+        $fileInput = $_FILES['file'] ?? null;
+        $files = [];
+        if ($fileInput && is_array($fileInput['name'] ?? null)) {
+            foreach ($fileInput['name'] as $index => $name) {
+                $files[] = [
+                    'name' => $name,
+                    'type' => $fileInput['type'][$index] ?? '',
+                    'tmp_name' => $fileInput['tmp_name'][$index] ?? '',
+                    'error' => $fileInput['error'][$index] ?? UPLOAD_ERR_NO_FILE,
+                    'size' => $fileInput['size'][$index] ?? 0,
+                ];
+            }
+        } elseif ($fileInput && ($fileInput['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+            $files[] = $fileInput;
+        }
         $errors = [];
         
         if ($title === '' || mb_strlen($title) > 150) $errors[] = 'Enter a title up to 150 characters.';
 
-        if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) $errors[] = 'Choose a file to upload.';
+        if (!$files) $errors[] = 'Choose a file to upload.';
+        if (count($files) > 10) $errors[] = 'Upload up to 10 images at once.';
         
         $allowed = [
             'zip'  => [
@@ -294,26 +341,23 @@ final class PromotionKitRequestController
             ],
         ];
         
-        $extension = strtolower(
-            pathinfo((string)$file['name'], PATHINFO_EXTENSION)
-        );
-
-        $mime = '';
-
-        if ($file && is_uploaded_file($file['tmp_name'])) {
-            $mime = (new finfo(FILEINFO_MIME_TYPE))
-                ->file($file['tmp_name']);
+        $validated = [];
+        $imagesOnly = true;
+        foreach ($files as $file) {
+            $extension = strtolower(pathinfo((string)$file['name'], PATHINFO_EXTENSION));
+            $mime = is_uploaded_file($file['tmp_name']) ? (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']) : '';
+            if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !isset($allowed[$extension]) || !in_array($mime, $allowed[$extension], true)) {
+                $errors[] = 'Only valid ZIP, PDF, DOCX, PPTX, JPG, JPEG, or PNG files are allowed.';
+                continue;
+            }
+            if ((int)$file['size'] > 50 * 1024 * 1024) $errors[] = 'Files must be 50 MB or smaller.';
+            $image = in_array($mime, ['image/jpeg', 'image/png'], true);
+            if (!$image) $imagesOnly = false;
+            $validated[] = $file + ['extension' => $extension, 'mime' => $mime];
         }
-
-        if (
-            !isset($allowed[$extension]) ||
-            !in_array($mime, $allowed[$extension], true)
-        ) {
-            $errors[] = 'Only valid ZIP, PDF, DOCX, PPTX, JPG, JPEG, or PNG files are allowed.';
+        if (count($files) > 1 && (!$imagesOnly || count($validated) !== count($files))) {
+            $errors[] = 'Select one non-image kit file, or upload up to 10 images together.';
         }
-        
-        if ($file && (int)$file['size'] > 50 * 1024 * 1024) 
-            $errors[] = 'Files must be 50 MB or smaller.';
         
         if ($errors) {
             $this->uploadError($async, $jobId, (int) $user['id'], implode(' ', $errors));
@@ -327,12 +371,18 @@ final class PromotionKitRequestController
         if (!is_dir($directory)) 
             mkdir($directory, 0700, true);
         
-        $stored = bin2hex(random_bytes(20)).'.'.$extension; $path = $folder.'/'.$stored;
-        
-        if (!move_uploaded_file($file['tmp_name'], $directory.DIRECTORY_SEPARATOR.$stored)) { 
-            $this->uploadError($async, $jobId, (int) $user['id'], 'The file could not be stored.');
-            return;
+        $storedFiles = [];
+        foreach ($validated as $file) {
+            $stored = bin2hex(random_bytes(20)).'.'.$file['extension'];
+            if (!move_uploaded_file($file['tmp_name'], $directory.DIRECTORY_SEPARATOR.$stored)) {
+                foreach ($storedFiles as $storedFile) @unlink($directory.DIRECTORY_SEPARATOR.$storedFile['stored']);
+                $this->uploadError($async, $jobId, (int) $user['id'], 'The file could not be stored.');
+                return;
+            }
+            $storedFiles[] = ['stored' => $stored, 'path' => $folder.'/'.$stored];
         }
+        $file = $validated[0];
+        $primary = $storedFiles[0];
 
         $accessType = $_POST['access_type'] ?? 'request';
 
@@ -341,12 +391,22 @@ final class PromotionKitRequestController
         }
         
         try {
+            db()->beginTransaction();
             $kitId = PromotionKit::create(['title'=>$title,'description'=>$description,'original'=>$file['name'],
-                                  'stored'=>$stored,'path'=>$path,'extension'=>$extension,'mime'=>$mime,
+                                  'stored'=>$primary['stored'],'path'=>$primary['path'],'extension'=>$file['extension'],'mime'=>$file['mime'],
                                   'size'=>(int)$file['size'],'cover'=>null,'access_type' => $accessType,
-                                  'user_id'=>(int)$user['id']]); 
+                                  'user_id'=>(int)$user['id']]);
+            if ($imagesOnly) {
+                $media = [];
+                foreach ($validated as $index => $image) {
+                    $media[] = ['path' => $storedFiles[$index]['path'], 'original' => $image['name'], 'mime' => $image['mime']];
+                }
+                PromotionKit::addMedia($kitId, $media);
+            }
+            db()->commit();
         } catch (Throwable $e) { 
-            @unlink($directory.DIRECTORY_SEPARATOR.$stored); 
+            if (db()->inTransaction()) db()->rollBack();
+            foreach ($storedFiles as $storedFile) @unlink($directory.DIRECTORY_SEPARATOR.$storedFile['stored']);
             $this->uploadError($async, $jobId, (int) $user['id'], 'The promotion kit could not be saved.');
             return;
         }

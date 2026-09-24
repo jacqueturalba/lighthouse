@@ -26,7 +26,7 @@ final class PageController
 
     public function promotionKits(): void {
         $user = require_auth();
-        view('promotions/promotion-kits', ['title' => 'Promotion Kits', 'kits' => PromotionKit::activeForUser((int)$user['id'])]);
+        view('promotions/promotion-kits', ['title' => 'Promotion Kits', 'kits' => PromotionKit::withMedia(PromotionKit::activeForUser((int)$user['id']))]);
     }
 
     public function promotionKitDetail(array $params): void {
