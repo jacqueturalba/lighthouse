@@ -62,17 +62,13 @@
             </div>
             <div class="col-12">
                 <label class="form-label" for="file">Kit file</label>
-                <input
-                    class="form-control"
-                    id="file"
-                    name="file"
-                    type="file"
-                    accept=".zip,.pdf,.docx,.pptx,.jpg,.jpeg,.png"
-                    required
-                >
+                <div data-multi-upload="promotion_kit">
+                    <input class="form-control" id="file" name="file[]" type="file" accept=".zip,.pdf,.docx,.pptx,.jpg,.jpeg,.png" multiple required>
+                    <div class="small text-secondary mt-2" data-upload-summary>Select one ZIP, PDF, DOCX, PPTX, JPG, or PNG file, or choose up to 10 images.</div>
+                    <div class="d-flex flex-wrap gap-2 mt-2" data-upload-previews></div>
+                </div>
                 <div class="form-text">
-                    ZIP, PDF, DOCX, PPTX, JPG, JPEG, or PNG.
-                    Maximum file size: 50 MB.
+                    ZIP, PDF, DOCX, PPTX, JPG, JPEG, or PNG. Select one file, or upload up to 10 images together. Maximum file size: 50 MB each.
                 </div>
             </div>
             <div class="col-12">

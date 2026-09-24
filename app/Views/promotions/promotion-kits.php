@@ -322,7 +322,7 @@
 
               <div class="promotion-kit-preview-stage">
 
-                <?php if ($isImage): ?>
+                <?php if ($isImage): $kitImages = $kit['media'] ?? []; if (!$kitImages) $kitImages = [['file_path' => $kit['file_path']]]; if (count($kitImages) > 1): $carouselId = 'kit-images-' . (int)$kit['id']; include __DIR__ . '/_image-carousel.php'; else: ?>
 
                   <div
                     class="promotion-kit-image-container"
@@ -390,7 +390,7 @@
 
                   </div>
 
-
+                <?php endif; ?>
                 <?php elseif ($isPdf): ?>
 
                   <iframe
