@@ -1,5 +1,52 @@
 document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('[data-password-toggle]').forEach(button=>button.addEventListener('click',()=>{const input=document.querySelector(button.dataset.passwordToggle);if(!input)return;input.type=input.type==='password'?'text':'password';button.setAttribute('aria-pressed',String(input.type==='text'));}));window.setTimeout(()=>document.querySelectorAll('[data-auto-dismiss]').forEach(alert=>bootstrap.Alert.getOrCreateInstance(alert).close()),5000);});
 
+document.addEventListener('DOMContentLoaded', () => {
+    const root = document.documentElement;
+    const preference = window.matchMedia('(prefers-color-scheme: dark)');
+    const currentTheme = () => root.dataset.bsTheme === 'dark' ? 'dark' : 'light';
+    const updateThemeControls = () => {
+        const dark = currentTheme() === 'dark';
+        document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+            button.setAttribute('aria-label', `Switch to ${dark ? 'light' : 'dark'} mode`);
+            button.setAttribute('aria-pressed', String(dark));
+            button.title = `Switch to ${dark ? 'light' : 'dark'} mode`;
+            const icon = button.querySelector('i');
+            if (icon) icon.className = `bi ${dark ? 'bi-sun' : 'bi-moon-stars'}`;
+            const label = button.querySelector('.d-lg-none');
+            if (label) label.textContent = dark ? 'Light mode' : 'Dark mode';
+        });
+    };
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => button.addEventListener('click', () => {
+        const theme = currentTheme() === 'dark' ? 'light' : 'dark';
+        root.dataset.bsTheme = theme;
+        try { localStorage.setItem('lh-theme', theme); } catch (_) {}
+        updateThemeControls();
+    }));
+    preference.addEventListener?.('change', (event) => {
+        try {
+            if (!localStorage.getItem('lh-theme')) {
+                root.dataset.bsTheme = event.matches ? 'dark' : 'light';
+                updateThemeControls();
+            }
+        } catch (_) {}
+    });
+    window.addEventListener('storage', (event) => {
+        if (event.key !== 'lh-theme' && event.key !== null) return;
+        try {
+            const saved = localStorage.getItem('lh-theme');
+            root.dataset.bsTheme = saved === 'light' || saved === 'dark' ? saved : (preference.matches ? 'dark' : 'light');
+            updateThemeControls();
+        } catch (_) {}
+    });
+    updateThemeControls();
+});
+
+document.addEventListener('slid.bs.carousel', (event) => {
+    const indicator = event.target.querySelector('[data-carousel-indicator]');
+    if (!indicator || !Number.isInteger(event.to)) return;
+    indicator.textContent = `${event.to + 1} / ${indicator.dataset.total}`;
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     const togglePassword = document.getElementById("togglePassword");
     const password = document.getElementById("password");

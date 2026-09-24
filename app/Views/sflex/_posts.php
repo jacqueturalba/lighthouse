@@ -39,7 +39,7 @@ foreach($posts as $p): ?>
   <?php endif;?>
   </div>
   <?php if(!empty($p['media'])): ?> 
-  <div id="media-<?= (int)$p['id'] ?>" class="carousel slide sflex-carousel mb-3"  data-bs-ride="carousel">
+  <div id="media-<?= (int)$p['id'] ?>" class="carousel slide lh-media-carousel sflex-carousel mb-3" data-bs-ride="carousel" aria-label="Post images">
       <div class="carousel-inner"> 
         <?php foreach($p['media'] as $i=>$m):  ?> 
           <div class="carousel-item <?= $i===0?'active':''?>">
@@ -54,13 +54,14 @@ foreach($posts as $p): ?>
           </div> 
         <?php endforeach;?> 
       </div> 
-      <?php if(count($p['media'])>1):?> 
-      <button class="carousel-control-prev" data-bs-target="#media-<?= (int)$p['id']?>" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
+      <?php if(count($p['media'])>1):?>
+      <button type="button" class="carousel-control-prev" data-bs-target="#media-<?= (int)$p['id']?>" data-bs-slide="prev" aria-label="Previous image">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       </button>
-      <button class="carousel-control-next" data-bs-target="#media-<?= (int)$p['id']?>" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
+      <button type="button" class="carousel-control-next" data-bs-target="#media-<?= (int)$p['id']?>" data-bs-slide="next" aria-label="Next image">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
       </button> 
+      <span class="lh-carousel-indicator" data-carousel-indicator data-total="<?= count($p['media']) ?>" aria-live="polite">1 / <?= count($p['media']) ?></span>
     <?php endif;?>
   </div> 
   <?php endif;?> 

@@ -1,8 +1,8 @@
-<div id="<?= e($carouselId) ?>" class="carousel slide promotion-kit-image-carousel" data-bs-interval="false">
+<div id="<?= e($carouselId) ?>" class="carousel slide lh-media-carousel promotion-kit-image-carousel" data-bs-interval="false" aria-label="Promotion Kit images">
     <div class="carousel-inner">
         <?php foreach ($kitImages as $imageIndex => $image): ?>
             <div class="carousel-item <?= $imageIndex === 0 ? 'active' : '' ?>">
-                <img src="<?= e(storage_asset($image['file_path'])) ?>" class="d-block w-100" alt="<?= e($kitTitle) ?> image <?= $imageIndex + 1 ?>">
+                <img src="<?= e(storage_asset($image['file_path'])) ?>" class="d-block w-100" alt="<?= e($kit['title']) ?> image <?= $imageIndex + 1 ?>">
             </div>
         <?php endforeach; ?>
     </div>
@@ -12,4 +12,5 @@
     <button class="carousel-control-next" type="button" data-bs-target="#<?= e($carouselId) ?>" data-bs-slide="next" aria-label="Next image">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
     </button>
+    <span class="lh-carousel-indicator" data-carousel-indicator data-total="<?= count($kitImages) ?>" aria-live="polite">1 / <?= count($kitImages) ?></span>
 </div>

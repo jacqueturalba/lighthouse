@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg lh-navbar sticky-top">
   <div class="container lh-shell">
     <a class="navbar-brand lh-brand" href="/">
-      <i class="bi bi-lighthouse-fill me-2"></i><span style="color: #2563eb;">LIGHT</span><span style="color: #efb70c;">HOUSE</span></a>
+      <i class="bi bi-lighthouse-fill me-2"></i><span class="lh-brand-light">LIGHT</span><span class="lh-brand-house">HOUSE</span></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -30,20 +30,21 @@
         </li>
 
         <li class="nav-item">
-          <button class="btn btn-outline-warning py-0 px-1" type="button">
-          <a class="nav-link lh-nav-link btn py-1" href="/profile" alt="Profile" 
+          <a class="nav-link lh-nav-link" href="/profile" aria-label="Profile"
              data-bs-toggle="tooltip" data-bs-placement="top"
              data-bs-custom-class="custom-tooltip"
              data-bs-title="Profile">
             <i class="bi bi-person-circle me-1"></i>
           </a>
-          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="btn btn-outline-secondary lh-theme-toggle" data-theme-toggle aria-label="Switch to dark mode" title="Switch theme"><i class="bi bi-moon-stars" aria-hidden="true"></i><span class="d-lg-none ms-2">Dark mode</span></button>
         </li>
         <?php if ($user['role'] === 'super_admin'): ?> 
 
 
-        <div class="dropdown">
-          <button class="btn btn-outline-warning dropdown-toggle py-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <li class="nav-item dropdown">
+          <button class="btn btn-outline-secondary dropdown-toggle py-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Administration">
             <i class="bi bi-gear-wide-connected"></i>
           </button>
           <ul class="dropdown-menu">
@@ -56,7 +57,7 @@
             <li><a class="dropdown-item" href="/users">User Management</a></li>
             <li><a class="dropdown-item" href="/register">Create Account</a></li>
           </ul>
-        </div>
+        </li>
 
 
         <?php endif; ?> 

@@ -4,13 +4,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="<?= e($_SESSION['csrf'] ?? '') ?>">
+    <script>
+      (() => { try {
+        const saved = localStorage.getItem('lh-theme');
+        document.documentElement.dataset.bsTheme = saved === 'light' || saved === 'dark' ? saved : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (_) {} })();
+    </script>
     <title> <?= e($title) ?> · LIGHTHOUSE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css?v=<?= config('VERSION') ?>" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css?v=<?= config('VERSION') ?>" rel="stylesheet">
     <link href="/assets/css/app.css?v=<?= config('VERSION') ?>" rel="stylesheet">
   </head>
   <body class="<?= (in_array(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), ['/login', '/forgot-password', '/reset-password'])) ? 'lh-login-page' : 'auth-class' ?>"> 
-  <?php if ($auth && $user): require __DIR__.'/navigation.php'; endif; ?>
+  <a class="lh-skip-link" href="#page-content">Skip to content</a>
+  <?php if ($auth && $user): require __DIR__.'/navigation.php'; else: ?>
+    <button type="button" class="btn btn-outline-secondary lh-theme-toggle lh-theme-toggle-floating" data-theme-toggle aria-label="Switch to dark mode" title="Switch theme"><i class="bi bi-moon-stars" aria-hidden="true"></i><span class="visually-hidden">Switch theme</span></button>
+  <?php endif; ?>
   <div id="page-loader" class="page-loader">
       <div class="spinner-border" role="status" aria-label="Loading"></div>
   </div>
@@ -37,7 +46,7 @@
           </div>
         </div>
         <div data-upload-manager-items></div>
-        <span class="mt-2 small text-muted d-flex p-1 fw-light" data-upload-manager-count>Do not close the browser tab or navigate away while uploading.</span>
+        <span class="mt-2 small text-secondary d-flex p-1 fw-light" data-upload-manager-count>Do not close the browser tab or navigate away while uploading.</span>
       </div>
       <div id="lh-upload-toasts" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
       <button id="lh-upload-manager-open" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-3 shadow" hidden aria-label="Show upload activity"><i class="bi bi-cloud-arrow-up"></i></button>

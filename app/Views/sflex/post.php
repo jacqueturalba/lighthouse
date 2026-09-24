@@ -29,31 +29,27 @@
 
       <?php endif; ?>
       <!-- Media -->
-      <?php if ($post['media_path']): ?>
-
-        <div class="sflex-media sflex-media-large mb-3">
-          <?php
-          $url = '/sflex-media/' . e(substr($post['media_path'], 6));
-
-          if ($post['media_type'] === 'video'):
-          ?>
-
-            <video
-              controls
-              preload="metadata"
-              src="<?=$url?>">
-            </video>
-
-          <?php else: ?>
-
-            <img
-              src="<?=$url?>"
-              alt="Post media"
-              loading="lazy" class="img-fluid">
-
+      <?php $postMedia = $post['media'] ?? []; if (!$postMedia && $post['media_path']) $postMedia = [['media_path' => $post['media_path'], 'media_type' => $post['media_type']]]; ?>
+      <?php if ($postMedia): ?>
+        <?php $mediaCarouselId = 'post-media-' . (int)$post['id']; ?>
+        <div id="<?= $mediaCarouselId ?>" class="carousel slide lh-media-carousel sflex-carousel sflex-media sflex-media-large mb-3" aria-label="Post images">
+          <div class="carousel-inner">
+            <?php foreach ($postMedia as $mediaIndex => $mediaItem): ?>
+              <div class="carousel-item <?= $mediaIndex === 0 ? 'active' : '' ?>">
+                <?php $mediaUrl = '/sflex-media/' . e(substr($mediaItem['media_path'], 6)); if ($mediaItem['media_type'] === 'video'): ?>
+                  <video controls preload="metadata" src="<?= $mediaUrl ?>"></video>
+                <?php else: ?>
+                  <img src="<?= $mediaUrl ?>" alt="Post image <?= $mediaIndex + 1 ?>" loading="lazy">
+                <?php endif; ?>
+              </div>
+            <?php endforeach; ?>
+          </div>
+          <?php if (count($postMedia) > 1): ?>
+            <button type="button" class="carousel-control-prev" data-bs-target="#<?= $mediaCarouselId ?>" data-bs-slide="prev" aria-label="Previous image"><span class="carousel-control-prev-icon" aria-hidden="true"></span></button>
+            <button type="button" class="carousel-control-next" data-bs-target="#<?= $mediaCarouselId ?>" data-bs-slide="next" aria-label="Next image"><span class="carousel-control-next-icon" aria-hidden="true"></span></button>
+            <span class="lh-carousel-indicator" data-carousel-indicator data-total="<?= count($postMedia) ?>" aria-live="polite">1 / <?= count($postMedia) ?></span>
           <?php endif; ?>
         </div>
-
       <?php endif; ?>
 
       <!-- Reactions -->
