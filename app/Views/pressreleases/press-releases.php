@@ -46,9 +46,26 @@
 
                 <?php foreach ($pressReleases as $pressRelease): ?>
 
+                    <?php
+                    $releaseTag = null;
+                    $releaseDateValue = (string) ($pressRelease['event_date'] ?? '');
+                    $releaseDate = DateTimeImmutable::createFromFormat('!Y-m-d', $releaseDateValue);
+                    if ($releaseDate !== false && $releaseDate->format('Y-m-d') === $releaseDateValue) {
+                        $releaseAgeDays = (int) $releaseDate->diff(new DateTimeImmutable('today'))->format('%r%a');
+                        if ($releaseAgeDays >= 0 && $releaseAgeDays <= 3) {
+                            $releaseTag = 'HOT';
+                        } elseif ($releaseAgeDays > 3 && $releaseAgeDays <= 7) {
+                            $releaseTag = 'LATEST';
+                        }
+
+                    }
+                    $releaseTagClass = $releaseTag === 'HOT' ? 'press-release-hot' : ($releaseTag === 'LATEST' ? 'press-release-latest' : '');
+
+                    ?>
+
                     <div class="col-12">
 
-                        <article class="lh-card lh-card-pr">
+                        <article class="lh-card lh-card-pr <?= e($releaseTagClass) ?>">
 
                             <div class="row g-4">
 
@@ -108,6 +125,10 @@
                                                             </text>
                                                         </svg>
 
+                                                    <?php endif; ?>
+
+                                                    <?php if ($releaseTag): ?>
+                                                        <span class="badge press-release-freshness-badge <?= $releaseTag === 'HOT' ? 'press-release-freshness-hot' : 'press-release-freshness-latest' ?>"><?= e($releaseTag) ?></span>
                                                     <?php endif; ?>
 
                                                 </div>
