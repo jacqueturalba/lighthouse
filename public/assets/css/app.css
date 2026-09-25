@@ -115,9 +115,9 @@ body {
   box-shadow: var(--lh-shadow);
   padding: 1.5rem;
 }
-.lh-card-pr {
-    /* height: 360px; */
-}
+/*.lh-card-pr {
+     height: 360px; 
+}*/
 .lh-card-title {
   font-size: 0.9rem;
   color: var(--lh-muted);
