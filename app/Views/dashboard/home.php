@@ -300,7 +300,21 @@
 
   <?php } else { ?>
 
-<div class="card mb-3 border border-0 rounded-top">
+<?php
+$releaseTag = null;
+$releaseDate = DateTimeImmutable::createFromFormat('!Y-m-d', (string) ($latestRelease['date_released'] ?? ''));
+if ($releaseDate !== false) {
+  $releaseAgeDays = (int) $releaseDate->diff(new DateTimeImmutable('today'))->format('%r%a');
+  if ($releaseAgeDays >= 0 && $releaseAgeDays <= 3) {
+    $releaseTag = 'HOT';
+  } elseif ($releaseAgeDays > 3 && $releaseAgeDays <= 7) {
+    $releaseTag = 'LATEST';
+  }
+}
+$releaseTagClass = $releaseTag === 'HOT' ? 'press-release-hot' : ($releaseTag === 'LATEST' ? 'press-release-latest' : '');
+?>
+
+<div class="card mb-3 border border-0 rounded-top press-release-feature <?= e($releaseTagClass) ?>">
   <div class="press-release-image-container rounded">
     <?php if(empty($latestRelease['cover_photo'])) : ?> 
     <svg aria-label="Image not available" class="bd-placeholder-img img-thumbnail rounded-home" 
@@ -314,6 +328,9 @@
                   ENT_QUOTES,
                   'UTF-8'
               ) ?>" class="card-img-top rounded-top" alt="<?= e($latestRelease['title'] ?? 'Press Release') ?>">
+    <?php endif; ?>
+    <?php if ($releaseTag): ?>
+      <span class="badge press-release-freshness-badge <?= $releaseTag === 'HOT' ? 'press-release-freshness-hot' : 'press-release-freshness-latest' ?>"><?= e($releaseTag) ?></span>
     <?php endif; ?>
   </div>
   <div class="card-body">
@@ -376,5 +393,4 @@
     </div>
   </div>
 </section>
-
 
