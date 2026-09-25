@@ -41,12 +41,13 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
           <strong class="small"><i class="bi bi-cloud-arrow-up me-1"></i>Upload activity</strong>
           <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary border-0" data-upload-manager-view-all aria-pressed="false" title="View all upload activity"><i class="bi bi-arrows-angle-expand me-1" aria-hidden="true"></i><span>View all</span></button>
             <button type="button" class="btn btn-sm btn-outline-secondary border border-0" data-upload-manager-minimize><i class="bi bi-dash-lg"></i></button>
             <button type="button" class="btn-close btn-sm" aria-label="Dismiss upload activity" data-upload-manager-dismiss></button>
           </div>
         </div>
-        <div data-upload-manager-items></div>
-        <span class="mt-2 small text-secondary d-flex p-1 fw-light" data-upload-manager-count>Do not close the browser tab or navigate away while uploading.</span>
+        <div class="lh-upload-manager-items" data-upload-manager-items></div>
+        <span class="mt-2 small text-secondary d-flex p-1 fw-light" data-upload-manager-count aria-live="polite">Showing latest 3 activities</span>
       </div>
       <div id="lh-upload-toasts" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
       <button id="lh-upload-manager-open" class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-3 shadow" hidden aria-label="Show upload activity"><i class="bi bi-cloud-arrow-up"></i></button>

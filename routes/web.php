@@ -61,6 +61,7 @@ $uploads = new UploadController();
 $router->post('/uploads/start', [$uploads, 'start']);
 $router->post('/uploads/{id}/progress', [$uploads, 'progress']);
 $router->post('/uploads/{id}/fail', [$uploads, 'fail']);
+$router->post('/uploads/{id}/delete', [$uploads, 'deleteFailed']);
 $router->get('/uploads/status', [$uploads, 'status']);
 $router->get('/sflex-media/{type}/{date}/{file}', [$sflex, 'media']);
 $router->post('/sflex', [$sflex, 'create']);

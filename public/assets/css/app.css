@@ -2120,3 +2120,38 @@ html[data-bs-theme="dark"] .lh-login-sso:hover { color: #e0f0ff; background: rgb
     .lh-login-page > main.page-content { padding-block: .25rem 1rem; }
     .lh-login-branding { padding-top: 0; }
 }
+
+/* Keep upload activity compact while preserving a scrollable full-history view. */
+.lh-upload-manager[hidden] { display: none !important; }
+.lh-upload-manager {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 2rem);
+    max-height: min(36rem, calc(100dvh - 2rem));
+    padding: .8rem;
+}
+.lh-upload-manager > .d-flex:first-child { flex: 0 0 auto; }
+.lh-upload-manager-items {
+    min-height: 0;
+    max-height: 10rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.lh-upload-manager.is-view-all .lh-upload-manager-items { max-height: none; }
+.lh-upload-manager [data-upload-manager-count] { flex: 0 0 auto; }
+.lh-upload-job + .lh-upload-job { margin-top: .55rem; padding-top: .55rem; }
+.lh-upload-job-error { overflow-wrap: anywhere; }
+.lh-upload-job-delete { padding: .15rem .5rem; font-size: .75rem; }
+@media (max-width: 575.98px) {
+    .lh-upload-manager {
+        right: .65rem;
+        bottom: max(.65rem, env(safe-area-inset-bottom));
+        width: calc(100vw - 1.3rem);
+        max-height: calc(72vh - .65rem);
+        max-height: calc(72dvh - .65rem);
+        padding: .7rem;
+    }
+    .lh-upload-manager-items { max-height: 9rem; }
+    .lh-upload-manager.is-view-all .lh-upload-manager-items { max-height: none; }
+    .lh-upload-manager [data-upload-manager-count] { margin-top: .35rem !important; }
+}

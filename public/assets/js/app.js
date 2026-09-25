@@ -407,6 +407,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const manager = document.getElementById('lh-upload-manager');
     const managerOpen = document.getElementById('lh-upload-manager-open');
     const items = document.querySelector('[data-upload-manager-items]');
+    const activityCount = document.querySelector('[data-upload-manager-count]');
+    const viewAllButton = document.querySelector('[data-upload-manager-view-all]');
     const toasts = document.getElementById('lh-upload-toasts');
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
     if (!manager || !items || !token) return;
@@ -456,6 +458,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const jobs = new Map();
     let activeUploads = 0;
+    let viewAll = false;
+    let refreshSequence = 0;
     const escapeHtml = (value) => {
         const element = document.createElement('span');
         element.textContent = value || '';
@@ -465,17 +469,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const retryUrlFor = (job) => job.upload_type === 'promotion_kit' ? '/promotion-kit-upload' : '/sflex';
     const statusText = (job) => {
         if (job.status === 'completed') return 'Ready';
-        if (job.status === 'failed') return job.error_message || 'Upload failed. Please select the file and try again.';
+        if (job.status === 'failed') return 'Failed';
         return `Uploading ${Math.max(0, Math.min(100, Number(job.progress) || 0))}%`;
     };
+    const activityTime = (job) => Date.parse(job.updated_at || job.created_at || '') || Number(job.client_updated_at) || 0;
     const cleanupOldJobs = () => {
-        [...jobs.entries()].forEach(([id, job]) => {
-            // Completed jobs are no longer needed in the client-side manager.
-            if (job.status === 'completed') {
-                jobs.delete(id);
-            }
-        });
-
         // Remove any stale job elements that may already exist in the DOM.
         items.querySelectorAll('.lh-upload-job').forEach((element) => {
             const jobId = Number(element.dataset.jobId);
@@ -489,9 +487,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const render = () => {
         cleanupOldJobs();
 
-        const visible = [...jobs.values()].filter(
-            (job) => job.status !== 'completed'
-        );
+        const history = [...jobs.values()].sort((left, right) => activityTime(right) - activityTime(left));
+        const visible = viewAll ? history : history.slice(0, 3);
 
         const dismissed =
             localStorage.getItem('lh-upload-manager-dismissed') === '1';
@@ -504,22 +501,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (managerOpen) {
             managerOpen.hidden =
-                visible.length === 0 || dismissed || !minimized;
+                history.length === 0 || dismissed || !minimized;
+        }
+
+        manager.classList.toggle('is-view-all', viewAll);
+        viewAllButton?.setAttribute('aria-pressed', String(viewAll));
+        if (viewAllButton) {
+            viewAllButton.title = viewAll ? 'Show recent upload activity' : 'View all upload activity';
+            viewAllButton.innerHTML = viewAll
+                ? '<i class="bi bi-arrows-angle-contract me-1" aria-hidden="true"></i><span>Recent</span>'
+                : '<i class="bi bi-arrows-angle-expand me-1" aria-hidden="true"></i><span>View all</span>';
+        }
+        if (activityCount) {
+            activityCount.textContent = viewAll
+                ? `Showing all ${history.length} activities`
+                : `Showing ${visible.length} most recent ${visible.length === 1 ? 'activity' : 'activities'}`;
         }
 
         items.innerHTML = visible.map((job) => `
             <div class="lh-upload-job" data-job-id="${Number(job.id)}">
                 <div class="d-flex justify-content-between gap-2 small">
-                    <span>${escapeHtml(labelFor(job))}</span>
-                    <span>${escapeHtml(statusText(job))}</span>
+                    <span class="fw-semibold">${escapeHtml(labelFor(job))}</span>
+                    <span class="text-nowrap">${escapeHtml(statusText(job))}</span>
                 </div>
-
+                ${job.original_filename ? `<div class="small text-secondary text-truncate" title="${escapeHtml(job.original_filename)}">${escapeHtml(job.original_filename)}</div>` : ''}
                 ${
                     job.status === 'failed'
-                        ? `<a class="small" href="${retryUrlFor(job)}">
-                            Select file and try again
-                        </a>`
-                        : `
+                        ? `<div class="small text-danger lh-upload-job-error">${escapeHtml(job.error_message || 'Upload failed. Please select the file and try again.')}</div>
+                            <div class="d-flex align-items-center justify-content-between gap-2 mt-1">
+                                <a class="small" href="${retryUrlFor(job)}">Select file and try again</a>
+                                <button type="button" class="btn btn-sm btn-outline-danger lh-upload-job-delete" data-upload-job-delete="${Number(job.id)}"><i class="bi bi-trash me-1" aria-hidden="true"></i>Delete</button>
+                            </div>`
+                        : job.status === 'completed'
+                            ? '<div class="small text-success"><i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>Upload complete</div>'
+                            : `
                             <div
                                 class="progress mt-2"
                                 role="progressbar"
@@ -556,10 +571,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     };
     const refresh = async () => {
+        const sequence = ++refreshSequence;
         try {
-            const response = await fetch('/uploads/status', { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+            const response = await fetch(`/uploads/status${viewAll ? '?all=1' : ''}`, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
             if (!response.ok) return;
             const data = await response.json();
+            if (sequence !== refreshSequence) return;
             const serverJobs = data.jobs || [];
             const serverJobIds = new Set(
                 serverJobs.map((job) => Number(job.id))
@@ -567,12 +584,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             serverJobs.forEach((job) => {
                 const id = Number(job.id);
-
-                // Do not restore completed jobs.
-                if (job.status === 'completed') {
-                    jobs.delete(id);
-                    return;
-                }
 
                 jobs.set(id, job);
             });
@@ -588,9 +599,31 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (_) { /* Status recovery is non-critical while offline. */ }
     };
     const updateProgress = (id, progress, type, filename) => {
-        jobs.set(id, { id, upload_type: type, original_filename: filename, status: 'uploading', progress });
+        jobs.set(id, { id, upload_type: type, original_filename: filename, status: 'uploading', progress, client_updated_at: Date.now() });
         render();
     };
+
+    viewAllButton?.addEventListener('click', () => {
+        viewAll = !viewAll;
+        render();
+        refresh();
+    });
+    items.addEventListener('click', async (event) => {
+        const button = event.target.closest('[data-upload-job-delete]');
+        if (!button) return;
+        const id = Number(button.dataset.uploadJobDelete);
+        if (!id || !window.confirm('Delete this failed upload activity?')) return;
+
+        button.disabled = true;
+        try {
+            await post(`/uploads/${id}/delete`, {});
+            jobs.delete(id);
+            render();
+        } catch (error) {
+            button.disabled = false;
+            notify(error.message || 'Could not delete this upload activity.', 'danger');
+        }
+    });
 
     document.querySelector('[data-upload-manager-minimize]')?.addEventListener('click', () => { 
         localStorage.setItem('lh-upload-manager-minimized','1'); 
@@ -673,16 +706,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 let response = {};
                 try { response = JSON.parse(xhr.responseText || '{}'); } catch (_) {}
                 if (xhr.status >= 200 && xhr.status < 300 && response.ok) {
-                    jobs.set(jobId, { id: jobId, upload_type: type, status: 'completed', progress: 100 });
+                    jobs.set(jobId, { ...jobs.get(jobId), id: jobId, upload_type: type, original_filename: file.name, status: 'completed', progress: 100, client_updated_at: Date.now() });
                     render();
                     form.reset();
                     notify(response.message || 'Upload complete.', 'success', response.link || '');
                     refresh();
                 } else {
                     const message = response.error || 'Your file could not be uploaded. Please try again.';
-                    jobs.set(jobId, { id: jobId, upload_type: type, status: 'failed', progress: 0, error_message: message });
+                    jobs.set(jobId, { ...jobs.get(jobId), id: jobId, upload_type: type, original_filename: file.name, status: 'failed', progress: 0, error_message: message, client_updated_at: Date.now() });
                     render();
-                    post(`/uploads/${jobId}/fail`, { message }).catch(() => {});
+                    post(`/uploads/${jobId}/fail`, { message }).then(refresh).catch(() => {});
                     notify(message, 'danger');
                 }
                 submit?.removeAttribute('disabled');
@@ -690,9 +723,9 @@ document.addEventListener('DOMContentLoaded', () => {
             xhr.addEventListener('error', () => {
                 activeUploads -= 1;
                 const message = 'Network error. Your file could not be uploaded. Please select it and try again.';
-                jobs.set(jobId, { id: jobId, upload_type: type, status: 'failed', progress: 0, error_message: message });
+                jobs.set(jobId, { ...jobs.get(jobId), id: jobId, upload_type: type, original_filename: file.name, status: 'failed', progress: 0, error_message: message, client_updated_at: Date.now() });
                 render();
-                post(`/uploads/${jobId}/fail`, { message }).catch(() => {});
+                post(`/uploads/${jobId}/fail`, { message }).then(refresh).catch(() => {});
                 notify(message, 'danger');
                 submit?.removeAttribute('disabled');
             });
