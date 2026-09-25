@@ -8,14 +8,15 @@
                     <h2 class="lh-page-greeting m-2 align-items-left">Press Releases</h2>
                 </div>
             </div>
-            <p class=" mb-3">Official announcements and media updates from the ministry.</p>
+            
         </div>
     <?php if ($user['role'] === 'super_admin'): ?>
         <div class="col d-flex justify-content-end align-middle">
-            <a class="btn btn-lh-primary" style="height: 45px;" href="/press-release-upload">
-            <i class="bi bi-cloud-arrow-up me-2"></i>Add Press Release</a>
+            <a class="btn btn-lh-primary" style="height: 45px" href="/press-release-upload">
+            <i class="bi bi-cloud-arrow-up me-2"></i>Add PR</a>
         </div>
     <?php endif; ?>
+        <p class=" mb-3">Official announcements and media updates from the ministry.</p>
         </div>
     </div>
 </section>
@@ -49,13 +50,13 @@
 
                         <article class="lh-card lh-card-pr">
 
-                            <div class="row g-4 h-100">
+                            <div class="row g-4">
 
                                 <!-- ========================================= -->
                                 <!-- COLUMN 1: PRESS RELEASE                  -->
                                 <!-- ========================================= -->
-                                <div class="col-lg-8 col-md-7 col-12 d-flex h-100">
-                                    <div class="card border-0 h-100 w-100 d-flex flex-column">
+                                <div class="col-lg-8 col-md-7 col-12 d-flex ">
+                                    <div class="card border-0  w-100 d-flex flex-column">
 
                                         <div class="row g-0">
 
@@ -72,7 +73,7 @@
                                                                 ENT_QUOTES,
                                                                 'UTF-8'
                                                             ) ?>"
-                                                            class="card-img-top img-fluid img-thumbnail w-100 h-100 object-fit-cover rounded"
+                                                            class="card-img-top img-fluid img-thumbnail w-100  object-fit-cover rounded"
                                                             alt="<?= htmlspecialchars(
                                                                 $pressRelease['title'],
                                                                 ENT_QUOTES,
