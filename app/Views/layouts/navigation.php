@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg lh-navbar sticky-top">
   <div class="container lh-shell">
     <a class="navbar-brand lh-brand" href="/">
-      <i class="bi bi-sun-fill me-2"></i><span class="lh-brand-light">LIGHT</span><span class="lh-brand-house">HOUSE</span></a>
+      <i class="bi bi-sun-fill me-2 sun-icon"></i><span class="lh-brand-light">LIGHT</span><span class="lh-brand-house">HOUSE</span></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -24,7 +24,7 @@
 
         <li class="nav-item">
           <a class="nav-link lh-nav-link" href="/sflex">
-          <i class="bi bi-broadcast-pin"></i>
+          <i class="bi bi-broadcast-pin sun-icon"></i>
           SFlex
           </a>
         </li>

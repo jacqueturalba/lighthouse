@@ -14,6 +14,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css?v=<?= config('VERSION') ?>" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css?v=<?= config('VERSION') ?>" rel="stylesheet">
     <link href="/assets/css/app.css?v=<?= config('VERSION') ?>" rel="stylesheet">
+    
+    <link rel="icon" type="image/png" href="<?= config('APP_URL') ?>/favicon.png">
   </head>
   <body class="<?= (in_array(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), ['/login', '/forgot-password', '/reset-password'])) ? 'lh-login-page' : 'auth-class' ?>"> 
   <a class="lh-skip-link" href="#page-content">Skip to content</a>
