@@ -48,7 +48,18 @@ final class UploadController
     public function status(): void
     {
         $user = require_auth();
-        $this->json(['jobs' => UploadJob::forUser((int) $user['id'])]);
+        $this->json(['jobs' => UploadJob::forUser((int) $user['id'], ($_GET['all'] ?? '') === '1')]);
+    }
+
+    public function deleteFailed(array $params): void
+    {
+        $user = require_auth();
+        csrf();
+        $deleted = UploadJob::deleteFailed((int) $params['id'], (int) $user['id']);
+        $this->json(
+            $deleted ? ['ok' => true] : ['error' => 'Failed upload activity was not found.'],
+            $deleted ? 200 : 404
+        );
     }
 
     private function json(array $data, int $status = 200): void
