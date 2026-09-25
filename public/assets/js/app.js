@@ -380,7 +380,7 @@ document.querySelectorAll('.lh-calendar-day[data-href]').forEach(day => {
     day.addEventListener('click', function (event) {
 
         // Don't redirect when clicking an event link
-        if (event.target.closest('.lh-calendar-event')) {
+        if (event.target.closest('.lh-calendar-event, .lh-calendar-more')) {
             return;
         }
 
