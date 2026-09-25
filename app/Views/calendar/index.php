@@ -2,6 +2,13 @@
 foreach ($events as $e) {
     $by[$e["event_date"]][] = $e;
 }
+foreach ($by as &$dayEventsForCalendar) {
+    usort($dayEventsForCalendar, static fn(array $left, array $right): int =>
+        strcmp((string) ($left['start_time'] ?? ''), (string) ($right['start_time'] ?? ''))
+        ?: strcmp((string) $left['title'], (string) $right['title'])
+    );
+}
+unset($dayEventsForCalendar);
 $key = $selected->format("Y-m-d");
 $dayEvents = $by[$key] ?? [];
 $url = fn($c = []) => "/calendar?" . http_build_query(array_merge($_GET, $c));
@@ -83,10 +90,13 @@ $today = date('Y-m-d');
           $date = $d->format("Y-m-d");
           $dateKey = $d->format("Y-m-d");
           $inMonth = $d->format("Y-m") === $month;
+          $dateEvents = $by[$date] ?? [];
+          $visibleDateEvents = array_slice($dateEvents, 0, 3);
+          $moreEventsCount = count($dateEvents) - count($visibleDateEvents);
       ?>
 
         <div
-          class="lh-calendar-day <?= $inMonth ? '' : 'is-muted' ?><?= $dateKey === $today ? ' is-today' : '' ?>"
+          class="lh-calendar-day <?= $inMonth ? '' : 'is-muted' ?><?= $dateKey === $today ? ' is-today' : '' ?><?= $dateKey === $key ? ' is-selected' : '' ?>"
           data-href="<?= e($url(["selected" => $date])) ?>"
           role="link"
           tabindex="0"
@@ -96,7 +106,7 @@ $today = date('Y-m-d');
             <?= $d->format("j") ?>
           </p>
 
-          <?php foreach (array_slice($by[$date] ?? [], 0, 3) as $event): ?>
+          <?php foreach ($visibleDateEvents as $event): ?>
             <a
               class="lh-calendar-event"
               style="--event-color:<?= e($event['organizer_color']) ?>"
@@ -106,6 +116,9 @@ $today = date('Y-m-d');
               <?= e($event['title']) ?>
             </a>
           <?php endforeach; ?>
+          <?php if ($moreEventsCount > 0): ?>
+            <a class="lh-calendar-more" href="<?= e($url(["selected" => $date])) ?>">+<?= $moreEventsCount ?> more</a>
+          <?php endif; ?>
 
         </div>
 
