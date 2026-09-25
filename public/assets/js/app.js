@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
             button.setAttribute('aria-pressed', String(dark));
             button.title = `Switch to ${dark ? 'light' : 'dark'} mode`;
             const icon = button.querySelector('i');
-            if (icon) icon.className = `bi ${dark ? 'bi-sun' : 'bi-moon-stars'}`;
+            if (icon) icon.className = `bi ${dark ? 'bi-sun sun-icon' : 'bi-moon-stars'}`;
             const label = button.querySelector('.d-lg-none');
             if (label) label.textContent = dark ? 'Light mode' : 'Dark mode';
         });

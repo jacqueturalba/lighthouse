@@ -6,7 +6,7 @@
 
             <div class="lh-login-brand">
                 <div class="lh-login-brand-icon">
-                    <i class="bi bi-sun"></i>
+                    <i class="bi bi-sun sun-icon"></i>
                 </div>
 
                 <div>
