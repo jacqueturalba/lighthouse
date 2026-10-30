@@ -40,10 +40,10 @@ final class UploadJob
         // A request abandoned during navigation cannot notify PHP. Mark only
         // long-stale jobs failed; active browsers refresh progress regularly.
         db()->prepare(
-            "UPDATE upload_jobs SET status = 'failed', error_message = 'The upload was interrupted. Please select the file and try again.' WHERE user_id = ? AND status IN ('preparing', 'uploading') AND updated_at < DATE_SUB(NOW(), INTERVAL 30 MINUTE)"
+            "UPDATE upload_jobs SET status = 'failed', error_message = 'The upload was interrupted. Please select the file and try again.' WHERE user_id = ? AND status IN ('preparing', 'uploading', 'processing') AND updated_at < DATE_SUB(NOW(), INTERVAL 30 MINUTE)"
         )->execute([$userId]);
 
-        $columns = 'id, upload_type, original_filename, file_size, status, progress, related_id, error_message, created_at, updated_at, completed_at';
+        $columns = 'id, upload_type, original_filename, file_size, status, progress, related_id, error_message, total_count, processed_count, created_count, updated_count, created_at, updated_at, completed_at';
         if ($all) {
             $statement = db()->prepare(
                 "SELECT {$columns} FROM upload_jobs WHERE user_id = ? ORDER BY updated_at DESC, id DESC"
@@ -53,7 +53,7 @@ final class UploadJob
         }
 
         $active = db()->prepare(
-            "SELECT {$columns} FROM upload_jobs WHERE user_id = ? AND status IN ('preparing', 'uploading')"
+            "SELECT {$columns} FROM upload_jobs WHERE user_id = ? AND status IN ('preparing', 'uploading', 'processing')"
         );
         $active->execute([$userId]);
         $recent = db()->prepare(

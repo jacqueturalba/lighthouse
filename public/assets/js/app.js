@@ -465,13 +465,15 @@ document.addEventListener('DOMContentLoaded', () => {
         element.textContent = value || '';
         return element.innerHTML;
     };
-    const labelFor = (job) => job.upload_type === 'promotion_kit' ? 'Promotion kit' : 'SFlex media';
+    const labelFor = (job) => job.upload_type === 'promotion_kit' ? 'Promotion kit' : job.upload_type === 'user_bulk' ? 'Bulk user upload' : 'SFlex media';
     const retryUrlFor = (job) => job.upload_type === 'promotion_kit' ? '/promotion-kit-upload' : '/sflex';
     const statusText = (job) => {
-        if (job.status === 'completed') return 'Ready';
+        if (job.status === 'completed') return job.upload_type === 'user_bulk' ? 'Completed' : 'Ready';
         if (job.status === 'failed') return 'Failed';
+        if (job.upload_type === 'user_bulk' && job.status === 'processing') return `Processing · ${Number(job.processed_count || 0).toLocaleString()} / ${Number(job.total_count || 0).toLocaleString()} processed`;
         return `Uploading ${Math.max(0, Math.min(100, Number(job.progress) || 0))}%`;
     };
+    const bulkResultsUrl = (job) => `/users/bulk-upload/${Number(job.id)}/results`;
     const activityTime = (job) => Date.parse(job.updated_at || job.created_at || '') || Number(job.client_updated_at) || 0;
     const cleanupOldJobs = () => {
         // Remove any stale job elements that may already exist in the DOM.
@@ -533,7 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <button type="button" class="btn btn-sm btn-outline-danger lh-upload-job-delete" data-upload-job-delete="${Number(job.id)}"><i class="bi bi-trash me-1" aria-hidden="true"></i>Delete</button>
                             </div>`
                         : job.status === 'completed'
-                            ? '<div class="small text-success"><i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>Upload complete</div>'
+                            ? `<div class="small text-success"><i class="bi bi-check-circle-fill me-1" aria-hidden="true"></i>${job.upload_type === 'user_bulk' ? `<a href="${bulkResultsUrl(job)}">View created/updated/error summary</a>` : 'Upload complete'}</div>`
                             : `
                             <div
                                 class="progress mt-2"
@@ -596,11 +598,32 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             render();
+            serverJobs.filter((job) => job.upload_type === 'user_bulk' && job.status === 'processing').forEach(runBulkWorker);
         } catch (_) { /* Status recovery is non-critical while offline. */ }
     };
     const updateProgress = (id, progress, type, filename) => {
         jobs.set(id, { id, upload_type: type, original_filename: filename, status: 'uploading', progress, client_updated_at: Date.now() });
         render();
+    };
+
+    const processingBulkJobs = new Set();
+    const runBulkWorker = (job) => {
+        const id = Number(job.id);
+        if (!id || processingBulkJobs.has(id)) return;
+        processingBulkJobs.add(id);
+        const step = async () => {
+            try {
+                const state = await post(`/users/bulk-upload/${id}/process`, {});
+                jobs.set(id, { ...jobs.get(id), ...state, total_count: state.total, processed_count: state.processed, created_count: state.created, updated_count: state.updated, id, upload_type: 'user_bulk', original_filename: job.original_filename });
+                render();
+                if (state.status === 'processing') window.setTimeout(step, 150);
+                else { processingBulkJobs.delete(id); if(state.status==='completed')notify(`Bulk upload complete. Created ${Number(state.created||0).toLocaleString()}, updated ${Number(state.updated||0).toLocaleString()}.`,'success',bulkResultsUrl({id})); refresh(); }
+            } catch (_) {
+                processingBulkJobs.delete(id);
+                window.setTimeout(refresh, 3000);
+            }
+        };
+        step();
     };
 
     viewAllButton?.addEventListener('click', () => {
@@ -730,6 +753,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 submit?.removeAttribute('disabled');
             });
             xhr.send(data);
+        });
+    });
+
+    const activeBulkTransfers = new Set();
+    window.addEventListener('pagehide', () => {
+        activeBulkTransfers.forEach((id) => {
+            const body=new Blob([new URLSearchParams({_token:token,message:'The file transfer was interrupted. Select it again to retry.'})],{type:'application/x-www-form-urlencoded'});
+            navigator.sendBeacon(`/uploads/${id}/fail`,body);
+        });
+    });
+    document.querySelectorAll('form[data-bulk-user-upload]').forEach((form) => {
+        form.addEventListener('submit', async (event) => {
+            const input=form.querySelector('input[type="file"]'); const file=input?.files?.[0];
+            if(!file||!form.reportValidity())return;
+            event.preventDefault();
+            const submit=form.querySelector('[type="submit"]'); submit?.setAttribute('disabled','disabled');
+            localStorage.removeItem('lh-upload-manager-dismissed');
+            let jobId;
+            try {
+                const started=await post('/uploads/start',{upload_type:'user_bulk',original_filename:file.name,file_size:file.size}); jobId=Number(started.id);
+            } catch(error) { submit?.removeAttribute('disabled');notify(error.message||'Could not prepare the upload.','danger');return; }
+            jobs.set(jobId,{id:jobId,upload_type:'user_bulk',original_filename:file.name,status:'uploading',progress:0,client_updated_at:Date.now()});render();activeBulkTransfers.add(jobId);activeUploads++;
+            const body=new FormData(form); body.set('upload_job_id',String(jobId)); const xhr=new XMLHttpRequest(); xhr.open('POST',form.action,true); xhr.setRequestHeader('Accept','application/json');
+            let lastBulkProgress=-1,lastBulkReport=0;
+            xhr.upload.addEventListener('progress',(progressEvent)=>{if(!progressEvent.lengthComputable)return;const progress=Math.min(99,Math.round(progressEvent.loaded/progressEvent.total*100));jobs.set(jobId,{...jobs.get(jobId),progress,client_updated_at:Date.now()});render();const now=Date.now();if(progress!==lastBulkProgress&&now-lastBulkReport>=5000){lastBulkProgress=progress;lastBulkReport=now;post(`/uploads/${jobId}/progress`,{progress}).catch(()=>{});}});
+            const finish=()=>{activeBulkTransfers.delete(jobId);activeUploads=Math.max(0,activeUploads-1);submit?.removeAttribute('disabled');};
+            xhr.addEventListener('load',()=>{let data={};try{data=JSON.parse(xhr.responseText||'{}');}catch(_){} finish();if(xhr.status>=200&&xhr.status<300&&data.id){jobs.set(jobId,{...jobs.get(jobId),status:'processing',progress:0,total_count:data.total,processed_count:0});refresh();runBulkWorker({id:jobId,upload_type:'user_bulk',original_filename:file.name,status:'processing'});form.reset();}else{const message=data.error||'The Excel file could not be accepted.';jobs.set(jobId,{...jobs.get(jobId),status:'failed',error_message:message});render();post(`/uploads/${jobId}/fail`,{message}).catch(()=>{});notify(message,'danger');}});
+            xhr.addEventListener('error',()=>{finish();const message='The file transfer failed. Select the workbook and try again.';jobs.set(jobId,{...jobs.get(jobId),status:'failed',error_message:message});render();post(`/uploads/${jobId}/fail`,{message}).catch(()=>{});notify(message,'danger');});
+            xhr.send(body);
         });
     });
 });

@@ -77,18 +77,18 @@
                     <!-- EMAIL -->
                     <div class="lh-login-field">
                         <label for="email">
-                            Email Address
+                            Email or Serial Number
                         </label>
 
                         <div class="lh-login-input-wrapper">
-                            <i class="bi bi-envelope"></i>
+                            <i class="bi bi-person"></i>
 
                             <input
                                 name="email"
-                                type="email"
-                                autocomplete="email"
+                                type="text"
+                                autocomplete="username"
                                 id="email"
-                                placeholder="Enter your email"
+                                placeholder="Enter your email or serial number"
                                 required
                             >
                         </div>

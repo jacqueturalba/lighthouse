@@ -2,13 +2,19 @@
 if (!empty($rows)) {
 foreach($rows as $u) { ?>
 <tr>
-    <td><?php echo $u['name']; ?></td>
-    <td><?php echo $u['email']; ?></td>
-    <td><?php echo $u['role']; ?></td>
-    <td><?php echo $u['status']; ?></td>
-    <td><?php echo $u['created_at']; ?></td>
-    <td><?php echo $u['last_login_at']?:'—'; ?></td>
+    <td><?= e($u['serial_no']) ?></td>
+    <td><?= e($u['name']) ?></td>
+    <td><?= e($u['email']) ?></td>
+    <td><?= e($u['role']) ?></td>
+    <td><?= e($u['status']) ?></td>
+    <td><?= e($u['created_at']) ?></td>
+    <td><?= e($u['last_login_at']?:'—') ?></td>
     <td class="d-flex justify-content-center">
+
+        <div class="dropdown px-1">
+            <button type="button" title="More actions" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i><span class="visually-hidden">More actions</span></button>
+            <div class="dropdown-menu dropdown-menu-end p-1"><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#user-details-<?= (int)$u['id'] ?>"><i class="bi bi-person-vcard me-2"></i>View Details</button></div>
+        </div>
 
         <div class="dropdown px-1">
             <button type="button" title="Reset Password" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
@@ -17,7 +23,7 @@ foreach($rows as $u) { ?>
 
             <form class="dropdown-menu p-4" method="post" action="/users/reset" style="margin:0; width:200px;">
                 <?php echo form_token(); ?>
-                <input type="hidden" name="email" value="<?php echo $u['email']; ?>">
+                <input type="hidden" name="email" value="<?= e($u['email']) ?>">
                 <button class="btn btn-outline-primary py-1 mt-2 mb-2" alt="Send Password Reset Link">Send Reset Email</button>
             </form>
 
@@ -60,4 +66,4 @@ foreach($rows as $u) { ?>
     </td>
 </tr>
 <?php }
-} ?>
+} else { ?><tr><td colspan="8" class="text-center text-secondary py-4">No users match this search.</td></tr><?php } ?>

@@ -10,10 +10,19 @@ final class AuthenticationService
         return empty($_SESSION['user_id']) ? null : User::findActiveById((int) $_SESSION['user_id']);
     }
 
-    public function attempt(string $email, string $password): bool
+    public function attempt(string $identifier, string $password): bool
     {
-        $user = User::findByEmail($email);
-        if (!$user || $user['status'] !== 'active' || !password_verify($password, $user['password'])) return false;
+        $user = User::findBySerialNo($identifier);
+        if ($user) {
+            if ($user['status'] !== 'active' || !password_verify($password, $user['password'])) return false;
+        } else {
+            $matches = array_values(array_filter(
+                User::findAllByEmail(strtolower($identifier)),
+                static fn(array $candidate): bool => $candidate['status'] === 'active' && password_verify($password, $candidate['password'])
+            ));
+            if (count($matches) !== 1) return false;
+            $user = $matches[0];
+        }
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
         User::recordLogin((int) $user['id']);

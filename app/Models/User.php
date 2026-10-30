@@ -3,10 +3,17 @@ declare(strict_types=1);
 
 final class User
 {
-    public static function findByEmail(string $email): ?array
+    public static function findAllByEmail(string $email): array
     {
-        $statement = db()->prepare('SELECT * FROM users WHERE email=? LIMIT 1');
+        $statement = db()->prepare('SELECT * FROM users WHERE email=? ORDER BY id');
         $statement->execute([$email]);
+        return $statement->fetchAll();
+    }
+
+    public static function findBySerialNo(string $serialNo): ?array
+    {
+        $statement = db()->prepare('SELECT * FROM users WHERE serial_no=? LIMIT 1');
+        $statement->execute([$serialNo]);
         return $statement->fetch() ?: null;
     }
 

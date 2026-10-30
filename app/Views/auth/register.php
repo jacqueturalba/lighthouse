@@ -10,8 +10,13 @@
         </div>
 
         <div class="form-floating mb-3 py-2">
+            <label>Serial Number </label>
+            <input name="serial_no" maxlength="100" class="form-control" required>
+        </div>
+
+        <div class="form-floating mb-3 py-2">
             <label>Email </label>
-            <input name="email" type="email" class="form-control" required>
+            <input name="email" type="email" class="form-control">
         </div>
 
         <p>New accounts are created with the Admin role. Super Admin access can only be granted from User Management.</p>
