@@ -351,7 +351,7 @@
 
                                         <?php else: ?>
 
-                                            <div class="press-release-links" style="max-height: 250px;overflow-y: auto;overflow-x: hidden;">
+                                            <div class="press-release-links" style="max-height: 250px;overflow-y: auto;overflow-x: hidden; border: var(--bs-border-width) solid var(--bs-border-color); padding: 8px;">
 
                                                 <div class="list-group">
 
