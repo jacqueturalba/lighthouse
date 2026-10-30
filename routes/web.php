@@ -10,6 +10,7 @@ require dirname(__DIR__).'/app/Controllers/MaterialRequestController.php';
 require dirname(__DIR__).'/app/Controllers/PressReleaseController.php';
 require dirname(__DIR__).'/app/Controllers/SFlexController.php';
 require dirname(__DIR__).'/app/Controllers/UploadController.php';
+require dirname(__DIR__).'/app/Controllers/BulkUserUploadController.php';
 
 $storage = new StorageController();
 $router->get('/storage/{type}/{folder}/{file}', [$storage, 'show']);
@@ -89,5 +90,10 @@ $router->post('/material-requests/{id}', [$materialRequests, 'update']);
 
 
 $application = new ApplicationController();
+$bulkUsers = new BulkUserUploadController();
+$router->get('/users/template', [$bulkUsers, 'template']);
+$router->post('/users/bulk-upload', [$bulkUsers, 'upload']);
+$router->post('/users/bulk-upload/{id}/process', [$bulkUsers, 'process']);
+$router->get('/users/bulk-upload/{id}/results', [$bulkUsers, 'results']);
 $router->any('/', [$application, 'dispatch']);
 $router->any('/{path}', [$application, 'dispatch']);

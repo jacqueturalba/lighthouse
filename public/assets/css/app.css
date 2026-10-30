@@ -2226,3 +2226,11 @@ html[data-bs-theme="dark"] .lh-login-sso:hover { color: #e0f0ff; background: rgb
     .lh-calendar-day.is-today.is-selected { box-shadow: inset 0 3px 0 var(--lh-gold), inset 0 -3px 0 var(--bs-primary), inset 0 0 0 1px color-mix(in srgb, var(--bs-primary) 22%, transparent); }
     .lh-calendar-more { margin-top: .15rem; font-size: .56rem; line-height: 1.1; text-align: center; white-space: nowrap; }
 }
+
+/* =========================================================
+   USER MANAGEMENT
+   ========================================================= */
+.modal.user-details.show {
+    z-index: 3000 !important;
+
+}

@@ -11,12 +11,12 @@ final class UploadController
         $user = require_auth();
         csrf();
         $type = (string) ($_POST['upload_type'] ?? '');
-        if (!in_array($type, ['promotion_kit', 'sflex'], true)) {
+        if (!in_array($type, ['promotion_kit', 'sflex', 'user_bulk'], true)) {
             $this->json(['error' => 'Invalid upload type.'], 422);
             return;
         }
-        if ($type === 'promotion_kit' && $user['role'] !== 'super_admin') {
-            $this->json(['error' => 'You do not have permission to upload promotion kits.'], 403);
+        if (in_array($type, ['promotion_kit','user_bulk'], true) && $user['role'] !== 'super_admin') {
+            $this->json(['error' => 'You do not have permission to start this upload.'], 403);
             return;
         }
 

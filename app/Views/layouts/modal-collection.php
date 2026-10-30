@@ -181,3 +181,28 @@
         </div>
     </div>
 </div>
+<?php 
+if (isset($rows) && !empty($rows)):
+foreach($rows as $u): ?>
+    <div class="modal fade user-details" id="user-details-<?= (int)$u['id'] ?>" tabindex="-1" 
+            aria-labelledby="user-details-title-<?= (int)$u['id'] ?>" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="user-details-title-<?= (int)$u['id'] ?>">User Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row mb-0">
+                    <?php foreach(['serial_no'=>'Serial No.','church'=>'Church','hq_dept'=>'HQ Department','ph_dept'=>'PH Department','region'=>'Region','area'=>'Area','birthday'=>'Birthday','contact_number'=>'Contact Number'] as $field=>$label): ?>
+                        <dt class="col-sm-5"><?= e($label) ?></dt>
+                        <dd class="col-sm-7"><?= e($u[$field] ?: '—') ?></dd>
+                    <?php endforeach ?>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php 
+endforeach;
+endif; ?>
